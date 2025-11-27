@@ -1,25 +1,18 @@
-# config/settings.py
-
 import os
+from dataclasses import dataclass
 from dotenv import load_dotenv
 
+# Load .env file
 load_dotenv()
 
+
+@dataclass
 class Settings:
-    # Telegram Bot
     BOT_TOKEN: str = os.getenv("BOT_TOKEN")
-
-    # OpenWeather
-    WEATHER_API_KEY: str = os.getenv("WEATHER_API_KEY")
-
-    # Google Maps
+    OPENWEATHER_API_KEY: str = os.getenv("OPENWEATHER_API_KEY")
     GOOGLE_MAPS_API_KEY: str = os.getenv("GOOGLE_MAPS_API_KEY")
-
-    # AI / GPT
     AI_API_KEY: str = os.getenv("AI_API_KEY")
+    DEBUG: bool = os.getenv("DEBUG", "False").lower() == "true"
 
-    # Project settings
-    PROJECT_NAME: str = "AskYerevan"
-    VERSION: str = "1.0.0"
 
 settings = Settings()
