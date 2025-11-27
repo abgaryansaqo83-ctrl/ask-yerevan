@@ -1,11 +1,16 @@
 import logging
 
-logger = logging.getLogger("askyerevan")
-logger.setLevel(logging.INFO)
+# Basic logger setup
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
-handler = logging.StreamHandler()
-formatter = logging.Formatter("[%(asctime)s] [%(levelname)s] %(message)s")
-handler.setFormatter(formatter)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 
-logger.addHandler(handler)
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(formatter)
 
+logger.addHandler(console_handler)
+
+# Example usage
+if __name__ == "__main__":
+    logger.info("Logger initialized successfully")
