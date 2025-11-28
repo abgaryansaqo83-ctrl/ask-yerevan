@@ -2,20 +2,20 @@ import os
 from dataclasses import dataclass
 from dotenv import load_dotenv
 
-# Load .env file
+# Load .env file (locally). On Render values գալիս են Environment-ից.
 load_dotenv()
 
 
 @dataclass
 class Settings:
-TELEGRAM_BOT_TOKEN=8233762189:AAEXblwVlRQC9L-Y2GI9BLcf4evKmY9Qq8w
-OPENWEATHER_KEY=04fdb8fd5fc148e6daa6f79957409ad0
-GOOGLE_MAPS_KEY=AIzaSyB08LkQTy9j5G7iRVUNDPu4cCG0LEDkLS4
-GOOGLE_DIRECTIONS_KEY=AIzaSyB08LkQTy9j5G7iRVUNDPu4cCG0LEDkLS4
-AI_API_KEY=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
-DATABASE_URL=postgresql://ask_yerevan_db_user:waI7XmdpS9sSMlXDwuZrzQnYZYu7ZSf0@dpg-d4ke7jali9vc73dn2ujg-a/ask_yerevan_db
-TIMEZONE=Asia/Yerevan
-GROUP_CHAT_ID=-1003340745236
+    BOT_TOKEN: str = os.getenv("BOT_TOKEN")
+    OPENWEATHER_API_KEY: str = os.getenv("OPENWEATHER_API_KEY")
+    GOOGLE_MAPS_API_KEY: str = os.getenv("GOOGLE_MAPS_API_KEY")
+    GOOGLE_DIRECTIONS_KEY: str = os.getenv("GOOGLE_DIRECTIONS_KEY")
+    AI_API_KEY: str = os.getenv("AI_API_KEY")
+    DATABASE_URL: str = os.getenv("DATABASE_URL")
+    TIMEZONE: str = os.getenv("TIMEZONE", "Asia/Yerevan")
+    GROUP_CHAT_ID: int = int(os.getenv("GROUP_CHAT_ID", "-1003340745236"))
 
 
 settings = Settings()
