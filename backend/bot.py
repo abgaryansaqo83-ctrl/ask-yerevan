@@ -17,9 +17,16 @@ bot = Bot(
 dp = Dispatcher()
 
 
-@dp.message(CommandStart())
-async def start(message: Message):
-    await message.answer(get_text("start", "hy"))
+@dp.message(Command("admin"))
+async def admin_start(message: Message):
+    text = (
+        "կապ ադմինի հետ առաջարկների/բողոքների համար։\n"
+        "Ձեր հաղորդագրությունը չի հրապարակվի խմբում, "
+        "այլ կուղարկվի ուղիղ ադմինին անձնական նամակով.\n\n"
+        "Խնդրում եմ գրիր քո հաղորդագրությունը հետևյալ հաղորդագրությամբ։"
+    )
+    await message.answer(text)
+
 
 
 @dp.message()
