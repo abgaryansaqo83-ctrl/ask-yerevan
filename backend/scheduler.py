@@ -116,7 +116,7 @@ async def run_scheduler():
     signal.signal(signal.SIGTERM, signal_handler)
     signal.signal(signal.SIGINT, signal_handler)
 
-    try:
+        try:
         scheduler.start()
         logger.info("🚀 Scheduler started. Press Ctrl+C to stop.")
 
@@ -124,7 +124,7 @@ async def run_scheduler():
         while True:
             await asyncio.sleep(60)
 
-        except KeyboardInterrupt:
+    except KeyboardInterrupt:
         logger.info("🛑 Scheduler stopped by user")
     except SystemExit:
         logger.info("🛑 Scheduler received SystemExit")
@@ -135,6 +135,7 @@ async def run_scheduler():
         except Exception:
             pass
         logger.info("👋 Scheduler shutdown complete")
+
 
 if __name__ == "__main__":
     asyncio.run(run_scheduler())
