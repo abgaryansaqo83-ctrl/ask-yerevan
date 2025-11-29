@@ -2,7 +2,9 @@
 
 import aiohttp
 import asyncio
+import random
 from typing import Optional
+
 from config.settings import settings
 from ..utils.logger import setup_logger
 
@@ -10,6 +12,7 @@ logger = setup_logger(__name__)
 
 OPENWEATHER_BASE_URL = "https://api.openweathermap.org/data/2.5"
 YEREVAN_LAT, YEREVAN_LON = 40.1811, 44.5136
+
 WEATHER_EMOJIS = {
     "Clear": "☀️",
     "Clouds": "☁️",
@@ -28,33 +31,28 @@ async def get_yerevan_weather(api_key: Optional[str] = None) -> str:
     Ջերմաստիճան + զգացողական + օրվա forecast + հումորային խորհուրդ.
     """
     api_key = api_key or settings.OPENWEATHER_API_KEY
-    
+
     if not api_key:
         return "🌤️ Եղանակի տվյալները ժամանակավորապես անհասանելի են։ Փորձիր կրկին մի քանի րոպե հետո։"
 
     async with aiohttp.ClientSession() as session:
         try:
-            # Current weather
             current_url = (
                 f"{OPENWEATHER_BASE_URL}/weather?"
                 f"lat={YEREVAN_LAT}&lon={YEREVAN_LON}&appid={api_key}&units=metric&lang=ru"
             )
-            
-            # 5-day forecast (մենք օգտագործում ենք առաջին օրվա min/max)
+
             forecast_url = (
                 f"{OPENWEATHER_BASE_URL}/forecast?"
                 f"lat={YEREVAN_LAT}&lon={YEREVAN_LON}&appid={api_key}&units=metric&lang=ru"
             )
 
-            # Current weather
             async with session.get(current_url) as resp:
                 if resp.status != 200:
                     logger.error(f"OpenWeather API error: {resp.status}")
                     return "🌤️ Եղանակի տվյալները ժամանակավորապես անհասանելի են։"
-                
                 current_data = await resp.json()
 
-            # Forecast (այսօրվա min/max)
             async with session.get(forecast_url) as resp:
                 if resp.status != 200:
                     logger.warning("Forecast unavailable, using current data only")
@@ -73,7 +71,6 @@ def _get_weather_emoji(weather_main: str) -> str:
     """Ըստ weather condition-ի emoji."""
     return WEATHER_EMOJIS.get(weather_main, "🌤️")
 
-import random
 
 def _get_humor_advice(temp: float, feels_like: float, weather_main: str) -> str:
     """
@@ -84,10 +81,10 @@ def _get_humor_advice(temp: float, feels_like: float, weather_main: str) -> str:
             "Արևը ժպտում է, ուրեմն այսօր կարող եք էլի ձևացնել, թե ամեն ինչ վերահսկողության տակ է։ Լրիվ սուտ է, բայց արևն էլ չի իմանա 😎☀️",
         ],
         "Clouds": [
-            "Եթե օրը պայծառ չէ, մի վատացրեք. պարզապես եղեք “միստիկ” ու “խորհրդավոր”, ոչ թե “ներկառուցված Wi-Fi չունեցող մարդ” ☁️📶",
+            "Եթե օրը պայծառ չէ, մի վատացրեք. պարզապես եղեք «միստիկ» ու «խորհրդավոր», ոչ թե «ներկառուցված Wi‑Fi չունեցող մարդ» ☁️📶",
         ],
         "Rain": [
-            "Վերցրեք ամենամեծ հովանոցը, ոչ թե անձրևից պաշտպանվելու, այլ հոգու խաղաղության համար — մեծ հովանոցով մարդուն ոչ ոք հարցեր չի տալիս 🌧️☂️",
+            "Վերցրեք ամենամեծ հովանոցը, ոչ թե անձրևից защитվելու, այլ հոգու խաղաղության համար — մեծ հովանոցով մարդուն ոչ ոք հարցեր չի տալիս 🌧️☂️",
         ],
         "Thunderstorm": [
             "Եթե փոթորիկ է — մնա տանը, դա բնության DJ-ն ա նվագում ⛈️🎶",
@@ -106,8 +103,7 @@ def _get_humor_advice(temp: float, feels_like: float, weather_main: str) -> str:
         return random.choice(tips[weather_main])
 
     return "Բարի օր քեզ և եղանակից անկախ՝ լավ տրամադրություն 🌤️😊"
-    
-    return tip
+
 
 def _get_day_forecast_advice(min_temp: float, max_temp: float, weather_main: str) -> str:
     """Օրվա forecast-ի խորհուրդ."""
@@ -134,18 +130,17 @@ def _format_weather_message(current: dict, forecast: Optional[dict] = None) -> s
         f"😎 Զգացողական՝ {feels_like:.0f}°C\n"
         f"📝 {weather_desc.title()}"
     )
-    ...
-    
+
     # Humor advice
     humor = _get_humor_advice(temp, feels_like, weather_main)
-    
+
     # Day forecast
     day_forecast = ""
-    if forecast:
-        # Օրվա min/max temperature-ները առաջին 8 ժամից (այսօր)
+    if forecast and "list" in forecast and forecast["list"]:
+        today_date = forecast["list"][0]["dt_txt"][:10]
         today_forecasts = [
-            item for item in forecast["list"][:8] 
-            if item["dt_txt"].startswith(forecast["list"][0]["dt_txt"][:10])
+            item for item in forecast["list"][:8]
+            if item["dt_txt"].startswith(today_date)
         ]
         if today_forecasts:
             min_temp = min(item["main"]["temp_min"] for item in today_forecasts)
@@ -154,8 +149,6 @@ def _format_weather_message(current: dict, forecast: Optional[dict] = None) -> s
                 f"\n📊 Օրվա կանխատեսում՝ {min_temp:.0f}°C / {max_temp:.0f}°C\n"
                 f"{_get_day_forecast_advice(min_temp, max_temp, weather_main)}"
             )
-    
-    message = f"{current_line}\n\n💡 {humor}{day_forecast}"
-    
-    return message
 
+    message = f"{current_line}\n\n💡 {humor}{day_forecast}"
+    return message
