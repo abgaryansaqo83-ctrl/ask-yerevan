@@ -8,7 +8,7 @@ load_dotenv()
 
 @dataclass
 class Settings:
-    ADMIN_CHAT_ID=8233762189
+    ADMIN_CHAT_ID=8287675764
     BOT_TOKEN: str = os.getenv("BOT_TOKEN")
     OPENWEATHER_API_KEY: str = os.getenv("OPENWEATHER_API_KEY")
     GOOGLE_MAPS_API_KEY: str = os.getenv("GOOGLE_MAPS_API_KEY")
