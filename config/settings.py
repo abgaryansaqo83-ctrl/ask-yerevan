@@ -16,6 +16,7 @@ class Settings:
     DATABASE_URL: str = os.getenv("DATABASE_URL")
     TIMEZONE: str = os.getenv("TIMEZONE", "Asia/Yerevan")
     GROUP_CHAT_ID: int = int(os.getenv("GROUP_CHAT_ID", "-1003340745236"))
+    ADMIN_CHAT_ID=8233762189
 
 
 settings = Settings()
