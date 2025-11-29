@@ -114,7 +114,7 @@ def _format_weather_message(current: dict, forecast: Optional[dict] = None) -> s
     
     # Current weather
     current_line = (
-        f"{emoji} <b>{city_name}</b>\n"
+        f"{emoji} "{city_name}"
         f"🌡️ Ջերմաստիճան՝ {temp:.0f}°C\n"
         f"😎 Զգացողական՝ {feels_like:.0f}°C\n"
         f"📝 {weather_desc.title()}"
