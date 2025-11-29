@@ -137,7 +137,7 @@ def _format_recommendation(place: dict, emoji: str) -> str:
     desc = _get_short_desc(types)
     
     return (
-        f"{emoji} <b>{name}</b>\n"
+        f"{emoji} "{name}"
         f"⭐ {rating:.1f} | {address}\n"
         f"{price_str} {desc}"
     )
