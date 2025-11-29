@@ -1,7 +1,7 @@
 # bot.py
 
 import asyncio
-from aiogram import Bot, Dispatcher, F
+from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.filters import Command, CommandStart
@@ -104,17 +104,14 @@ async def cmd_news(message: Message):
 async def main_router(message: Message):
     text = (message.text or "").lower()
 
-    # Greeting
     if any(word in text for word in ["բարև", "barev", "hi", "hello"]):
         await message.answer("Բարև՜, լսում եմ քեզ 🙂")
         return
 
-    # Weather
     if "եղանակ" in text:
         await message.answer("Մի վայրկյան… եղանակը ստուգում եմ 🌤")
         return
 
-    # Traffic
     if "ճանապարհ" in text or "փակ" in text or "խցանում" in text:
         await message.answer("Հիմա կստուգեմ Երևանի ճանապարհները… 🚗")
         return
