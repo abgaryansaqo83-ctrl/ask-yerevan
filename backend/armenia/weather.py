@@ -120,22 +120,21 @@ def _get_day_forecast_advice(min_temp: float, max_temp: float, weather_main: str
 
 
 def _format_weather_message(current: dict, forecast: Optional[dict] = None) -> str:
-    """Հաղորդագրության ֆորմատավորում."""
     temp = current["main"]["temp"]
     feels_like = current["main"]["feels_like"]
     weather_main = current["weather"][0]["main"]
     weather_desc = current["weather"][0]["description"]
     city_name = current["name"]
-    
+
     emoji = _get_weather_emoji(weather_main)
-    
-    # Current weather
+
     current_line = (
-        f"{emoji} "{city_name}"
+        f"{emoji} {city_name}\n"
         f"🌡️ Ջերմաստիճան՝ {temp:.0f}°C\n"
         f"😎 Զգացողական՝ {feels_like:.0f}°C\n"
         f"📝 {weather_desc.title()}"
     )
+    ...
     
     # Humor advice
     humor = _get_humor_advice(temp, feels_like, weather_main)
