@@ -124,12 +124,17 @@ async def run_scheduler():
         while True:
             await asyncio.sleep(60)
 
-    except KeyboardInterrupt:
+        except KeyboardInterrupt:
         logger.info("🛑 Scheduler stopped by user")
+    except SystemExit:
+        logger.info("🛑 Scheduler received SystemExit")
     finally:
-        scheduler.shutdown()
+        try:
+            if scheduler.running:
+                scheduler.shutdown()
+        except Exception:
+            pass
         logger.info("👋 Scheduler shutdown complete")
-
 
 if __name__ == "__main__":
     asyncio.run(run_scheduler())
