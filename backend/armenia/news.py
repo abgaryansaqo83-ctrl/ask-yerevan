@@ -3,7 +3,7 @@
 import aiohttp
 import datetime
 from typing import List
-from .․utils.logger import setup_logger
+from ..utils.logger import setup_logger
 from config.settings import settings
 
 logger = setup_logger(__name__)
