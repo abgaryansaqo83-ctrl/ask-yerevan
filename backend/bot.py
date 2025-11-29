@@ -41,6 +41,8 @@ class AdminForm(StatesGroup):
 
 @dp.message(CommandStart(ignore_mention=True))
 async def cmd_start(message: Message):
+    lang = detect_lang(message)
+    await message.answer(get_text("start", lang))
     text = (
         "Բարև, ես AskYerevan բոտն եմ 🙌\n"
         "Խոսում ենք Երևանի մասին՝ հետաքրքիր վայրեր և այլն։\n\n"
@@ -54,6 +56,9 @@ async def cmd_start(message: Message):
 
 @dp.message(Command("admin", ignore_mention=True))
 async def cmd_admin(message: Message, state: FSMContext):
+    lang = detect_lang(message)
+    await message.answer(get_text("admin_intro", lang))
+    await state.set_state(AdminForm.waiting_for_message)
     text = (
         "Ձեր գրած հաղորդագրությունը կուղարկվի ադմինիստրատորին "
         "անձնական նամակով և չի հրապարակվի AskYerevan խմբում։\n\n"
