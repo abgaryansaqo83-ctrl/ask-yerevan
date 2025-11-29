@@ -31,7 +31,7 @@ async def get_daily_news() -> str:
     
     news_items = NEWS_SOURCES["mock"][:3]  # 3 վերջին նորություն
     
-    header = f"📰 <b>AskYerevan News Digest — {today}</b>\n\n"
+    header = f"📰 AskYerevan News Digest — {today}\n\n"
     
     body = "\n\n".join(news_items)
     
