@@ -81,13 +81,17 @@ def create_scheduler() -> AsyncIOScheduler:
         replace_existing=True,
     )
     
-    logger.info("✅ Scheduler configured with all jobs")
+       logger.info("✅ Scheduler configured with all jobs")
     logger.info("📅 Active jobs:")
     for job in scheduler.get_jobs():
-        logger.info(f"  • {job.id} — {job.next_run_time}")
+        # APScheduler 4.x-ում next_run_time-ը protected կամ None կարող է լինել
+        try:
+            run_time = getattr(job, "next_run_time", None)
+            logger.info(f"  • {job.id} — next run: {run_time}")
+        except Exception:
+            logger.info(f"  • {job.id}")
     
     return scheduler
-
 
 async def run_scheduler():
     """Scheduler-ի գործարկում + error handling."""
