@@ -4,7 +4,7 @@ import aiohttp
 import asyncio
 from typing import List
 from config.settings import settings
-from .․utils.logger import setup_logger
+from ..utils.logger import setup_logger
 
 logger = setup_logger(__name__)
 
