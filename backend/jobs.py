@@ -9,7 +9,10 @@ from .armenia.traffic import get_traffic_status
 from .armenia.events import (
     get_week_premiere,
     get_next_day_films_and_plays,
+    get_festival_events_7days,
 )
+from .armenia.news import get_daily_news  # ավելացրինք
+from .armenia.recommend import get_recommendations  # ավելացրինք (handler-ի համար)
 from .ai.response import generate_morning_tone
 from .utils.logger import setup_logger
 from config.settings import settings
@@ -27,7 +30,7 @@ def _get_group_chat_id() -> int:
     return settings.GROUP_CHAT_ID
 
 
-# ================ 1. Առավոտյան broadcast ===================
+# ================ 1. Առավոտյան broadcast (ամեն օր 08:00) ===================
 
 
 async def send_morning_broadcast():
@@ -51,7 +54,7 @@ async def send_morning_broadcast():
         await bot.session.close()
 
 
-# ================ 2. Երկուշաբթի՝ շաբաթվա պրեմիերա ================
+# ================ 2. Երկուշաբթի՝ շաբաթվա պրեմիերա (08:30) ================
 
 
 async def send_week_premiere():
@@ -72,7 +75,28 @@ async def send_week_premiere():
         await bot.session.close()
 
 
-# ================ 3. Չորեքշաբթի–կիրակի՝ հաջորդ օրվա event-ներ ================
+# ================ 3. Երկուշաբթի–ուրբաթ խցանումներ (08:30) ================
+
+
+async def send_traffic_report():
+    """
+    Երկուշաբթի–ուրբաթ 08:30 խցանումների հաղորդագրություն.
+    Կենտրոն գնացող փողոցներ, որտեղ խցանում կա.
+    """
+    bot = _get_bot()
+    chat_id = _get_group_chat_id()
+
+    try:
+        text = await get_traffic_status(settings.GOOGLE_DIRECTIONS_KEY)
+        await bot.send_message(chat_id, text)
+        logger.info("🚗 Traffic report sent to group")
+    except Exception as e:
+        logger.error(f"❌ Traffic report failed: {e}")
+    finally:
+        await bot.session.close()
+
+
+# ================ 4. Չորեքշաբթի–կիրակի՝ հաջորդ օրվա event-ներ (09:00) ================
 
 
 async def send_next_day_events():
@@ -97,25 +121,66 @@ async def send_next_day_events():
         await bot.session.close()
 
 
-# ================ 4. News digest (placeholder) ===================
+# ================ 5. Չորեքշաբթի՝ փառատոններ (09:30) ===================
 
 
-async def send_news_digest():
+async def send_festival_events():
     """
-    Placeholder: News digest / փառատոնային շաբաթ և այլն.
-    Հետագայում կկապենք events + news աղբյուրներին։
+    Չորեքշաբթի օրը 09:30.
+    7 օրվա փառատոնային իրադարձություններ (եթե կան).
     """
     bot = _get_bot()
     chat_id = _get_group_chat_id()
 
     try:
-        text = (
-            "📰 AskYerevan news digest-ը դեռ պատրաստման փուլում է.\n"
-            "Շուտով այստեղ կլինեն Երևանի ամենօրյա նորությունները և իրադարձությունները։"
-        )
+        text = await get_festival_events_7days()
         await bot.send_message(chat_id, text)
-        logger.info("ℹ️ News digest stub sent")
+        logger.info("🎉 Festival events sent to group")
+    except Exception as e:
+        logger.error(f"❌ Festival events failed: {e}")
+    finally:
+        await bot.session.close()
+
+
+# ================ 6. Ամենօրյա news digest (10:00) ===================
+
+
+async def send_news_digest():
+    """
+    Ամեն օր 10:00 news digest.
+    Երևանի նորություններ + կարևոր իրադարձություններ.
+    """
+    bot = _get_bot()
+    chat_id = _get_group_chat_id()
+
+    try:
+        text = await get_daily_news()  # news.py-ից
+        await bot.send_message(chat_id, text)
+        logger.info("📰 News digest sent to group")
     except Exception as e:
         logger.error(f"❌ News digest failed: {e}")
+    finally:
+        await bot.session.close()
+
+
+# ================ 7. Recommendation handler (bot.py-ում կօգտագործվի) ===================
+
+
+async def handle_recommendation_request(query: str, chat_id: int):
+    """
+    Խմբում recommendation խնդրանքներին պատասխանել.
+    Օգտագործվում ա bot.py message handler-ում.
+    """
+    bot = _get_bot()
+
+    try:
+        recommendations = await get_recommendations(query, settings.GOOGLE_MAPS_API_KEY)
+        
+        for rec in recommendations:
+            await bot.send_message(chat_id, rec)
+        
+        logger.info(f"🍽️ Recommendations sent for query: {query}")
+    except Exception as e:
+        logger.error(f"❌ Recommendation failed: {e}")
     finally:
         await bot.session.close()
