@@ -4,7 +4,7 @@ import aiohttp
 import re
 from typing import List, Optional
 from config.settings import settings
-from .․utils.logger import setup_logger
+from ..utils.logger import setup_logger
 
 logger = setup_logger(__name__)
 
