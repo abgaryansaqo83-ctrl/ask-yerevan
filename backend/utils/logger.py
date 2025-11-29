@@ -30,8 +30,10 @@ console_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(console_handler)
 
-# backend/utils/logger.py
-
+def get_logger():
+    return logger
+    
+    # backend/utils/logger.py
 def setup_logger(name: str):
     """Պարզ logger job-ների համար."""
     logger = logging.getLogger(name)
@@ -43,7 +45,4 @@ def setup_logger(name: str):
         )
         handler.setFormatter(formatter)
         logger.addHandler(handler)
-    return logger
-
-def get_logger():
     return logger
