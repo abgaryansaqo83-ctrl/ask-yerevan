@@ -32,7 +32,7 @@ def _format_event_line(
     🎟 Տոմսեր՝ 3000–8000 դրամ
     """
     return (
-        f"🎫 "{title}\n"
+        f"🎫 {title}\n"
         f"📍 {venue} — {time}\n"
         f"🎟 Տոմսեր՝ {price} դրամ\n"
     )
