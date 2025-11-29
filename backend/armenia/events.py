@@ -19,12 +19,13 @@ TOMSARKGH_URL = "https://www.tomsarkgh.am"
 # ================== HELPERS ==================
 
 
-def _format_event_line(
-    title: str,
-    venue: str,
-    time: str,
-    price: str,
-) -> str:
+def _format_event_line(title: str, place: str, time_str: str, price: str) -> str:
+    return (
+        f"🎫 {title}\n"
+        f"📍 {place}\n"
+        f"🕒 {time_str}\n"
+        f"💸 {price}\n"
+    )
     """
     Մեկ իրադարձության տողի ֆորմատ.
     🎫 Վերնագիր
