@@ -43,7 +43,6 @@ async def cmd_start(message: Message):
 
 @dp.message(Command("admin", ignore_mention=True))
 async def cmd_admin(message: Message, state: FSMContext):
-    logger.info("CMD_ADMIN triggered")
     text = (
         "Ձեր գրած հաղորդագրությունը կուղարկվի ադմինիստրատորին "
         "անձնական նամակով և չի հրապարակվի AskYerevan խմբում։\n\n"
