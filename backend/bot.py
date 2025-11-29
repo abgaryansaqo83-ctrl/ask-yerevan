@@ -55,14 +55,16 @@ async def cmd_admin(message: Message, state: FSMContext):
 
 @dp.message(AdminForm.waiting_for_message)
 async def process_admin_message(message: Message, state: FSMContext):
-    logger.info("process_admin_message triggered")
     admin_chat_id = settings.ADMIN_CHAT_ID
 
     user = message.from_user
+    username = f"@{user.username}" if user.username else "—"
     header = (
         "📩 Նոր admin հաղորդագրություն\n"
-        f"from: {user.full_name} (id={user.id})\n"
-        f"chat: {message.chat.id}\n\n"
+        f"👤 Անուն: {user.full_name}\n"
+        f"🔹 Username: {username}\n"
+        f"🆔 User ID: {user.id}\n"
+        f"💬 From chat: {message.chat.id}\n\n"
     )
 
     await bot.send_message(
@@ -72,8 +74,6 @@ async def process_admin_message(message: Message, state: FSMContext):
     await message.answer("Շնորհակալություն, ձեր հաղորդագրությունը ուղարկվեց ադմինին ✅")
 
     await state.clear()
-    logger.info("AdminForm cleared")
-
 
 # ========== /news ==========
 
