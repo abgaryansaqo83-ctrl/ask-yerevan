@@ -30,5 +30,20 @@ console_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(console_handler)
 
+# backend/utils/logger.py
+
+def setup_logger(name: str):
+    """Պարզ logger job-ների համար."""
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.INFO)
+    if not logger.handlers:
+        handler = logging.StreamHandler()
+        formatter = logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        )
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+    return logger
+
 def get_logger():
     return logger
