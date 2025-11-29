@@ -11,6 +11,17 @@ from aiogram.fsm.state import StatesGroup, State
 
 from config.settings import settings
 from backend.utils.logger import logger
+from backend.languages import get_text
+
+def detect_lang(message: Message) -> str:
+    code = (message.from_user.language_code or "hy").lower()
+    # Մի քանի ամենատարածված տարբերակ
+    if code.startswith("ru"):
+        return "ru"
+    if code.startswith("en"):
+        return "en"
+    # default՝ հայերեն
+    return "hy"
 
 
 bot = Bot(
