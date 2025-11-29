@@ -6,9 +6,12 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.filters import Command, CommandStart
 from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import StatesGroup, State
 
 from config.settings import settings
 from backend.utils.logger import logger
+
 
 bot = Bot(
     token=settings.BOT_TOKEN,
@@ -17,14 +20,21 @@ bot = Bot(
 dp = Dispatcher()
 
 
+# ========== Admin FSM ==========
+
+class AdminForm(StatesGroup):
+    waiting_for_message = State()
+
+
 # ========== /start ==========
 
 @dp.message(CommandStart(ignore_mention=True))
 async def cmd_start(message: Message):
     text = (
         "Բարև, ես AskYerevan բոտն եմ 🙌\n"
-        "Ի՞նչով կարող եմ օգնել։\n\n"
-        "Գրիր՝ ինչ ես ուզում՝ եղանակ, խցանումներ, event, recommend, թե ուղղակի հարց։"
+        "Խոսում ենք Երևանի մասին՝ հետաքրքիր վայրեր և այլն։\n\n"
+        "Կուզե՞ս ուղղակի հարց տուր կամ գրիր ինչ վայր ես փնտրում՝ ռեստորան, սրճարան, փաբ, "
+        "հավես տեղ ընկերներով նստելու, ես էլ կփորձեմ գտնել ու օգնել ինչով կարող եմ։"
     )
     await message.answer(text)
 
@@ -32,16 +42,34 @@ async def cmd_start(message: Message):
 # ========== /admin ==========
 
 @dp.message(Command("admin", ignore_mention=True))
-async def cmd_admin(message: Message):
+async def cmd_admin(message: Message, state: FSMContext):
     text = (
         "Ձեր գրած հաղորդագրությունը կուղարկվի ադմինիստրատորին "
         "անձնական նամակով և չի հրապարակվի AskYerevan խմբում։\n\n"
         "Խնդրում եմ, հաջորդ հաղորդագրությամբ գրեք ձեր հարցը կամ առաջարկը։"
     )
     await message.answer(text)
+    await state.set_state(AdminForm.waiting_for_message)
 
-    # Այստեղ հետո կարող ենք FSM ավելացնել, որ հաջորդ մեսեջը forward անի admin chat-ին
-    # օրինակ՝ await bot.send_message(settings.ADMIN_CHAT_ID, f"From {message.from_user.id}: {message.text}")
+
+@dp.message(AdminForm.waiting_for_message)
+async def process_admin_message(message: Message, state: FSMContext):
+    admin_chat_id = settings.ADMIN_CHAT_ID
+
+    user = message.from_user
+    header = (
+        "📩 Նոր admin հաղորդագրություն\n"
+        f"from: {user.full_name} (id={user.id})\n"
+        f"chat: {message.chat.id}\n\n"
+    )
+
+    await bot.send_message(
+        admin_chat_id,
+        header + (message.text or "⬜️ (առանց տեքստի)"),
+    )
+    await message.answer("Շնորհակալություն, ձեր հաղորդագրությունը ուղարկվեց ադմինին ✅")
+
+    await state.clear()
 
 
 # ========== /news ==========
