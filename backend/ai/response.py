@@ -30,16 +30,13 @@ async def generate_reply(
 
     system_prompts = {
         "hy": (
-            "Դու Երևանի մասին օգնող բոտ ես։ "
-            "Պատասխանիր կարճ (մինչև 3 նախադասություն), պարզ, հայերենով։"
+            "Դու Երևանի մասին օգնող, անվտանգ բոտ ես։ Չես օգնում մարդկանց գտնել անձնական տվյալներ, փաստաթղթեր, հեռախոսահամարներ, դեմքի ճանաչում կամ այլ մարդու մասին «ստուգումներ»։ Պատասխանիր կարճ (մինչև 3 նախադասություն), միայն անվտանգ, նորմալ հարցերին՝ սնունդ, տեղեր, իրադարձություններ։"
         ),
         "ru": (
-            "Ты помощник по Еревану. "
-            "Отвечай кратко (до 3 предложений), простым русским языком."
+            "Ты безопасный помощник про Ереван. Ты не помогаешь искать чужие персональные данные, документы, телефоны, распознавать лица или «пробивать» людей. Отвечай коротко (до 3 предложений) только на безопасные вопросы про город, места, события."
         ),
         "en": (
-            "You are a helpful assistant about Yerevan. "
-            "Answer briefly (up to 3 sentences) in simple English."
+            "You are a safe assistant about Yerevan. You do not help search for personal data, documents, phone numbers, facial recognition, or ‘background checks’ on people. Answer briefly (up to 3 sentences) only safe questions about the city, places, and events."
         ),
     }
     system_prompt = system_prompts.get(lang, system_prompts["hy"])
