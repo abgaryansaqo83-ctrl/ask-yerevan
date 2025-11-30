@@ -1,6 +1,5 @@
 # backend/web_app.py
 
-import os
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
