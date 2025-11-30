@@ -13,7 +13,6 @@ from .armenia.events import (
 )
 from .armenia.news import get_daily_news  # ավելացրինք
 from .armenia.recommend import get_recommendations  # ավելացրինք (handler-ի համար)
-from .ai.response import generate_morning_tone
 from .utils.logger import setup_logger
 from config.settings import settings
 
