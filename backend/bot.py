@@ -12,17 +12,15 @@ from aiogram.fsm.state import StatesGroup, State
 from config.settings import settings
 from backend.utils.logger import logger
 from backend.languages import get_text
+from backend.ai.response import generate_reply
 
 def detect_lang(message: Message) -> str:
     code = (message.from_user.language_code or "hy").lower()
-    # Մի քանի ամենատարածված տարբերակ
     if code.startswith("ru"):
         return "ru"
     if code.startswith("en"):
         return "en"
-    # default՝ հայերեն
     return "hy"
-
 
 bot = Bot(
     token=settings.BOT_TOKEN,
@@ -121,6 +119,7 @@ async def cmd_news(message: Message):
 @dp.message()
 async def main_router(message: Message):
     text = (message.text or "").lower()
+    lang = detect_lang(message)
 
     if any(word in text for word in ["բարև", "barev", "hi", "hello"]):
         await message.answer("Բարև՜, լսում եմ քեզ 🙂")
@@ -134,7 +133,9 @@ async def main_router(message: Message):
         await message.answer("Հիմա կստուգեմ Երևանի ճանապարհները… 🚗")
         return
 
-    await message.answer("Հա, ասա՝ ինչ կա։")
+    # AI fallback
+    reply = await generate_reply(message.text or "", lang=lang)
+    await message.answer(reply)
 
 
 async def main():
