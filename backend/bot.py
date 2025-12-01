@@ -159,6 +159,12 @@ async def handle_user_question(message: Message, state: FSMContext):
 
 @dp.message()
 async def main_router(message: Message):
+    logger.info(
+        f"msg chat_id={message.chat.id}, "
+        f"thread_id={getattr(message, 'message_thread_id', None)}, "
+        f"text={message.text!r}"
+    )
+
     text = (message.text or "").lower()
     # lang այստեղ պետք է միայն fixed պատասխանների համար,
     # AI fallback ուրիշ մեսիջների վրա այս փուլում ՉԵՆՔ կանչում
@@ -176,6 +182,7 @@ async def main_router(message: Message):
     if "ճանապարհ" in text or "փակ" in text or "խցանում" in text:
         await message.answer("Հիմա կստուգեմ Երևանի ճանապարհները… 🚗")
         return
+
 
 
 async def main():
