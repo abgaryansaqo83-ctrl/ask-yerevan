@@ -14,6 +14,7 @@ from backend.utils.logger import logger
 from backend.languages import get_text
 from backend.ai.response import generate_reply
 
+
 def detect_lang(message: Message) -> str:
     code = (message.from_user.language_code or "hy").lower()
     if code.startswith("ru"):
@@ -21,6 +22,7 @@ def detect_lang(message: Message) -> str:
     if code.startswith("en"):
         return "en"
     return "hy"
+
 
 bot = Bot(
     token=settings.BOT_TOKEN,
@@ -35,19 +37,33 @@ class AdminForm(StatesGroup):
     waiting_for_message = State()
 
 
+# ========== User FSM (AI հարց) ==========
+
+class UserQuestion(StatesGroup):
+    waiting_for_question = State()
+
+
 # ========== /start ==========
 
 @dp.message(CommandStart(ignore_mention=True))
-async def cmd_start(message: Message):
+async def cmd_start(message: Message, state: FSMContext):
     lang = detect_lang(message)
+
+    # Standard greeting from languages.py
     await message.answer(get_text("start", lang))
+
+    # Լրացուցիչ բացատրություն flow-ի մասին
     text = (
         "Բարև, ես AskYerevan բոտն եմ 🙌\n"
         "Խոսում ենք Երևանի մասին՝ հետաքրքիր վայրեր և այլն։\n\n"
-        "Կուզե՞ս ուղղակի հարց տուր կամ գրիր ինչ վայր ես փնտրում՝ ռեստորան, սրճարան, փաբ, "
-        "հավես տեղ ընկերներով նստելու, ես էլ կփորձեմ գտնել ու օգնել ինչով կարող եմ։"
+        "Հիմա գրի՛ քո հարցը՝ հատկապես եթե փնտրում ես ռեստորան, սրճարան, փաբ, "
+        "հավես տեղ ընկերներով նստելու, թատրոն, կինոթատրոն կամ որևէ վայր Հայաստանում, "
+        "ես էլ կփորձեմ գտնել ու օգնել ինչով կարող եմ։"
     )
     await message.answer(text)
+
+    # Մի հարցի սպասման վիճակ
+    await state.set_state(UserQuestion.waiting_for_question)
 
 
 # ========== /admin ==========
@@ -57,13 +73,13 @@ async def cmd_admin(message: Message, state: FSMContext):
     lang = detect_lang(message)
     await message.answer(get_text("admin_intro", lang))
     await state.set_state(AdminForm.waiting_for_message)
+
     text = (
         "Ձեր գրած հաղորդագրությունը կուղարկվի ադմինիստրատորին "
         "անձնական նամակով և չի հրապարակվի AskYerevan խմբում։\n\n"
         "Խնդրում եմ, հաջորդ հաղորդագրությամբ գրեք ձեր հարցը կամ առաջարկը։"
     )
     await message.answer(text)
-    await state.set_state(AdminForm.waiting_for_message)
 
 
 @dp.message(AdminForm.waiting_for_message)
@@ -87,6 +103,7 @@ async def process_admin_message(message: Message, state: FSMContext):
     await message.answer("Շնորհակալություն, ձեր հաղորդագրությունը ուղարկվեց ադմինին ✅")
 
     await state.clear()
+
 
 # ========== /news ==========
 
@@ -114,12 +131,39 @@ async def cmd_news(message: Message):
     )
 
 
+# ========== UserQuestion state-ի handler (AI) ==========
+
+@dp.message(UserQuestion.waiting_for_question)
+async def handle_user_question(message: Message, state: FSMContext):
+    """
+    /start-ից հետո եկող առաջին հարցականով մեսիջը.
+    Այստեղ է, որ AI-ին ենք ուղարկում հարցը և հետո state-ը մաքրում։
+    """
+    text = (message.text or "").strip()
+    lang = detect_lang(message)
+
+    # Եթե սա իրական հարց չէ (չի պարունակում '?'), treat as ordinary message
+    if "?" not in text:
+        await message.answer("Եթե ուզում ես, որ specifically քեզ օգնի բոտը, գրիր հարցդ հարցականով 🙂")
+        return
+
+    # AI reply
+    reply = await generate_reply(text, lang=lang)
+    await message.answer(reply)
+
+    # Մի հարցին պատասխանելուց հետո state reset
+    await state.clear()
+
+
 # ========== Սովորական տեքստեր (fallback router) ==========
 
 @dp.message()
 async def main_router(message: Message):
     text = (message.text or "").lower()
-    lang = detect_lang(message)
+    # lang այստեղ պետք է միայն fixed պատասխանների համար,
+    # AI fallback ուրիշ մեսիջների վրա այս փուլում ՉԵՆՔ կանչում
+    # որպեսզի բոտը չխառնվի ընդհանուր զրույցների մեջ։
+    # lang = detect_lang(message)
 
     if any(word in text for word in ["բարև", "barev", "hi", "hello"]):
         await message.answer("Բարև՜, լսում եմ քեզ 🙂")
@@ -133,9 +177,9 @@ async def main_router(message: Message):
         await message.answer("Հիմա կստուգեմ Երևանի ճանապարհները… 🚗")
         return
 
-    # AI fallback
-    reply = await generate_reply(message.text or "", lang=lang)
-    await message.answer(reply)
+    # Այստեղ այլևս AI fallback չկա.
+    # Պարզ 'generic' պատասխան можем оставить.
+    await message.answer("Լավ, noted, թողնենք սա ընդհանուր զրույցի մեջ 😊")
 
 
 async def main():
