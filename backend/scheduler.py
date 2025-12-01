@@ -11,7 +11,7 @@ from apscheduler.events import EVENT_JOB_EXECUTED, EVENT_JOB_ERROR
 from .jobs import (
     send_morning_broadcast,
     send_week_premiere,
-    send_traffic_report,
+    # send_traffic_report,  # traffic job այլևս չունենք
     send_next_day_events,
     send_festival_events,
     send_news_digest,
@@ -29,7 +29,7 @@ def create_scheduler() -> AsyncIOScheduler:
 
     # ================ ԱՄԵՆ ՕՐ ===================
 
-    # 08:00 — Առավոտյան broadcast (եղանակ + խցանումներ)
+    # 08:00 — Առավոտյան եղանակ (առանց խցանումների)
     scheduler.add_job(
         send_morning_broadcast,
         CronTrigger(hour=8, minute=0, timezone=TIMEZONE),
@@ -55,15 +55,9 @@ def create_scheduler() -> AsyncIOScheduler:
         replace_existing=True,
     )
 
-    # 08:30 — Խցանումներ (երկուշաբթի–ուրբաթ)
-    scheduler.add_job(
-        send_traffic_report,
-        CronTrigger(day_of_week="mon-fri", hour=8, minute=30, timezone=TIMEZONE),
-        id="traffic_report",
-        replace_existing=True,
-    )
+    # Այլևս ՉԿԱ 08:30 traffic_report job
 
-    # ================ ՉՈՐֵՔՇԱԲԹԻ–ԿԻՐԱԿԻ ===================
+    # ================ ՉՈՐԵՔՇԱԲԹԻ–ԿԻՐԱԿԻ ===================
 
     # 09:00 — Հաջորդ օրվա event-ներ (չորեքշաբթի–կիրակի)
     scheduler.add_job(
@@ -97,7 +91,6 @@ async def run_scheduler():
     """Scheduler-ի գործարկում + error handling."""
     scheduler = create_scheduler()
 
-    # Event listeners
     def job_executed(event):
         logger.info(f"✅ Job {event.job_id} completed successfully")
 
@@ -107,7 +100,6 @@ async def run_scheduler():
     scheduler.add_listener(job_executed, EVENT_JOB_EXECUTED)
     scheduler.add_listener(job_error, EVENT_JOB_ERROR)
 
-    # Graceful shutdown
     def signal_handler(signum, frame):
         logger.info("🛑 Shutting down scheduler...")
         scheduler.shutdown()
@@ -115,12 +107,11 @@ async def run_scheduler():
 
     signal.signal(signal.SIGTERM, signal_handler)
     signal.signal(signal.SIGINT, signal_handler)
-    
+
     try:
         scheduler.start()
         logger.info("🚀 Scheduler started. Press Ctrl+C to stop.")
 
-        # Keep running
         while True:
             await asyncio.sleep(60)
 
@@ -135,6 +126,7 @@ async def run_scheduler():
         except Exception:
             pass
         logger.info("👋 Scheduler shutdown complete")
+
 
 if __name__ == "__main__":
     asyncio.run(run_scheduler())
