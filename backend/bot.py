@@ -142,9 +142,9 @@ async def handle_user_question(message: Message, state: FSMContext):
     text = (message.text or "").strip()
     lang = detect_lang(message)
 
-    # Եթե սա իրական հարց չէ (չի պարունակում '?'), treat as ordinary message
-    if "?" not in text:
-        await message.answer("Եթե ուզում ես, որ specifically քեզ օգնի բոտը, գրիր հարցդ հարցականով 🙂")
+    # Եթե սա իրական հարց չէ (չի պարունակում '?' կամ '՞'), treat as ordinary message
+    if "?" not in text and "՞" not in text:
+        await message.answer("Եթե ուզում ես, որ անհատական քեզ օգնի բոտը, գրիր հարցդ հարցականով 🙂")
         return
 
     # AI reply
@@ -176,10 +176,6 @@ async def main_router(message: Message):
     if "ճանապարհ" in text or "փակ" in text or "խցանում" in text:
         await message.answer("Հիմա կստուգեմ Երևանի ճանապարհները… 🚗")
         return
-
-    # Այստեղ այլևս AI fallback չկա.
-    # Պարզ 'generic' պատասխան можем оставить.
-    await message.answer("Լավ, noted, թողնենք սա ընդհանուր զրույցի մեջ 😊")
 
 
 async def main():
