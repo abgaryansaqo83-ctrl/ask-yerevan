@@ -8,7 +8,7 @@ from backend.utils.logger import logger
 PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY", "")
 
 API_URL = "https://api.perplexity.ai/chat/completions"
-MODEL_NAME = "sonar-small"
+MODEL_NAME = "sonar"
 
 async def _call_perplexity(system_prompt: str, user_message: str) -> str:
     if not PERPLEXITY_API_KEY:
