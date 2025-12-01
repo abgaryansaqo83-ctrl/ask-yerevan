@@ -14,6 +14,8 @@ MODEL_NAME = "sonar-small-chat"  # կամ ուրիշ sonar-* մոդել, եթե 
 async def _call_perplexity(system_prompt: str, user_message: str) -> str:
     if not PERPLEXITY_API_KEY:
         raise RuntimeError("PERPLEXITY_API_KEY is missing")
+            logger.info(f"Perplexity: using model={MODEL_NAME}")
+
 
     headers = {
         "Authorization": f"Bearer {PERPLEXITY_API_KEY}",
