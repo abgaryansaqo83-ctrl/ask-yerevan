@@ -1,3 +1,5 @@
+# backend/database.py
+
 import sqlite3
 from pathlib import Path
 
@@ -45,6 +47,22 @@ def init_db():
         """
     )
 
+    # Listings table (հայտարարություններ)
+    cur.execute(
+        """
+        CREATE TABLE IF NOT EXISTS listings (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            category TEXT NOT NULL,           -- sell / rent / job_offer / service_offer / search
+            chat_id TEXT NOT NULL,
+            thread_id TEXT,                   -- optional, if using topics
+            user_id TEXT NOT NULL,
+            message_id TEXT NOT NULL,
+            text TEXT NOT NULL,
+            created_at TEXT DEFAULT (datetime('now'))
+        )
+        """
+    )
+
     conn.commit()
     conn.close()
 
@@ -75,3 +93,42 @@ def get_user(chat_id):
     conn.close()
     return row
 
+
+# ------------ Listings helpers ------------
+
+def save_listing(category: str, chat_id: int, thread_id: int | None,
+                 user_id: int, message_id: int, text: str) -> int:
+    """
+    Պահում է մեկ հայտարարություն listings table-ում և վերադարձնում է դրա id-ն։
+    """
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute(
+        """
+        INSERT INTO listings (category, chat_id, thread_id, user_id, message_id, text)
+        VALUES (?, ?, ?, ?, ?, ?)
+        """,
+        (category, str(chat_id), str(thread_id) if thread_id is not None else None,
+         str(user_id), str(message_id), text),
+    )
+    listing_id = cur.lastrowid
+    conn.commit()
+    conn.close()
+    return listing_id
+
+
+def cleanup_old_listings(days: int = 15) -> None:
+    """
+    Ջնջում է listings, որոնք ավելի հին են, քան `days` օր։
+    """
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute(
+        """
+        DELETE FROM listings
+        WHERE datetime(created_at) < datetime('now', ?)
+        """,
+        (f"-{days} days",),
+    )
+    conn.commit()
+    conn.close()
