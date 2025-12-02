@@ -25,6 +25,7 @@ class Settings:
     RENT_THREAD_ID: int = 261
     SEARCH_THREAD_ID: int = 273
     JOB_SERVICE_THREAD_ID: int = 269
+    FREE_CHAT_THREAD_ID: int = 454
 
 
 settings = Settings()
