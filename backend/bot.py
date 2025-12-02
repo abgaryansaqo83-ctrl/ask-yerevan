@@ -194,6 +194,10 @@ async def main_router(message: Message):
         f"text={message.text!r}"
     )
 
+    # 0) Admin bypass — քո վրա ոչ մի սահմանափակում չի աշխատում
+    if message.from_user.id == settings.ADMIN_CHAT_ID:
+        return
+
     text = (message.text or "").lower()
     thread_id = getattr(message, "message_thread_id", None)
 
