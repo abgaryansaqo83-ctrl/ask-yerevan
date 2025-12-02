@@ -145,3 +145,46 @@ def cleanup_old_listings(days: int = 15) -> None:
     )
     conn.commit()
     conn.close()
+
+# ------------ Violations helpers ------------
+
+def register_violation(user_id: int, chat_id: int, vtype: str) -> None:
+    """
+    Գրանցում է մեկ խախտում տվյալ օգտվողի համար.
+    vtype: 'spam_politics' / 'aggressive_chat' / 'repeat_listing'
+    """
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute(
+        """
+        INSERT INTO violations (user_id, chat_id, vtype)
+        VALUES (?, ?, ?)
+        """,
+        (str(user_id), str(chat_id), vtype),
+    )
+    conn.commit()
+    conn.close()
+
+
+def count_violations(user_id: int, chat_id: int, vtype: str, within_hours: int) -> int:
+    """
+    Հաշվում է, քանի նույն type-ի խախտում ունի user-ը վերջին within_hours ժամերում
+    տվյալ chat-ում։
+    """
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute(
+        """
+        SELECT COUNT(*) AS cnt
+        FROM violations
+        WHERE user_id = ?
+          AND chat_id = ?
+          AND vtype = ?
+          AND datetime(created_at) >= datetime('now', ?)
+        """,
+        (str(user_id), str(chat_id), vtype, f"-{within_hours} hours"),
+    )
+    row = cur.fetchone()
+    conn.close()
+    return int(row["cnt"] if row else 0)
+
