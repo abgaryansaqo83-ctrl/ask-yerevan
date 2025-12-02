@@ -9,7 +9,6 @@ from .armenia.events import (
     get_next_day_films_and_plays,
     get_festival_events_7days,
 )
-from .armenia.news import get_daily_news
 from .armenia.recommend import get_recommendations
 from .utils.logger import setup_logger
 from config.settings import settings
