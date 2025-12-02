@@ -14,6 +14,7 @@ from .jobs import (
     # send_traffic_report,  # traffic job այլևս չունենք
     send_next_day_events,
     send_festival_events,
+    send_traffic_report,
 )
 from .utils.logger import setup_logger
 from config.settings import settings
@@ -28,11 +29,19 @@ def create_scheduler() -> AsyncIOScheduler:
 
     # ================ ԱՄԵՆ ՕՐ ===================
 
-    # 08:00 — Առավոտյան եղանակ (առանց խցանումների)
+        # 08:00 — Առավոտյան եղանակ
     scheduler.add_job(
         send_morning_broadcast,
         CronTrigger(hour=8, minute=0, timezone=TIMEZONE),
         id="morning_broadcast",
+        replace_existing=True,
+    )
+
+    # 08:30 — Խցանումներ (երկուշաբթի–ուրբաթ)
+    scheduler.add_job(
+        send_traffic_report,
+        CronTrigger(day_of_week="mon-fri", hour=8, minute=30, timezone=TIMEZONE),
+        id="traffic_report",
         replace_existing=True,
     )
 
