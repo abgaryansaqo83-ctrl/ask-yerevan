@@ -133,6 +133,32 @@ async def cmd_news(message: Message):
         reply_markup=keyboard,
     )
 
+@dp.chat_member()
+async def on_chat_member_update(event: ChatMemberUpdated):
+    old = event.old_chat_member
+    new = event.new_chat_member
+    user = new.user
+
+    # Լեզուն հիմա կարող ենք վերցնել user.language_code-ից
+    lang_code = (user.language_code or "hy").lower()
+    if lang_code.startswith("ru"):
+        lang = "ru"
+    elif lang_code.startswith("en"):
+        lang = "en"
+    else:
+        lang = "hy"
+
+    # Նոր անդամ է միացել
+    if old.status in ("left", "kicked") and new.status in ("member", "administrator"):
+        text = get_text("welcome_new_member", lang).format(name=user.full_name)
+        await event.chat.send_message(text)
+        return
+
+    # Մասնակիցը դուրս է եկել կամ հեռացվել է
+    if old.status in ("member", "administrator") and new.status in ("left", "kicked"):
+        text = get_text("goodbye_member", lang).format(name=user.full_name)
+        await event.chat.send_message(text)
+        return
 
 # ========== UserQuestion state-ի handler (AI) ==========
 
