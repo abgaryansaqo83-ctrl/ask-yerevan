@@ -17,6 +17,7 @@ from backend.languages import get_text
 from backend.ai.response import generate_reply
 from backend.utils.listings import detect_listing_category
 from backend.database import save_listing
+from backend.database import save_listing, register_violation, count_violations, count_similar_listings
 
 
 def detect_lang(message: Message) -> str:
@@ -271,7 +272,7 @@ async def main_router(message: Message):
             await message.delete()
             return
 
-    # 2) Հայտարարությունների վերահսկում (SELL/RENT/SEARCH/JOB_SERVICE)
+        # 2) Հայտարարությունների վերահսկում (SELL/RENT/SEARCH/JOB_SERVICE)
     is_listing, category = detect_listing_category(text)
     if is_listing:
         if category == "sell" and thread_id != settings.SELL_THREAD_ID:
@@ -302,12 +303,32 @@ async def main_router(message: Message):
             await message.delete()
             return
 
-        # Ճիշտ բաժին է՝ պահում ենք DB-ում
+        # ----- 2.1 Կրկնվող հայտարարությունների սահմանափակում -----
+        user_id = message.from_user.id
+        repeats = count_similar_listings(user_id, message.text or "", days=15)
+
+        if repeats >= 5:
+            await message.reply(
+                "Նույն հայտարարությունը հնարավոր է հրապարակել առավելագույնը 5 անգամ "
+                "15 օրվա ընթացքում։ Խնդրում ենք սպասել, մինչև անցնի 15 օրը, "
+                "և նոր միայն կրկին տեղադրել։"
+            )
+            await message.delete()
+            return
+        elif repeats == 4:
+            await message.reply(
+                "Զգուշացում․ այս հայտարարությունն արդեն գրեթե ամբողջությամբ "
+                "օգտագործել է 15 օրվա 5 հրապարակման սահմանը։ "
+                "Հաջորդ հրապարակումը կարող է արդեն արգելվել։"
+            )
+            # Թույլ ենք տալիս 5-րդը պահել
+
+        # ----- 2.2 Ճիշտ բաժին է՝ պահում ենք DB-ում -----
         save_listing(
             category=category,
             chat_id=message.chat.id,
             thread_id=thread_id,
-            user_id=message.from_user.id,
+            user_id=user_id,
             message_id=message.message_id,
             text=message.text or "",
         )
