@@ -14,7 +14,6 @@ from .jobs import (
     # send_traffic_report,  # traffic job այլևս չունենք
     send_next_day_events,
     send_festival_events,
-    send_news_digest,
 )
 from .utils.logger import setup_logger
 from config.settings import settings
@@ -34,14 +33,6 @@ def create_scheduler() -> AsyncIOScheduler:
         send_morning_broadcast,
         CronTrigger(hour=8, minute=0, timezone=TIMEZONE),
         id="morning_broadcast",
-        replace_existing=True,
-    )
-
-    # 10:00 — News digest
-    scheduler.add_job(
-        send_news_digest,
-        CronTrigger(hour=10, minute=0, timezone=TIMEZONE),
-        id="news_digest",
         replace_existing=True,
     )
 
