@@ -12,7 +12,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram import F
 from aiogram.types import CallbackQuery
 
-
+from backend.armenia.events_sources import get_dummy_film_events
 from config.settings import settings
 from backend.utils.logger import logger
 from backend.languages import get_text
@@ -140,9 +140,28 @@ async def cmd_news(message: Message):
 @dp.callback_query(F.data.startswith("news:"))
 async def handle_news_callback(callback: CallbackQuery):
     kind = callback.data.split(":", 1)[1]  # film / theatre / opera / party / festival
+    await callback.answer()  # փակում է loading-ը
 
+    if kind == "film":
+        events = get_dummy_film_events()
+        if not events:
+            await callback.message.answer("Այս պահին կինոյի event-ների տվյալ չունեմ 🙂")
+            return
+
+        lines = []
+        for ev in events:
+            line = (
+                f"🎬 <b>{ev['title']}</b>\n"
+                f"📅 {ev['date']} • 🕒 {ev['time']}\n"
+                f"📍 {ev['place']}"
+            )
+            lines.append(line)
+
+        await callback.message.answer("\n\n".join(lines))
+        return
+
+    # Մյուս կատեգորիաների համար՝ ժամանակավոր stub
     mapping = {
-        "film": "կինոյի",
         "theatre": "թատրոնի",
         "opera": "օպերայի",
         "party": "փաբների / փարթիների",
@@ -150,11 +169,11 @@ async def handle_news_callback(callback: CallbackQuery):
     }
     label = mapping.get(kind, "event‑ների")
 
-    await callback.answer()  # փակում է loading‑ը
     await callback.message.answer(
         f"Հիմա դեռ test փուլում եմ {label} event‑ների համար, "
-        f"շուտով կապ կհաստատեմ live աղբյուրների հետ ու կսկսեմ ցուցադրել կոնկրետ միջոցառումներ։"
+        f"շուտով կապ կհաստատեմ live աղբյուրների հետ և կսկսեմ բերել կոնկրետ միջոցառումներ։"
     )
+
 
 @dp.chat_member()
 async def on_chat_member_update(event: ChatMemberUpdated):
