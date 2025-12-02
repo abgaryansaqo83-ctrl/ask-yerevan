@@ -33,8 +33,8 @@ def init_db():
         )
         """
     )
-    
-        # Violations table (կանոնների խախտումներ)
+
+    # Violations table (կանոնների խախտումներ)
     cur.execute(
         """
         CREATE TABLE IF NOT EXISTS violations (
