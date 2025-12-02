@@ -12,7 +12,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram import F
 from aiogram.types import CallbackQuery
 
-from backend.armenia.events_sources import get_dummy_film_events
+from backend.armenia.events_sources import refresh_dummy_cinema_events
 from config.settings import settings
 from backend.utils.logger import logger
 from backend.languages import get_text
@@ -143,7 +143,8 @@ async def handle_news_callback(callback: CallbackQuery):
     await callback.answer()  # փակում է loading-ը
 
     if kind == "film":
-        events = get_dummy_film_events()
+        # Հիմա օգտագործում ենք dummy cinema events refresh helper-ը
+        events = refresh_dummy_cinema_events(save_to_db=False)
         if not events:
             await callback.message.answer("Այս պահին կինոյի event-ների տվյալ չունեմ 🙂")
             return
