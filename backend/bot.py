@@ -138,12 +138,17 @@ async def cmd_news(message: Message):
 @dp.chat_member()
 async def on_chat_member_update(event: ChatMemberUpdated):
     logger.info(
-        f"chat_member update: chat={event.chat.id}, "
-        f"user={event.new_chat_member.user.id}, "
-        f"old={event.old_chat_member.status}, new={event.new_chat_member.status}"
+        "chat_member update: chat=%s user=%s old=%s new=%s",
+        event.chat.id,
+        event.new_chat_member.user.id,
+        event.old_chat_member.status,
+        event.new_chat_member.status,
     )
 
-    # Լեզուն հիմա կարող ենք վերցնել user.language_code-ից
+    old = event.old_chat_member
+    new = event.new_chat_member
+    user = new.user
+
     lang_code = (user.language_code or "hy").lower()
     if lang_code.startswith("ru"):
         lang = "ru"
@@ -152,13 +157,13 @@ async def on_chat_member_update(event: ChatMemberUpdated):
     else:
         lang = "hy"
 
-    # Նոր անդամ է միացել
-    if old.status in ("left", "kicked") and new.status in ("member", "administrator"):
+    # Նոր անդամ է միացել (anything -> member/admin)
+    if new.status in ("member", "administrator") and old.status not in ("member", "administrator"):
         text = get_text("welcome_new_member", lang).format(name=user.full_name)
         await event.chat.send_message(text)
         return
 
-    # Մասնակիցը դուրս է եկել կամ հեռացվել է
+    # Մասնակիցը դուրս է եկել կամ հեռացվել է (member/admin -> left/kicked)
     if old.status in ("member", "administrator") and new.status in ("left", "kicked"):
         text = get_text("goodbye_member", lang).format(name=user.full_name)
         await event.chat.send_message(text)
