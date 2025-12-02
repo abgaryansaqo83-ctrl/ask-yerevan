@@ -9,7 +9,9 @@ from aiogram.filters import Command, CommandStart
 from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, ChatMemberUpdated
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram import F  # պետք կլինի, եթե հետո filters օգտագործենք
+from aiogram import F
+from aiogram.types import CallbackQuery
+
 
 from config.settings import settings
 from backend.utils.logger import logger
