@@ -149,6 +149,7 @@ async def on_chat_member_update(event: ChatMemberUpdated):
     new = event.new_chat_member
     user = new.user
 
+    # Լեզվի որոշում
     lang_code = (user.language_code or "hy").lower()
     if lang_code.startswith("ru"):
         lang = "ru"
@@ -157,16 +158,18 @@ async def on_chat_member_update(event: ChatMemberUpdated):
     else:
         lang = "hy"
 
+    chat_id = event.chat.id
+
     # Նոր անդամ է միացել (anything -> member/admin)
     if new.status in ("member", "administrator") and old.status not in ("member", "administrator"):
         text = get_text("welcome_new_member", lang).format(name=user.full_name)
-        await event.chat.send_message(text)
+        await bot.send_message(chat_id, text)
         return
 
     # Մասնակիցը դուրս է եկել կամ հեռացվել է (member/admin -> left/kicked)
     if old.status in ("member", "administrator") and new.status in ("left", "kicked"):
         text = get_text("goodbye_member", lang).format(name=user.full_name)
-        await event.chat.send_message(text)
+        await bot.send_message(chat_id, text)
         return
 
 # ========== UserQuestion state-ի handler (AI) ==========
