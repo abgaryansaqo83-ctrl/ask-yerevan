@@ -11,7 +11,6 @@ from apscheduler.events import EVENT_JOB_EXECUTED, EVENT_JOB_ERROR
 from .jobs import (
     send_morning_broadcast,
     send_week_premiere,
-    # send_traffic_report,  # traffic job այլևս չունենք
     send_next_day_events,
     send_festival_events,
     send_traffic_report,
