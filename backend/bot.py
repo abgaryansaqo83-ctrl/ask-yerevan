@@ -13,6 +13,10 @@ from config.settings import settings
 from backend.utils.logger import logger
 from backend.languages import get_text
 from backend.ai.response import generate_reply
+from backend.utils.listings import detect_listing_category
+from backend.database import save_listing
+from config.settings import settings
+
 
 
 def detect_lang(message: Message) -> str:
@@ -166,10 +170,53 @@ async def main_router(message: Message):
     )
 
     text = (message.text or "").lower()
-    # lang այստեղ պետք է միայն fixed պատասխանների համար,
-    # AI fallback ուրիշ մեսիջների վրա այս փուլում ՉԵՆՔ կանչում
-    # որպեսզի բոտը չխառնվի ընդհանուր զրույցների մեջ։
-    # lang = detect_lang(message)
+    thread_id = getattr(message, "message_thread_id", None)
+
+    # -------- 1) հայտարարությունների վերահսկում --------
+    is_listing, category = detect_listing_category(text)
+
+    if is_listing:
+        # Սխալ բաժիններ
+        if category == "sell" and thread_id != settings.SELL_THREAD_ID:
+            await message.reply(
+                "Սա վաճառքի հայտարարություն է, խնդրում եմ տեղադրեք «Վաճառք» բաժնում 🙂"
+            )
+            await message.delete()
+            return
+
+        if category == "rent" and thread_id != settings.RENT_THREAD_ID:
+            await message.reply(
+                "Սա վարձակալության հայտարարություն է, խնդրում եմ տեղադրեք «Վարձու» բաժնում 🙂"
+            )
+            await message.delete()
+            return
+
+        if category == "search" and thread_id != settings.SEARCH_THREAD_ID:
+            await message.reply(
+                "Սա «Փնտրում եմ» հայտարարություն է, խնդրում եմ տեղադրեք «Փնտրում եմ» բաժնում 🙂"
+            )
+            await message.delete()
+            return
+
+        if category == "job_offer" and thread_id != settings.JOB_SERVICE_THREAD_ID:
+            await message.reply(
+                "Սա աշխատանքի կամ ծառայության առաջարկ է, խնդրում եմ տեղադրեք համապատասխան բաժնում 🙂"
+            )
+            await message.delete()
+            return
+
+        # Ճիշտ բաժին է՝ պահում ենք DB-ում (հետո կավելացնենք matching-ը)
+        save_listing(
+            category=category,
+            chat_id=message.chat.id,
+            thread_id=thread_id,
+            user_id=message.from_user.id,
+            message_id=message.message_id,
+            text=message.text or "",
+        )
+        return
+
+    # -------- 2) մնացած logic-ը, որը արդեն ունեիր --------
 
     if any(word in text for word in ["բարև", "barev", "hi", "hello"]):
         await message.answer("Բարև՜, լսում եմ քեզ 🙂")
@@ -183,6 +230,8 @@ async def main_router(message: Message):
         await message.answer("Հիմա կստուգեմ Երևանի ճանապարհները… 🚗")
         return
 
+    # Այլ դեպքերում բոտը լռում է
+    return
 
 
 async def main():
