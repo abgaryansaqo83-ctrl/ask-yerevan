@@ -201,6 +201,25 @@ async def main_router(message: Message):
     text = (message.text or "").lower()
     thread_id = getattr(message, "message_thread_id", None)
 
+    # 0.5) Ազատ զրույց թեմա — ոչ հայտարարությունների control, ոչ ուրիշ սահմանափակում
+    if thread_id == settings.FREE_CHAT_THREAD_ID:
+        if any(word in text for word in ["բարև", "barev", "hi", "hello"]):
+            await message.answer("Բարև՜, լսում եմ քեզ 🙂")
+        return
+
+    # 1) հայտարարությունների վերահսկում (մնացած SELL/RENT/SEARCH/JOB_SERVICE)
+    is_listing, category = detect_listing_category(text)
+    if is_listing:
+        ...  # announcements control-ը, ինչպես արդեն ունես
+        return
+
+    # 2) մնացածը՝ հիմա բոտը լռում է, կամ ինչ որ fixed բաներ, եթե ուզում ես
+    if any(word in text for word in ["բարև", "barev", "hi", "hello"]):
+        await message.answer("Բարև՜, լսում եմ քեզ 🙂")
+        return
+
+    return
+
     # -------- 1) հայտարարությունների վերահսկում --------
     is_listing, category = detect_listing_category(text)
 
