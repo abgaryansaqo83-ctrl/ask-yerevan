@@ -137,6 +137,25 @@ async def cmd_news(message: Message):
         reply_markup=keyboard,
     )
 
+@dp.callback_query(F.data.startswith("news:"))
+async def handle_news_callback(callback: CallbackQuery):
+    kind = callback.data.split(":", 1)[1]  # film / theatre / opera / party / festival
+
+    mapping = {
+        "film": "կինոյի",
+        "theatre": "թատրոնի",
+        "opera": "օպերայի",
+        "party": "փաբների / փարթիների",
+        "festival": "event‑ների",
+    }
+    label = mapping.get(kind, "event‑ների")
+
+    await callback.answer()  # փակում է loading‑ը
+    await callback.message.answer(
+        f"Հիմա դեռ test փուլում եմ {label} event‑ների համար, "
+        f"շուտով կապ կհաստատեմ live աղբյուրների հետ ու կսկսեմ ցուցադրել կոնկրետ միջոցառումներ։"
+    )
+
 @dp.chat_member()
 async def on_chat_member_update(event: ChatMemberUpdated):
     logger.info(
