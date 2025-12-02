@@ -135,9 +135,11 @@ async def cmd_news(message: Message):
 
 @dp.chat_member()
 async def on_chat_member_update(event: ChatMemberUpdated):
-    old = event.old_chat_member
-    new = event.new_chat_member
-    user = new.user
+    logger.info(
+        f"chat_member update: chat={event.chat.id}, "
+        f"user={event.new_chat_member.user.id}, "
+        f"old={event.old_chat_member.status}, new={event.new_chat_member.status}"
+    )
 
     # Լեզուն հիմա կարող ենք վերցնել user.language_code-ից
     lang_code = (user.language_code or "hy").lower()
