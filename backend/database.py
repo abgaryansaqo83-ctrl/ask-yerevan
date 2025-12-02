@@ -19,6 +19,24 @@ def init_db():
     conn = get_connection()
     cur = conn.cursor()
 
+    # Events table (միջոցառումներ, կինո, թատրոն, ֆեստիվալներ)
+    cur.execute(
+        """
+        CREATE TABLE IF NOT EXISTS events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            date TEXT,              -- ISO date, օրինակ 2025-12-31
+            time TEXT,              -- օրինակ 19:00
+            place TEXT,
+            city TEXT,
+            category TEXT,          -- concert / theatre / festival / cinema / party / other
+            url TEXT,
+            source TEXT,            -- tomsarkgh / ticket_am / armenia_travel / visit_yerevan ...
+            created_at TEXT DEFAULT (datetime('now'))
+        )
+        """
+    )
+
     # Users table
     cur.execute(
         """
@@ -105,6 +123,82 @@ def get_user(chat_id):
     row = cur.fetchone()
     conn.close()
     return row
+
+# ------------ Events helpers ------------
+
+def save_event(event: dict) -> int:
+    """
+    event: dict(title, date, time, place, city, category, url, source)
+    """
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute(
+        """
+        INSERT INTO events (title, date, time, place, city, category, url, source)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            event.get("title"),
+            event.get("date"),
+            event.get("time"),
+            event.get("place"),
+            event.get("city"),
+            event.get("category"),
+            event.get("url"),
+            event.get("source"),
+        ),
+    )
+    event_id = cur.lastrowid
+    conn.commit()
+    conn.close()
+    return event_id
+
+
+def get_upcoming_events(limit: int = 20, city: str | None = None, category: str | None = None):
+    """
+    Վերադարձնում է մոտակա event-ները՝ optional քաղաք / category ֆիլտրով։
+    """
+    conn = get_connection()
+    cur = conn.cursor()
+
+    query = """
+        SELECT * FROM events
+        WHERE date IS NOT NULL
+          AND datetime(date) >= date('now')
+        """
+    params: list[str] = []
+
+    if city:
+        query += " AND city = ?"
+        params.append(city)
+    if category:
+        query += " AND category = ?"
+        params.append(category)
+
+    query += " ORDER BY date, time LIMIT ?"
+    params.append(str(limit))
+
+    cur.execute(query, params)
+    rows = cur.fetchall()
+    conn.close()
+    return rows
+
+
+def cleanup_old_events(days: int = 30) -> None:
+    """
+    Ջնջում է event-ները, որոնք արդեն հին են (օր. 30 օր).
+    """
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute(
+        """
+        DELETE FROM events
+        WHERE datetime(date) < datetime('now', ?)
+        """,
+        (f"-{days} days",),
+    )
+    conn.commit()
+    conn.close()
 
 
 # ------------ Listings helpers ------------
