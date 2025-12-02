@@ -146,6 +146,28 @@ def cleanup_old_listings(days: int = 15) -> None:
     conn.commit()
     conn.close()
 
+def count_similar_listings(user_id: int, text: str, days: int = 15) -> int:
+    """
+    Հաշվում է, քանի հայտարարություն է նույն user-ը հրապարակել վերջին `days` օրում,
+    որտեղ text-ը նույնն է կամ շատ նման (պարզ տարբերակ՝ հավասար կամ LIKE).
+    """
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute(
+        """
+        SELECT COUNT(*) AS cnt
+        FROM listings
+        WHERE user_id = ?
+          AND datetime(created_at) >= datetime('now', ?)
+          AND text = ?
+        """,
+        (str(user_id), f"-{days} days", text),
+    )
+    row = cur.fetchone()
+    conn.close()
+    return int(row["cnt"] if row else 0)
+
+
 # ------------ Violations helpers ------------
 
 def register_violation(user_id: int, chat_id: int, vtype: str) -> None:
