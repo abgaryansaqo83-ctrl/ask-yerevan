@@ -97,22 +97,6 @@ async def send_festival_events():
         await bot.session.close()
 
 
-# ================ 5. Ամենօրյա news digest (10:00) ===================
-
-async def send_news_digest():
-    bot = _get_bot()
-    chat_id = _get_group_chat_id()
-
-    try:
-        text = await get_daily_news()
-        await bot.send_message(chat_id, text)
-        logger.info("📰 News digest sent to group")
-    except Exception as e:
-        logger.error(f"❌ News digest failed: {e}")
-    finally:
-        await bot.session.close()
-
-
 # ================ 6. Recommendation handler (bot.py-ում) ===================
 
 async def handle_recommendation_request(query: str, chat_id: int):
