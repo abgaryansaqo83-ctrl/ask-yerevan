@@ -222,14 +222,6 @@ async def main_router(message: Message):
         await message.answer("Բարև՜, լսում եմ քեզ 🙂")
         return
 
-    if "եղանակ" in text:
-        await message.answer("Մի վայրկյան… եղանակը ստուգում եմ 🌤")
-        return
-
-    if "ճանապարհ" in text or "փակ" in text or "խցանում" in text:
-        await message.answer("Հիմա կստուգեմ Երևանի ճանապարհները… 🚗")
-        return
-
     # Այլ դեպքերում բոտը լռում է
     return
 
