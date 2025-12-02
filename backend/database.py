@@ -33,6 +33,19 @@ def init_db():
         )
         """
     )
+    
+        # Violations table (կանոնների խախտումներ)
+    cur.execute(
+        """
+        CREATE TABLE IF NOT EXISTS violations (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT NOT NULL,
+            chat_id TEXT NOT NULL,
+            vtype TEXT NOT NULL,          -- spam_politics / aggressive_chat / repeat_listing
+            created_at TEXT DEFAULT (datetime('now'))
+        )
+        """
+    )
 
     # Memory table (optional future use)
     cur.execute(
