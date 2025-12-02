@@ -1,6 +1,7 @@
 # bot.py
 
 import asyncio
+from backend.database import save_listing, register_violation, count_violations
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
@@ -188,6 +189,29 @@ async def handle_user_question(message: Message, state: FSMContext):
 
 # ========== Սովորական տեքստեր (fallback router) ==========
 
+SPAM_POLITICS_KEYWORDS = [
+    # Հայերեն
+    "քաղաքական", "կուսակց", "պատգամավոր", "կառավարություն", "իշխանություն",
+    "ընդդիմություն", "վարչապետ", "նախագահ", "ընտրութ", "ընտրարշավ",
+    "քարոզչ", "հանրաքվե", "սահմանադր", "ազգային ժողով", "կոռուպցիա",
+    "իշխանափոխություն", "հեղափոխություն", "դիվանագիտ", "դեսպան",
+    "պետականություն", "քաղաքական ուժ", "քաղաքական գործընթաց",
+
+    # Русский
+    "политик", "депутат", "правительств", "власть", "оппозиция",
+    "партия", "выборы", "избирател", "агитац", "пропаганд",
+    "референдум", "конституц", "коррупц", "смена власти",
+    "революц", "дипломат", "президент", "премьер", "режим",
+    "олигарх",
+
+    # English
+    "politic", "government", "opposition", "parliament", "senat",
+    "election", "campaign", "vote", "voting", "referendum",
+    "constitution", "corruption", "regime", "authoritarian",
+    "oligarch", "diplomac", "propaganda", "lobby", "policy",
+]
+
+
 @dp.message()
 async def main_router(message: Message):
     logger.info(
@@ -203,23 +227,98 @@ async def main_router(message: Message):
     text = (message.text or "").lower()
     thread_id = getattr(message, "message_thread_id", None)
 
-    # 0.5) Ազատ զրույց թեմա — ոչ հայտարարությունների control, ոչ ուրիշ սահմանափակում
+    # 0.5) Ազատ զրույց թեմա — ոչ հայտարարությունների control, ոչ սանկցիաներ
     if thread_id == settings.FREE_CHAT_THREAD_ID:
         if any(word in text for word in ["բարև", "barev", "hi", "hello"]):
             await message.answer("Բարև՜, լսում եմ քեզ 🙂")
         return
 
-    # 1) հայտարարությունների վերահսկում (մնացած SELL/RENT/SEARCH/JOB_SERVICE)
+    # 1) Spam / politics filter
+    if any(kw in text for kw in SPAM_POLITICS_KEYWORDS):
+        user_id = message.from_user.id
+        chat_id = message.chat.id
+
+        register_violation(user_id, chat_id, "spam_politics")
+        count = count_violations(user_id, chat_id, "spam_politics", within_hours=24)
+
+        if count == 1:
+            await message.reply(
+                "Խումբը չի թույլատրում քաղաքական կամ սպամային հայտարարություններ։ "
+                "Սա առաջին զգուշացումն է։ Կրկնվելու դեպքում գրելու հնարավորությունը "
+                "կսահմանափակվի 24 ժամով։"
+            )
+            await message.delete()
+            return
+
+        if count == 2:
+            await message.reply(
+                "Կրկնվող քաղաքական/սպամային հայտարարության պատճառով "
+                "ձեր գրելու հնարավորությունը սահմանափակվում է 24 ժամով։"
+            )
+            # Այստեղ հետո ճիշտ permissions / until_date կդնենք aiogram-ի տակ
+            # հիմա միայն ջնջենք մեսիջը, առանց իրական restrict-ի, որ error չգա
+            await message.delete()
+            return
+
+        if count >= 3:
+            await message.reply(
+                "Կանոնների բազմակի խախտման պատճառով դուք հեռացվում եք խմբից։ "
+                "Վերադառնալ կարող եք միայն ադմինի հատուկ հղումով։"
+            )
+            # Նույն պատճառով ban-ը էլ հիմա կարող ենք ժամանակավորապես Comment-Out անել,
+            # եթե դեռ չես փորձել permissions-ը.
+            # await bot.ban_chat_member(chat_id=chat_id, user_id=user_id)
+            await message.delete()
+            return
+
+    # 2) Հայտարարությունների վերահսկում (SELL/RENT/SEARCH/JOB_SERVICE)
     is_listing, category = detect_listing_category(text)
     if is_listing:
-        ...  # announcements control-ը, ինչպես արդեն ունես
+        if category == "sell" and thread_id != settings.SELL_THREAD_ID:
+            await message.reply(
+                "Սա վաճառքի հայտարարություն է, խնդրում եմ տեղադրեք «Վաճառք» բաժնում 🙂"
+            )
+            await message.delete()
+            return
+
+        if category == "rent" and thread_id != settings.RENT_THREAD_ID:
+            await message.reply(
+                "Սա վարձակալության հայտարարություն է, խնդրում եմ տեղադրեք «Վարձու» բաժնում 🙂"
+            )
+            await message.delete()
+            return
+
+        if category == "search" and thread_id != settings.SEARCH_THREAD_ID:
+            await message.reply(
+                "Սա «Փնտրում եմ» հայտարարություն է, խնդրում եմ տեղադրեք «Փնտրում եմ» բաժնում 🙂"
+            )
+            await message.delete()
+            return
+
+        if category == "job_offer" and thread_id != settings.JOB_SERVICE_THREAD_ID:
+            await message.reply(
+                "Սա աշխատանքի կամ ծառայության առաջարկ է, խնդրում եմ տեղադրեք համապատասխան բաժնում 🙂"
+            )
+            await message.delete()
+            return
+
+        # Ճիշտ բաժին է՝ պահում ենք DB-ում
+        save_listing(
+            category=category,
+            chat_id=message.chat.id,
+            thread_id=thread_id,
+            user_id=message.from_user.id,
+            message_id=message.message_id,
+            text=message.text or "",
+        )
         return
 
-    # 2) մնացածը՝ հիմա բոտը լռում է, կամ ինչ որ fixed բաներ, եթե ուզում ես
+    # 3) Պարզ բարև
     if any(word in text for word in ["բարև", "barev", "hi", "hello"]):
         await message.answer("Բարև՜, լսում եմ քեզ 🙂")
         return
 
+    # Այլ դեպքերում բոտը լռում է
     return
 
     # -------- 1) հայտարարությունների վերահսկում --------
