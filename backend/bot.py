@@ -5,9 +5,10 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.filters import Command, CommandStart
-from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, ChatMemberUpdated
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
+from aiogram import F  # պետք կլինի, եթե հետո filters օգտագործենք
 
 from config.settings import settings
 from backend.utils.logger import logger
@@ -15,8 +16,6 @@ from backend.languages import get_text
 from backend.ai.response import generate_reply
 from backend.utils.listings import detect_listing_category
 from backend.database import save_listing
-from config.settings import settings
-
 
 
 def detect_lang(message: Message) -> str:
