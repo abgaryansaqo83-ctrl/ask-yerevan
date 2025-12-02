@@ -34,7 +34,7 @@ TEXTS: dict[str, dict[LangCode, str]] = {
 }
 
 TEXTS: dict[str, dict[LangCode, str]] = {
-    ...
+
     "welcome_new_member": {
         "hy": (
             "Բարի գալուստ, {name}! 👋\n"
