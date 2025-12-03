@@ -17,6 +17,8 @@ from .jobs import (
 )
 from .utils.logger import setup_logger
 from config.settings import settings
+from backend.armenia.events_sources import refresh_today_events
+
 
 logger = setup_logger(__name__)
 TIMEZONE = ZoneInfo(settings.TIMEZONE)  # Asia/Yerevan
@@ -85,6 +87,12 @@ def create_scheduler() -> AsyncIOScheduler:
 
     return scheduler
 
+    scheduler.add_job(
+        refresh_today_events,
+        CronTrigger(hour=3, minute=0, timezone=TIMEZONE),
+        id="events_refresh_all",
+        replace_existing=True,
+    )
 
 async def run_scheduler():
     """Scheduler-ի գործարկում + error handling."""
