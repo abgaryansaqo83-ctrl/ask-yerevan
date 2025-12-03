@@ -1,6 +1,6 @@
 # backend/armenia/events_sources.py
 
-from datetime import date, timedelta
+from datetime import date
 from typing import List, Dict, Any
 
 from backend.database import save_event, cleanup_old_events, get_today_events
@@ -52,26 +52,25 @@ async def refresh_today_events():
     today = date.today().isoformat()
     _delete_today_events(today)
 
-
     # 3) Լցնել այսօրվա data-ն ըստ ուղղությունների
-    # 3.1 Կինո (dummy)
+    # 3.1 Կինո (dummy, մինչ scrapers-ը գրենք)
     for ev in get_dummy_film_events():
         save_event(ev)
 
-    # 3.2 Թատրոն / օպերա / փաբ / festival
+    # 3.2 Թատրոն / օպերա / փաբ / event-ներ
     # Հիմա դեռ ոչինչ չենք լցնում, հետո այստեղ կկանչենք իրական source fetch-եր
-    # օրինակ:
-    # for ev in fetch_theatre_events_from_source():
+    # օրինակ.
+    # for ev in await fetch_cinema_from_tomsarkgh():
     #     save_event(ev)
-    # for ev in fetch_party_events_from_source():
+    # for ev in await fetch_theatre_from_tomsarkgh():
     #     save_event(ev)
     # ...
 
 
 def _delete_today_events(today_iso: str) -> None:
     """
-    Օգնական՝ ջնջելու events table-ից տվյալ օրվա բոլոր գրառումները
-    (քանի որ refresh_today_events-ը ամբողջ օրը նորից կլցնի).
+    Ջնջում է events table-ից տվյալ օրվա բոլոր գրառումները
+    (քանի որ refresh_today_events-ը օրվա ամբողջ data-ն նորից է լցնելու)։
     """
     from backend.database import get_connection  # local import to avoid cycles
 
@@ -86,7 +85,7 @@ def _delete_today_events(today_iso: str) -> None:
 
 def get_today_events_by_category(category: str, city: str = "Yerevan"):
     """
-    Վերադարձնում է տվյալ օրվա event-ները ըստ category-ի (օր. cinema/theatre/party).
+    Վերադարձնում է տվյալ օրվա event-ները ըստ category-ի (cinema/theatre/party/...). 
     """
     rows = get_today_events(city=city, category=category)
     return rows
