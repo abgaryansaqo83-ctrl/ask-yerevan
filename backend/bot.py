@@ -1,25 +1,33 @@
 # bot.py
 
 import asyncio
-from backend.database import save_listing, register_violation, count_violations
-from aiogram import Bot, Dispatcher
+
+from aiogram import Bot, Dispatcher, F
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.filters import Command, CommandStart
-from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, ChatMemberUpdated
+from aiogram.types import (
+    Message,
+    InlineKeyboardMarkup,
+    InlineKeyboardButton,
+    ChatMemberUpdated,
+    CallbackQuery,
+)
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram import F
-from aiogram.types import CallbackQuery
 
-from backend.armenia.events_sources import refresh_dummy_cinema_events
 from config.settings import settings
 from backend.utils.logger import logger
 from backend.languages import get_text
 from backend.ai.response import generate_reply
 from backend.utils.listings import detect_listing_category
-from backend.database import save_listing
-from backend.database import save_listing, register_violation, count_violations, count_similar_listings
+from backend.database import (
+    save_listing,
+    register_violation,
+    count_violations,
+    count_similar_listings,
+)
+from backend.armenia.events_sources import get_today_events_by_category
 
 
 def detect_lang(message: Message) -> str:
@@ -56,10 +64,8 @@ class UserQuestion(StatesGroup):
 async def cmd_start(message: Message, state: FSMContext):
     lang = detect_lang(message)
 
-    # Standard greeting from languages.py
     await message.answer(get_text("start", lang))
 
-    # Լրացուցիչ բացատրություն flow-ի մասին
     text = (
         "Բարև, ես AskYerevan բոտն եմ 🙌\n"
         "Խոսում ենք Երևանի մասին՝ հետաքրքիր վայրեր և այլն։\n\n"
@@ -69,7 +75,6 @@ async def cmd_start(message: Message, state: FSMContext):
     )
     await message.answer(text)
 
-    # Մի հարցի սպասման վիճակ
     await state.set_state(UserQuestion.waiting_for_question)
 
 
@@ -137,61 +142,30 @@ async def cmd_news(message: Message):
         reply_markup=keyboard,
     )
 
+
 @dp.callback_query(F.data.startswith("news:"))
 async def handle_news_callback(callback: CallbackQuery):
-    kind = callback.data.split(":", 1)[1]  # film / theatre / opera / party / festival
-    await callback.answer()  # փակում է loading-ը
-
-def get_today_events(city: str | None = None, category: str | None = None):
-    today = date.today().isoformat()
-    conn = get_connection()
-    cur = conn.cursor()
-    query = "SELECT * FROM events WHERE date = ?"
-    params: list[str] = [today]
-
-    if city:
-        query += " AND city = ?"
-        params.append(city)
-    if category:
-        query += " AND category = ?"
-        params.append(category)
-
-    query += " ORDER BY time"
-    cur.execute(query, params)
-    rows = cur.fetchall()
-    conn.close()
-    return rows
-
+    kind = callback.data.split(":", 1)[1]
+    await callback.answer()
 
     if kind == "film":
-        # Հիմա օգտագործում ենք dummy cinema events refresh helper-ը
-        events = refresh_dummy_cinema_events(save_to_db=False)
-        if not events:
-            await callback.message.answer("Այս պահին կինոյի event-ների տվյալ չունեմ 🙂")
+        rows = get_today_events_by_category("cinema")
+        if not rows:
+            await callback.message.answer("Այսօր Երևանում կինոցուցադրության մասին ինֆո չունեմ 🙂")
             return
 
-        if kind == "film":
-    rows = get_today_events(city="Yerevan", category="cinema")
-    if not rows:
-        await callback.message.answer("Այսօր Երևանում կինոցուցադրության մասին ինֆո չունեմ 🙂")
-        return
-
-    lines = []
-    for row in rows[:5]:
-        line = (
-            f"🎬 <b>{row['title']}</b>\n"
-            f"📅 {row['date']} • 🕒 {row['time']}\n"
-            f"📍 {row['place']}"
-        )
-        lines.append(line)
-    await callback.message.answer("\n\n".join(lines))
-    return
-
+        lines = []
+        for row in rows[:5]:
+            line = (
+                f"🎬 <b>{row['title']}</b>\n"
+                f"📅 {row['date']} • 🕒 {row['time']}\n"
+                f"📍 {row['place']}"
+            )
+            lines.append(line)
 
         await callback.message.answer("\n\n".join(lines))
         return
 
-    # Մյուս կատեգորիաների համար՝ ժամանակավոր stub
     mapping = {
         "theatre": "թատրոնի",
         "opera": "օպերայի",
@@ -205,6 +179,8 @@ def get_today_events(city: str | None = None, category: str | None = None):
         f"շուտով կապ կհաստատեմ live աղբյուրների հետ և կսկսեմ բերել կոնկրետ միջոցառումներ։"
     )
 
+
+# ========== Նոր անդամ / լքող անդամ ==========
 
 @dp.chat_member()
 async def on_chat_member_update(event: ChatMemberUpdated):
@@ -220,7 +196,6 @@ async def on_chat_member_update(event: ChatMemberUpdated):
     new = event.new_chat_member
     user = new.user
 
-    # Լեզվի որոշում
     lang_code = (user.language_code or "hy").lower()
     if lang_code.startswith("ru"):
         lang = "ru"
@@ -231,39 +206,30 @@ async def on_chat_member_update(event: ChatMemberUpdated):
 
     chat_id = event.chat.id
 
-    # Նոր անդամ է միացել (anything -> member/admin)
     if new.status in ("member", "administrator") and old.status not in ("member", "administrator"):
         text = get_text("welcome_new_member", lang).format(name=user.full_name)
         await bot.send_message(chat_id, text)
         return
 
-    # Մասնակիցը դուրս է եկել կամ հեռացվել է (member/admin -> left/kicked)
     if old.status in ("member", "administrator") and new.status in ("left", "kicked"):
         text = get_text("goodbye_member", lang).format(name=user.full_name)
         await bot.send_message(chat_id, text)
         return
 
-# ========== UserQuestion state-ի handler (AI) ==========
+
+# ========== /start-ից հետո AI հարց ==========
 
 @dp.message(UserQuestion.waiting_for_question)
 async def handle_user_question(message: Message, state: FSMContext):
-    """
-    /start-ից հետո եկող առաջին հարցականով մեսիջը.
-    Այստեղ է, որ AI-ին ենք ուղարկում հարցը և հետո state-ը մաքրում։
-    """
     text = (message.text or "").strip()
     lang = detect_lang(message)
 
-    # Եթե սա իրական հարց չէ (չի պարունակում '?' կամ '՞'), treat as ordinary message
     if "?" not in text and "՞" not in text:
         await message.answer("Եթե ուզում ես, որ անհատական քեզ օգնի բոտը, գրիր հարցդ հարցականով 🙂")
         return
 
-    # AI reply
     reply = await generate_reply(text, lang=lang)
     await message.answer(reply)
-
-    # Մի հարցին պատասխանելուց հետո state reset
     await state.clear()
 
 
@@ -300,20 +266,19 @@ async def main_router(message: Message):
         f"text={message.text!r}"
     )
 
-    # 0) Admin bypass — քո վրա ոչ մի սահմանափակում չի աշխատում
     if message.from_user.id == settings.ADMIN_CHAT_ID:
         return
 
     text = (message.text or "").lower()
     thread_id = getattr(message, "message_thread_id", None)
 
-    # 0.5) Ազատ զրույց թեմա — ոչ հայտարարությունների control, ոչ սանկցիաներ
+    # Ազատ զրույց թեմա
     if thread_id == settings.FREE_CHAT_THREAD_ID:
         if any(word in text for word in ["բարև", "barev", "hi", "hello"]):
             await message.answer("Բարև՜, լսում եմ քեզ 🙂")
         return
 
-    # 1) Spam / politics filter
+    # 1) Քաղաքական / սպամ filter
     if any(kw in text for kw in SPAM_POLITICS_KEYWORDS):
         user_id = message.from_user.id
         chat_id = message.chat.id
@@ -335,8 +300,6 @@ async def main_router(message: Message):
                 "Կրկնվող քաղաքական/սպամային հայտարարության պատճառով "
                 "ձեր գրելու հնարավորությունը սահմանափակվում է 24 ժամով։"
             )
-            # Այստեղ հետո ճիշտ permissions / until_date կդնենք aiogram-ի տակ
-            # հիմա միայն ջնջենք մեսիջը, առանց իրական restrict-ի, որ error չգա
             await message.delete()
             return
 
@@ -345,13 +308,10 @@ async def main_router(message: Message):
                 "Կանոնների բազմակի խախտման պատճառով դուք հեռացվում եք խմբից։ "
                 "Վերադառնալ կարող եք միայն ադմինի հատուկ հղումով։"
             )
-            # Նույն պատճառով ban-ը էլ հիմա կարող ենք ժամանակավորապես Comment-Out անել,
-            # եթե դեռ չես փորձել permissions-ը.
-            # await bot.ban_chat_member(chat_id=chat_id, user_id=user_id)
             await message.delete()
             return
 
-        # 2) Հայտարարությունների վերահսկում (SELL/RENT/SEARCH/JOB_SERVICE)
+    # 2) Հայտարարությունների վերահսկում
     is_listing, category = detect_listing_category(text)
     if is_listing:
         if category == "sell" and thread_id != settings.SELL_THREAD_ID:
@@ -382,7 +342,6 @@ async def main_router(message: Message):
             await message.delete()
             return
 
-        # ----- 2.1 Կրկնվող հայտարարությունների սահմանափակում -----
         user_id = message.from_user.id
         repeats = count_similar_listings(user_id, message.text or "", days=15)
 
@@ -400,9 +359,7 @@ async def main_router(message: Message):
                 "օգտագործել է 15 օրվա 5 հրապարակման սահմանը։ "
                 "Հաջորդ հրապարակումը կարող է արդեն արգելվել։"
             )
-            # Թույլ ենք տալիս 5-րդը պահել
 
-        # ----- 2.2 Ճիշտ բաժին է՝ պահում ենք DB-ում -----
         save_listing(
             category=category,
             chat_id=message.chat.id,
@@ -418,60 +375,6 @@ async def main_router(message: Message):
         await message.answer("Բարև՜, լսում եմ քեզ 🙂")
         return
 
-    # Այլ դեպքերում բոտը լռում է
-    return
-
-    # -------- 1) հայտարարությունների վերահսկում --------
-    is_listing, category = detect_listing_category(text)
-
-    if is_listing:
-        # Սխալ բաժիններ
-        if category == "sell" and thread_id != settings.SELL_THREAD_ID:
-            await message.reply(
-                "Սա վաճառքի հայտարարություն է, խնդրում եմ տեղադրեք «Վաճառք» բաժնում 🙂"
-            )
-            await message.delete()
-            return
-
-        if category == "rent" and thread_id != settings.RENT_THREAD_ID:
-            await message.reply(
-                "Սա վարձակալության հայտարարություն է, խնդրում եմ տեղադրեք «Վարձու» բաժնում 🙂"
-            )
-            await message.delete()
-            return
-
-        if category == "search" and thread_id != settings.SEARCH_THREAD_ID:
-            await message.reply(
-                "Սա «Փնտրում եմ» հայտարարություն է, խնդրում եմ տեղադրեք «Փնտրում եմ» բաժնում 🙂"
-            )
-            await message.delete()
-            return
-
-        if category == "job_offer" and thread_id != settings.JOB_SERVICE_THREAD_ID:
-            await message.reply(
-                "Սա աշխատանքի կամ ծառայության առաջարկ է, խնդրում եմ տեղադրեք համապատասխան բաժնում 🙂"
-            )
-            await message.delete()
-            return
-
-        # Ճիշտ բաժին է՝ պահում ենք DB-ում (հետո կավելացնենք matching-ը)
-        save_listing(
-            category=category,
-            chat_id=message.chat.id,
-            thread_id=thread_id,
-            user_id=message.from_user.id,
-            message_id=message.message_id,
-            text=message.text or "",
-        )
-        return
-
-    # -------- 2) մնացած logic-ը, որը արդեն ունեիր --------
-
-    if any(word in text for word in ["բարև", "barev", "hi", "hello"]):
-        await message.answer("Բարև՜, լսում եմ քեզ 🙂")
-        return
-
-    # Այլ դեպքերում բոտը լռում է
     return
 
 
