@@ -46,6 +46,14 @@ def create_scheduler() -> AsyncIOScheduler:
         replace_existing=True,
     )
 
+        # Գիշերային event refresh (բոլոր կատեգորիաների համար՝ հիմա dummy cinema)
+    scheduler.add_job(
+        refresh_today_events,
+        CronTrigger(hour=3, minute=0, timezone=TIMEZONE),
+        id="events_refresh_all",
+        replace_existing=True,
+    )
+
     # ================ ԵՐԿՈՒՇԱԲԹԻ ===================
 
     # 08:30 — Շաբաթվա պրեմիերա
