@@ -142,6 +142,27 @@ async def handle_news_callback(callback: CallbackQuery):
     kind = callback.data.split(":", 1)[1]  # film / theatre / opera / party / festival
     await callback.answer()  # փակում է loading-ը
 
+def get_today_events(city: str | None = None, category: str | None = None):
+    today = date.today().isoformat()
+    conn = get_connection()
+    cur = conn.cursor()
+    query = "SELECT * FROM events WHERE date = ?"
+    params: list[str] = [today]
+
+    if city:
+        query += " AND city = ?"
+        params.append(city)
+    if category:
+        query += " AND category = ?"
+        params.append(category)
+
+    query += " ORDER BY time"
+    cur.execute(query, params)
+    rows = cur.fetchall()
+    conn.close()
+    return rows
+
+
     if kind == "film":
         # Հիմա օգտագործում ենք dummy cinema events refresh helper-ը
         events = refresh_dummy_cinema_events(save_to_db=False)
@@ -149,14 +170,23 @@ async def handle_news_callback(callback: CallbackQuery):
             await callback.message.answer("Այս պահին կինոյի event-ների տվյալ չունեմ 🙂")
             return
 
-        lines = []
-        for ev in events:
-            line = (
-                f"🎬 <b>{ev['title']}</b>\n"
-                f"📅 {ev['date']} • 🕒 {ev['time']}\n"
-                f"📍 {ev['place']}"
-            )
-            lines.append(line)
+        if kind == "film":
+    rows = get_today_events(city="Yerevan", category="cinema")
+    if not rows:
+        await callback.message.answer("Այսօր Երևանում կինոցուցադրության մասին ինֆո չունեմ 🙂")
+        return
+
+    lines = []
+    for row in rows[:5]:
+        line = (
+            f"🎬 <b>{row['title']}</b>\n"
+            f"📅 {row['date']} • 🕒 {row['time']}\n"
+            f"📍 {row['place']}"
+        )
+        lines.append(line)
+    await callback.message.answer("\n\n".join(lines))
+    return
+
 
         await callback.message.answer("\n\n".join(lines))
         return
