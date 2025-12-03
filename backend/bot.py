@@ -28,6 +28,9 @@ from backend.database import (
     count_similar_listings,
 )
 from backend.armenia.events_sources import get_today_events_by_category
+from backend.database import init_db
+
+init_db()
 
 
 def detect_lang(message: Message) -> str:
