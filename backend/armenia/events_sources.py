@@ -3,21 +3,17 @@
 from datetime import date, timedelta
 from typing import List, Dict, Any
 
-from backend.database import save_event, get_upcoming_events
+from backend.database import save_event, cleanup_old_events, get_today_events
 
 
 # ---------- Dummy cinema events (test phase) ----------
 
 def get_dummy_film_events() -> List[Dict[str, Any]]:
-    """
-    Ժամանակավոր test event-ներ, մինչև իրական կայքերից տվյալ քաշելը։
-    Վերադարձնում է list[dict] նույն կառուցվածքով, ինչ events table-ը սպասում է։
-    """
     today = date.today()
     return [
         {
             "title": "Կինոերեկո «Երևան by Night»",
-            "date": (today + timedelta(days=1)).isoformat(),
+            "date": today.isoformat(),
             "time": "19:30",
             "place": "Մոսկվա կինոթատրոն",
             "city": "Yerevan",
@@ -27,7 +23,7 @@ def get_dummy_film_events() -> List[Dict[str, Any]]:
         },
         {
             "title": "Արտհաուս ֆիլմերի մարաթոն",
-            "date": (today + timedelta(days=2)).isoformat(),
+            "date": today.isoformat(),
             "time": "20:00",
             "place": "Կինոակումբ «Հին Երևան»",
             "city": "Yerevan",
@@ -38,31 +34,59 @@ def get_dummy_film_events() -> List[Dict[str, Any]]:
     ]
 
 
-# ---------- High-level helpers, որ հետո կօգտագործի /news callback-ը ----------
+# ---------- Գիշերային refresh բոլոր ուղղությունների համար ----------
 
-def refresh_dummy_cinema_events(save_to_db: bool = True) -> List[Dict[str, Any]]:
+async def refresh_today_events():
     """
-    Հիմա պարզապես վերադարձնում է dummy կինո event-ները և, ցանկության դեպքում,
-    գրանցում դրանք events աղյուսակում future օգտագործման համար։
-    Հետագայում այստեղ կդնենք իրական source fetch (tomsarkgh / ticket-am և այլն)։
+    Գիշերային job.
+    - Մաքրում է հին event-ները.
+    - Ջնջում է ներկա օրվա event-ները (որ կրկնություն չլինի).
+    - Լցնում է այսօրվա նոր event-ները տարբեր կատեգորիաներով։
+    Հիմա իրականում dummy-ով լցնում ենք միայն 'cinema'-ն։
     """
-    events = get_dummy_film_events()
 
-    if save_to_db:
-        for ev in events:
-            try:
-                save_event(ev)
-            except Exception:
-                # Եթե միևնույն dummy-ն մի քանի անգամ փորձարկենք, errors-ից խուսափելու համար
-                continue
+    # 1) ջնջել հին (օր. 30 օրից հին) event-ները
+    cleanup_old_events(days=30)
 
-    return events
+    # 2) ջնջել այսօր գրանցված event-ները, որ սեղմ refresh լինի
+    today = date.today().isoformat()
+    _delete_today_events(today)
 
 
-def get_upcoming_cinema_events_from_db(limit: int = 10):
+    # 3) Լցնել այսօրվա data-ն ըստ ուղղությունների
+    # 3.1 Կինո (dummy)
+    for ev in get_dummy_film_events():
+        save_event(ev)
+
+    # 3.2 Թատրոն / օպերա / փաբ / festival
+    # Հիմա դեռ ոչինչ չենք լցնում, հետո այստեղ կկանչենք իրական source fetch-եր
+    # օրինակ:
+    # for ev in fetch_theatre_events_from_source():
+    #     save_event(ev)
+    # for ev in fetch_party_events_from_source():
+    #     save_event(ev)
+    # ...
+
+
+def _delete_today_events(today_iso: str) -> None:
     """
-    Օգնական՝ DB-ից վերցնելու մոտակա կինո event-ները Երևանի համար։
-    Կօգտագործվի, երբ իրական աղբյուրներից սկսենք լցնել events աղյուսակը։
+    Օգնական՝ ջնջելու events table-ից տվյալ օրվա բոլոր գրառումները
+    (քանի որ refresh_today_events-ը ամբողջ օրը նորից կլցնի).
     """
-    rows = get_upcoming_events(limit=limit, city="Yerevan", category="cinema")
+    from backend.database import get_connection  # local import to avoid cycles
+
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM events WHERE date = ?", (today_iso,))
+    conn.commit()
+    conn.close()
+
+
+# ---------- Օգտագործվող helpers /news-ի համար ----------
+
+def get_today_events_by_category(category: str, city: str = "Yerevan"):
+    """
+    Վերադարձնում է տվյալ օրվա event-ները ըստ category-ի (օր. cinema/theatre/party).
+    """
+    rows = get_today_events(city=city, category=category)
     return rows
