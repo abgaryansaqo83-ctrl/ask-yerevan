@@ -2,6 +2,8 @@
 
 import sqlite3
 from pathlib import Path
+from datetime import date
+
 
 DB_PATH = Path("data/bot.db")
 
@@ -200,6 +202,31 @@ def cleanup_old_events(days: int = 30) -> None:
     conn.commit()
     conn.close()
 
+def get_today_events(city: str | None = None, category: str | None = None):
+    """
+    Վերադարձնում է միայն տվյալ օրվա event-ները (date == այսօր),
+    optional քաղաք / category ֆիլտրերով։
+    """
+    today = date.today().isoformat()
+    conn = get_connection()
+    cur = conn.cursor()
+
+    query = "SELECT * FROM events WHERE date = ?"
+    params: list[str] = [today]
+
+    if city:
+        query += " AND city = ?"
+        params.append(city)
+    if category:
+        query += " AND category = ?"
+        params.append(category)
+
+    query += " ORDER BY time"
+    cur.execute(query, params)
+    rows = cur.fetchall()
+    conn.close()
+    return rows
+    
 
 # ------------ Listings helpers ------------
 
