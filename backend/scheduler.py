@@ -17,7 +17,7 @@ from .jobs import (
 )
 from .utils.logger import setup_logger
 from config.settings import settings
-from backend.armenia.events_sources import refresh_today_events
+from backend.armenia.events_sources import refresh_week_events
 
 
 logger = setup_logger(__name__)
@@ -95,12 +95,15 @@ def create_scheduler() -> AsyncIOScheduler:
 
     return scheduler
 
-    scheduler.add_job(
-        refresh_today_events,
-        CronTrigger(hour=3, minute=0, timezone=TIMEZONE),
-        id="events_refresh_all",
-        replace_existing=True,
-    )
+
+# Շաբաթական event refresh (բոլոր կատեգորիաների համար)
+scheduler.add_job(
+    refresh_week_events,
+    CronTrigger(day_of_week="mon", hour=3, minute=0, timezone=TIMEZONE),
+    id="events_refresh_week",
+    replace_existing=True,
+)
+
 
 async def run_scheduler():
     """Scheduler-ի գործարկում + error handling."""
