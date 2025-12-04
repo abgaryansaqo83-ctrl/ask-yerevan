@@ -1,7 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
 
-EVENT_URL = "https://www.tomsarkgh.am/hy/event/49890/Մոլորվածը.html"
+from backend.database import save_event
+
+
+EVENT_URL = "https://www.tomsarkgh.am/hy/event/48361/Բախտի-տերը.html"
+
 
 def scrape_one_event(url: str) -> dict:
     resp = requests.get(url, timeout=15)
@@ -36,4 +40,7 @@ def scrape_one_event(url: str) -> dict:
 
 
 if __name__ == "__main__":
-    print(scrape_one_event(EVENT_URL))
+    ev = scrape_one_event(EVENT_URL)
+    print("Scraped:", ev)
+    save_event(ev)
+    print("Saved to DB.")
