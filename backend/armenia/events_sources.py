@@ -37,13 +37,63 @@ def get_dummy_film_events() -> List[Dict[str, Any]]:
     ]
 
 
-# ---------- Real cinema fetcher from Tomsarkgh ----------
+# ---------- Real fetchers from Tomsarkgh ----------
 
 CINEMA_CATEGORY_URL = "https://www.tomsarkgh.am/hy/category/%D4%BF%D5%AB%D5%B6%D5%B8"
 THEATRE_CATEGORY_URL = "https://www.tomsarkgh.am/hy/category/%D4%B9%D5%A1%D5%BF%D6%80%D5%B8%D5%B6"
 OPERA_CATEGORY_URL = "https://www.tomsarkgh.am/hy/category/%D5%95%D5%BA%D5%A5%D6%80%D5%A1-%D6%87-%D5%A2%D5%A1%D5%AC%D5%A5%D5%BF"
 PARTY_CATEGORY_URL = "https://www.tomsarkgh.am/hy/category/%D4%B1%D5%AF%D5%B8%D6%82%D5%B4%D5%A2-%D6%87-%D6%83%D5%A1%D5%A2"
 EVENTS_CATEGORY_URL = "https://www.tomsarkgh.am/hy/category/%D4%B1%D5%B5%D5%AC"
+
+
+def _scrape_one_tomsarkgh_event(url: str) -> Dict[str, Any] | None:
+    """
+    Քաշում է մեկ Tomsarkgh event էջը և վերադառնում է event dict:
+    Եթե status code != 200 կամ կառուցվածքը կոտրված է, վերադարձնում է None։
+    """
+    try:
+        resp = requests.get(url, timeout=15)
+    except Exception:
+        return None
+
+    if resp.status_code != 200:
+        return None
+
+    soup = BeautifulSoup(resp.text, "html.parser")
+
+    # Վերնագիր
+    title_tag = soup.select_one("h1.event-name")
+    if not title_tag:
+        return None
+    title = title_tag.get_text(strip=True)
+
+    # Սկզբի ամսաթիվ/ժամ
+    start_meta = soup.select_one("meta[itemprop=startDate]")
+    raw_dt = start_meta["content"].strip() if start_meta and start_meta.has_attr("content") else ""
+    date_part, time_part = None, None
+    if " " in raw_dt:
+        date_part, time_part = raw_dt.split(" ", 1)
+    else:
+        date_part = raw_dt
+
+    if not date_part:
+        return None
+
+    # Վայրը
+    venue_span = soup.select_one("div.occurrence_venue span[itemprop=name]")
+    place = venue_span.get_text(strip=True) if venue_span else "Unknown venue"
+
+    return {
+        "title": title,
+        "date": date_part,
+        "time": time_part,
+        "place": place,
+        "city": "Yerevan",
+        "category": "cinema",  # default, հետո fetch_*-երը կփոխեն
+        "url": url,
+        "source": "tomsarkgh",
+    }
+
 
 def _collect_event_links(category_url: str, limit: int) -> list[str]:
     """
@@ -80,7 +130,6 @@ def fetch_cinema_from_tomsarkgh(limit: int = 20) -> List[Dict[str, Any]]:
     Կինոների category էջից քաշում է մինչև `limit` ֆիլմերի event-ներ։
     """
     events: List[Dict[str, Any]] = []
-
     links = _collect_event_links(CINEMA_CATEGORY_URL, limit=limit)
 
     for url in links:
@@ -90,6 +139,8 @@ def fetch_cinema_from_tomsarkgh(limit: int = 20) -> List[Dict[str, Any]]:
             events.append(ev)
 
     return events
+
+
 def fetch_theatre_from_tomsarkgh(limit: int = 20) -> List[Dict[str, Any]]:
     events: List[Dict[str, Any]] = []
     links = _collect_event_links(THEATRE_CATEGORY_URL, limit=limit)
@@ -143,37 +194,6 @@ def fetch_misc_events_from_tomsarkgh(limit: int = 20) -> List[Dict[str, Any]]:
             events.append(ev)
     return events
 
-    try:
-        resp = requests.get(CINEMA_CATEGORY_URL, timeout=15)
-    except Exception:
-        return events
-
-    if resp.status_code != 200:
-        return events
-
-    soup = BeautifulSoup(resp.text, "html.parser")
-
-    # Կինոների list-ում event link-երը
-    # Սելեկտորը պետք է մի քիչ ճկուն լինի, այնպես որ վերցնում ենք բոլոր href-երը, որոնք սկսվում են /hy/event/
-    links = []
-    for a in soup.select('a[href^="/hy/event/"]'):
-        href = a.get("href")
-        if not href:
-            continue
-        full_url = "https://www.tomsarkgh.am" + href
-        # Նույն event-ը մի քանի անգամ չավելացնելու համար
-        if full_url not in links:
-            links.append(full_url)
-        if len(links) >= limit:
-            break
-
-    for url in links:
-        ev = _scrape_one_tomsarkgh_event(url)
-        if ev is not None:
-            events.append(ev)
-
-    return events
-
 
 # ---------- Գիշերային refresh բոլոր ուղղությունների համար ----------
 
@@ -183,7 +203,6 @@ async def refresh_today_events():
     - Մաքրում է հին event-ները.
     - Ջնջում է ներկա օրվա event-ները (որ կրկնություն չլինի).
     - Լցնում է այսօրվա նոր event-ները տարբեր կատեգորիաներով։
-    Հիմա իրականում dummy-ով և tomsarkgh-ով լցնում ենք 'cinema'-ն։
     """
 
     # 1) ջնջել հին (օր. 30 օրից հին) event-ները
@@ -195,7 +214,7 @@ async def refresh_today_events():
 
     # 3) Լցնել այսօրվա data-ն ըստ ուղղությունների
 
-        # 3.1 Կինո
+    # 3.1 Կինո
     for ev in fetch_cinema_from_tomsarkgh(limit=20):
         save_event(ev)
 
@@ -216,7 +235,6 @@ async def refresh_today_events():
         save_event(ev)
 
 
-
 def _delete_today_events(today_iso: str) -> None:
     """
     Ջնջում է events table-ից տվյալ օրվա բոլոր գրառումները
@@ -235,7 +253,7 @@ def _delete_today_events(today_iso: str) -> None:
 
 def get_today_events_by_category(category: str, city: str = "Yerevan"):
     """
-    Վերադարձնում է տվյալ օրվա event-ները ըստ category-ի (cinema/theatre/party/...). 
+    Վերադարձնում է տվյալ օրվա event-ները ըստ category-ի (cinema/theatre/party/...).
     """
     rows = get_today_events(city=city, category=category)
     return rows
