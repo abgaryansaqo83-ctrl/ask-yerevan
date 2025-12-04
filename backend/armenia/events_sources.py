@@ -195,42 +195,42 @@ def fetch_misc_events_from_tomsarkgh(limit: int = 20) -> List[Dict[str, Any]]:
     return events
 
 
-# ---------- Գիշերային refresh բոլոր ուղղությունների համար ----------
+# ---------- ՇԱԲԱԹԱԿԱՆ REFRESH (երկուշաբթի 03:00) ----------
 
-async def refresh_today_events():
+async def refresh_week_events():
     """
-    Գիշերային job.
-    - Մաքրում է հին event-ները.
-    - Ջնջում է ներկա օրվա event-ները (որ կրկնություն չլինի).
-    - Լցնում է այսօրվա նոր event-ները տարբեր կատեգորիաներով։
+    Ամեն երկուշաբթի 03:00.
+    - Մաքրում է 14 օրից հին event-ները;
+    - Քաշում է Tomsarkgh-ից առաջիկա օրերի event-ները
+      բոլոր հիմնական կատեգորիաների համար (մինչև 20 event մեկ կատեգորիայում) և
+      պահում է DB-ում:
     """
 
-    # 1) ջնջել հին (օր. 30 օրից հին) event-ները
-    cleanup_old_events(days=30)
+    # 1) ջնջել 14 օրից հին event-ները
+    cleanup_old_events(days=14)
 
-    # 2) ջնջել այսօր գրանցված event-ները, որ սեղմ refresh լինի
-    today = date.today().isoformat()
-    _delete_today_events(today)
+    # Եթե ուզում ես լիովին նստարք անել ու ամեն շաբաթ զրոյից լցնել՝
+    # _delete_all_events()
 
-    # 3) Լցնել այսօրվա data-ն ըստ ուղղությունների
+    # 2) Քաշել նոր շաբաթվա event-ները ըստ ուղղությունների
 
-    # 3.1 Կինո
+    # Կինո
     for ev in fetch_cinema_from_tomsarkgh(limit=20):
         save_event(ev)
 
-    # 3.2 Թատրոն
+    # Թատրոն
     for ev in fetch_theatre_from_tomsarkgh(limit=20):
         save_event(ev)
 
-    # 3.3 Օպերա / բալետ
+    # Օպերա / բալետ
     for ev in fetch_opera_from_tomsarkgh(limit=10):
         save_event(ev)
 
-    # 3.4 Ակումբ / փաբ / party
+    # Ակումբ / փաբ / party
     for ev in fetch_party_from_tomsarkgh(limit=20):
         save_event(ev)
 
-    # 3.5 Այլ event-ներ (stand-up, ցուցահանդես...)
+    # Այլ event-ներ (stand-up, ցուցահանդես և այլն)
     for ev in fetch_misc_events_from_tomsarkgh(limit=20):
         save_event(ev)
 
