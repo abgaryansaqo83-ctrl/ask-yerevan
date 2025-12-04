@@ -1,9 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-
-EVENT_URL = "https://www.tomsarkgh.am/hy/event/49649/Ֆարս-Մաժոր.html"
-
+EVENT_URL = "https://www.tomsarkgh.am/hy/event/49890/Մոլորվածը.html"
 
 def scrape_one_event(url: str) -> dict:
     resp = requests.get(url, timeout=15)
