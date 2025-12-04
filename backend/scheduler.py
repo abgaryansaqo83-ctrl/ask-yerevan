@@ -4,10 +4,12 @@ import asyncio
 import signal
 import sys
 from zoneinfo import ZoneInfo
+
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.events import EVENT_JOB_EXECUTED, EVENT_JOB_ERROR
 
+from backend.armenia.events_sources import refresh_week_events
 from .jobs import (
     send_morning_broadcast,
     send_week_premiere,
@@ -17,11 +19,9 @@ from .jobs import (
 )
 from .utils.logger import setup_logger
 from config.settings import settings
-from backend.armenia.events_sources import refresh_week_events
-
 
 logger = setup_logger(__name__)
-TIMEZONE = ZoneInfo(settings.TIMEZONE)  # Asia/Yerevan
+TIMEZONE = ZoneInfo(settings.TIMEZONE
 
 
 def create_scheduler() -> AsyncIOScheduler:
@@ -96,14 +96,14 @@ def create_scheduler() -> AsyncIOScheduler:
     return scheduler
 
 
-# Շաբաթական event refresh (բոլոր կատեգորիաների համար)
+scheduler.add_job(...)
+...
 scheduler.add_job(
     refresh_week_events,
     CronTrigger(day_of_week="mon", hour=3, minute=0, timezone=TIMEZONE),
     id="events_refresh_week",
     replace_existing=True,
 )
-
 
 async def run_scheduler():
     """Scheduler-ի գործարկում + error handling."""
