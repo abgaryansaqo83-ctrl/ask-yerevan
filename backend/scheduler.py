@@ -21,7 +21,7 @@ from .utils.logger import setup_logger
 from config.settings import settings
 
 logger = setup_logger(__name__)
-TIMEZONE = ZoneInfo(settings.TIMEZONE
+TIMEZONE = ZoneInfo(settings.TIMEZONE)
 
 
 def create_scheduler() -> AsyncIOScheduler:
@@ -30,7 +30,7 @@ def create_scheduler() -> AsyncIOScheduler:
 
     # ================ ԱՄԵՆ ՕՐ ===================
 
-        # 08:00 — Առավոտյան եղանակ
+    # 08:00 — Առավոտյան եղանակ
     scheduler.add_job(
         send_morning_broadcast,
         CronTrigger(hour=8, minute=0, timezone=TIMEZONE),
@@ -46,11 +46,11 @@ def create_scheduler() -> AsyncIOScheduler:
         replace_existing=True,
     )
 
-        # Գիշերային event refresh (բոլոր կատեգորիաների համար՝ հիմա dummy cinema)
+    # Շաբաթական event refresh (բոլոր կատեգորիաների համար, երկուշաբթի 03:00)
     scheduler.add_job(
-        refresh_today_events,
-        CronTrigger(hour=3, minute=0, timezone=TIMEZONE),
-        id="events_refresh_all",
+        refresh_week_events,
+        CronTrigger(day_of_week="mon", hour=3, minute=0, timezone=TIMEZONE),
+        id="events_refresh_week",
         replace_existing=True,
     )
 
@@ -63,8 +63,6 @@ def create_scheduler() -> AsyncIOScheduler:
         id="week_premiere",
         replace_existing=True,
     )
-
-    # Այլևս ՉԿԱ 08:30 traffic_report job
 
     # ================ ՉՈՐԵՔՇԱԲԹԻ–ԿԻՐԱԿԻ ===================
 
@@ -95,15 +93,6 @@ def create_scheduler() -> AsyncIOScheduler:
 
     return scheduler
 
-
-scheduler.add_job(...)
-...
-scheduler.add_job(
-    refresh_week_events,
-    CronTrigger(day_of_week="mon", hour=3, minute=0, timezone=TIMEZONE),
-    id="events_refresh_week",
-    replace_existing=True,
-)
 
 async def run_scheduler():
     """Scheduler-ի գործարկում + error handling."""
