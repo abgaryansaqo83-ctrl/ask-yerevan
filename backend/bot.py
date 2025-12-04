@@ -148,39 +148,50 @@ async def cmd_news(message: Message):
 
 @dp.callback_query(F.data.startswith("news:"))
 async def handle_news_callback(callback: CallbackQuery):
-    kind = callback.data.split(":", 1)[1]
+    kind = callback.data.split(":", 1)[1]  # film / theatre / opera / party / festival
     await callback.answer()
 
-    if kind == "film":
-        rows = get_today_events_by_category("cinema")
-        if not rows:
-            await callback.message.answer("Այսօր Երևանում կինոցուցադրության մասին ինֆո չունեմ 🙂")
-            return
+    # DB category mapping
+    db_category_map = {
+        "film": "cinema",
+        "theatre": "theatre",
+        "opera": "opera",
+        "party": "party",      # փաբ / փարթի / standup
+        "festival": "festival",
+    }
 
-        lines = []
-        for row in rows[:5]:
-            line = (
-                f"🎬 <b>{row['title']}</b>\n"
-                f"📅 {row['date']} • 🕒 {row['time']}\n"
-                f"📍 {row['place']}"
-            )
-            lines.append(line)
-
-        await callback.message.answer("\n\n".join(lines))
+    db_cat = db_category_map.get(kind)
+    if db_cat is None:
+        await callback.message.answer("Չեմ հասկացել ինչ event ես ուզում տեսնել 🙂")
         return
 
-    mapping = {
-        "theatre": "թատրոնի",
-        "opera": "օպերայի",
-        "party": "փաբների / փարթիների",
-        "festival": "event‑ների",
-    }
-    label = mapping.get(kind, "event‑ների")
+    rows = get_today_events_by_category(db_cat)
+    events = list(rows)
 
-    await callback.message.answer(
-        f"Հիմա դեռ test փուլում եմ {label} event‑ների համար, "
-        f"շուտով կապ կհաստատեմ live աղբյուրների հետ և կսկսեմ բերել կոնկրետ միջոցառումներ։"
-    )
+    if not events:
+        await callback.message.answer("Այսօր այդ ուղղությամբ միջոցառումներ չեմ գտել 🙂")
+        return
+
+    # random 5
+    k = min(5, len(events))
+    chosen = random.sample(events, k=k)
+
+    lines = []
+    for row in chosen:
+        title = row["title"]
+        date_str = row["date"]
+        time_str = row.get("time") or ""
+        place = row["place"]
+        nice_time = f"{date_str} • 🕒 {time_str}" if time_str else date_str
+
+        line = (
+            f"🎫 <b>{title}</b>\n"
+            f"📅 {nice_time}\n"
+            f"📍 {place}"
+        )
+        lines.append(line)
+
+    await callback.message.answer("\n\n".join(lines))
 
 
 # ========== Նոր անդամ / լքող անդամ ==========
