@@ -3,6 +3,10 @@ from bs4 import BeautifulSoup
 
 
 EVENT_URL = "https://www.tomsarkgh.am/hy/event/49649/Ֆարս-Մաժոր.html"
+            "https://www.tomsarkgh.am/hy/event/46845/Ara-Malikian-Live-in-Yerevan.html"
+            "https://www.tomsarkgh.am/hy/event/50204/Эльф-и-украденное-Рождество.html"
+            "https://www.tomsarkgh.am/hy/event/50149/Сожалею-о-тебе.html"
+            "https://www.tomsarkgh.am/hy/event/50206/Пять-ночей-с-Фредди-2.html"
 
 
 def scrape_one_event(url: str) -> dict:
