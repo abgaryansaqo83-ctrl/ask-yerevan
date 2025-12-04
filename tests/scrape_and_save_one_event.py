@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from backend.database import save_event
 
 
-EVENT_URL = "https://www.tomsarkgh.am/hy/event/49688/%D4%B3%D5%B8%D5%B2%D5%B8%D6%82%D5%A9%D5%B5%D5%B8%D6%82%D5%B6-%D5%B0%D5%A1%D5%B5%D5%AF%D5%A1%D5%AF%D5%A1%D5%B6-%D5%B1%D6%87%D5%B8%D5%BE.html"
+EVENT_URL = "https://www.tomsarkgh.am/hy/event/48361/Բախտի-տերը.html"
 
 
 def scrape_one_event(url: str) -> dict:
