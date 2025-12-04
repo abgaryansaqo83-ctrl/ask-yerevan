@@ -136,7 +136,7 @@ def save_event(event: dict) -> int:
     cur = conn.cursor()
     cur.execute(
         """
-        INSERT INTO events (title, date, time, place, city, category, url, source)
+        INSERT OR IGNORE INTO events (title, date, time, place, city, category, url, source)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
