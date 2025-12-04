@@ -91,7 +91,7 @@ def _scrape_one_tomsarkgh_event(url: str) -> Dict[str, Any] | None:
     }
 
 
-def fetch_cinema_from_tomsarkgh(limit: int = 10) -> List[Dict[str, Any]]:
+def fetch_cinema_from_tomsarkgh(limit: int = 20) -> List[Dict[str, Any]]:
     """
     Բացում է կինոյի category էջը և հավաքում է առաջին `limit` ֆիլմերի event URL-ները,
     հետո յուրաքանչյուրի համար քաշում է event տվյալները։
