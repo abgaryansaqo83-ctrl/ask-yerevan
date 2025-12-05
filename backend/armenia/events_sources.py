@@ -251,10 +251,24 @@ def _delete_today_events(today_iso: str) -> None:
 def get_today_events_by_category(category: str, city: str = "Yerevan"):
     """
     Վերադարձնում է տվյալ քաղաքի event-ները ըստ category-ի,
-    որոնք պահված են DB-ում (շաբաթական refresh-ից հետո)՝
-    հիմնականում «այսօրը և մոտակա օրերը» համար։
-    Հիմա DB query-ն նույնն է, իսկ օրերի ընտրությունը անում ենք
-    events.py-ում (`_pick_events_for_range`).
+    որոնց date-ը այսօրից սկսած է (date >= today).
+    Օգտագործվում է /news-ի event-ների համար։
     """
-    rows = get_today_events(city=city, category=category)
+    from datetime import date
+    from backend.database import get_connection
+
+    today = date.today().isoformat()
+    conn = get_connection()
+    cur = conn.cursor()
+
+    query = """
+        SELECT * FROM events
+        WHERE date >= ?
+          AND city = ?
+          AND category = ?
+        ORDER BY date, time
+    """
+    cur.execute(query, (today, city, category))
+    rows = cur.fetchall()
+    conn.close()
     return rows
