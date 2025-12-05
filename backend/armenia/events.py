@@ -197,37 +197,51 @@ async def get_events_by_category(
 ) -> str:
     """
     Օգտագործվում է /news մենյուի time-ում.
-    Սկզբում փորձում է բրել այսօրվա event-ները, եթե չկան՝
-    բերում է մոտակա օրերից ամենամոտ օրվա event-ներից random `limit` հատ։
+    Վերցնում է տվյալ category-ով event-ներ այսօրից սկսած (date >= today),
+    դրանցից random մինչև `limit` հատ և ցույց է տալիս:
     """
     label = CATEGORY_LABELS_HY.get(category, "Իրադարձություններ")
 
-    # category map DB-ի համար
     db_category_map = {
         "film": "cinema",
         "theatre": "theatre",
         "opera": "opera",
         "party": "party",
-        "standup": "party",      # standup-ը պահում ենք party category-ում
+        "standup": "party",
         "festival": "festival",
-        "premiere": "cinema",    # կարելի է fine-tune անել
+        "premiere": "cinema",
     }
 
     db_cat = db_category_map.get(category)
     if db_cat is None:
         return f"😕 Այս պահին {label.lower()} ուղղությամբ միջոցառումներ չեն գտնվել։"
 
-    # Վերցնում ենք տվյալ քաղաքի բոլոր today events-ը (ֆաքթո՝ refresh_today_events-ից)
+    # Բերում ենք տվյալ կատեգորիայի բոլոր event-ները (բոլոր օրերով)
     rows = list(get_today_events_by_category(db_cat))
 
-    today = datetime.date.today()
-    chosen, day_label = _pick_events_for_range(rows, today, limit)
-
-    if not chosen:
+    if not rows:
         return f"😕 Այս պահին {label.lower()} ուղղությամբ միջոցառումներ չեն գտնվել։"
 
-    # Վերնագիր՝ նշելով օրն ըստ logic-ի
-    header = f"🎭 {label} — {len(chosen)} տարբերակ ({day_label})\n\n"
+    today = datetime.date.today()
+
+    # Թողնենք միայն event-ները, որոնց date >= today
+    future_events: list[dict] = []
+    for ev in rows:
+        try:
+            d = datetime.date.fromisoformat(ev["date"])
+        except Exception:
+            continue
+        if d >= today:
+            future_events.append(ev)
+
+    if not future_events:
+        return f"😕 Այս պահին {label.lower()} ուղղությամբ միջոցառումներ չեն գտնվել։"
+
+    # Random max `limit` հատ
+    k = min(limit, len(future_events))
+    chosen = random.sample(future_events, k=k)
+
+    header = f"🎭 {label} — {k} տարբերակ մոտակա օրերից\n\n"
 
     lines: list[str] = []
     for ev in chosen:
@@ -236,20 +250,11 @@ async def get_events_by_category(
         date_str = ev["date"]
         time_str = ev.get("time") or ""
         nice_time = f"{date_str} {time_str}".strip()
-
-        # գին հիմա չունենք DB-ում, placeholder
         price = "գինը նշված չէ"
 
-        lines.append(
-            _format_event_line(
-                title,
-                venue,
-                nice_time,
-                price,
-            )
-        )
+        lines.append(_format_event_line(title, venue, nice_time, price))
 
-    return header + "\n".join(lines)  # footer հանված է
+    return header + "\n".join(lines)
 
 
 # ================== FESTIVAL EVENTS (7 days) ==================
