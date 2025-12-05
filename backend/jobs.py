@@ -1,18 +1,30 @@
 # backend/jobs.py
 
+import datetime
+
 from aiogram import Bot
+
 from config.settings import settings
 from backend.utils.logger import logger
-from .armenia.traffic import get_traffic_status
-from .armenia.weather import get_yerevan_weather
+from backend.armenia.traffic import get_traffic_status
+from backend.armenia.weather import get_yerevan_weather
+from backend.armenia.events import (
+    get_week_premiere,
+    get_next_day_films_and_plays,
+    get_festival_events_7days,
+)
+from backend.armenia.recommend import get_recommendations
+
 
 def _get_bot() -> Bot:
     """Օգնական՝ ստեղծելու Bot instance-ը մեկ տեղից."""
     return Bot(token=settings.BOT_TOKEN)
 
+
 def _get_group_chat_id() -> int:
     """Խմբի ID-ն settings-ից / env-ից."""
     return settings.GROUP_CHAT_ID
+
 
 async def send_morning_broadcast():
     """
@@ -30,10 +42,10 @@ async def send_morning_broadcast():
     finally:
         await bot.session.close()
 
+
 async def send_traffic_report():
     """
-    Երկուշաբթի–ուրբաթ 08:30՝ ճանապարհների խցանման հաղորդագրություն
-    (իմացությամբ՝ հիմնական փողոցներում դեպի կենտրոն)
+    Երկուշաբթի–ուրբաթ 08:30՝ ճանապարհների խցանման հաղորդագրություն։
     """
     bot = _get_bot()
     chat_id = _get_group_chat_id()
@@ -46,6 +58,7 @@ async def send_traffic_report():
         logger.error(f"❌ Traffic report failed: {e}")
     finally:
         await bot.session.close()
+
 
 # ================ 2. Երկուշաբթի՝ շաբաթվա պրեմիերա (08:30) ================
 
