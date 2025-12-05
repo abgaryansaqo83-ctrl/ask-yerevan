@@ -4,7 +4,6 @@ import asyncio
 import logging
 import random
 
-
 from aiogram import Bot, Dispatcher, F
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
@@ -30,6 +29,7 @@ from backend.database import (
     count_violations,
     count_similar_listings,
 )
+from backend.armenia.events import get_events_by_category  # ← ՆՈՐ import
 from backend.armenia.events_sources import get_today_events_by_category
 from backend.database import init_db
 
@@ -139,6 +139,7 @@ async def cmd_news(message: Message):
             ],
             [
                 InlineKeyboardButton(text="🎉 Event‑ներ", callback_data="news:festival"),
+                InlineKeyboardButton(text="😂 Ստենդ-ափ", callback_data="news:standup"),
             ],
         ]
     )
@@ -149,52 +150,17 @@ async def cmd_news(message: Message):
     )
 
 
+# ========== /news callback handler ==========
+
 @dp.callback_query(F.data.startswith("news:"))
 async def handle_news_callback(callback: CallbackQuery):
-    kind = callback.data.split(":", 1)[1]  # film / theatre / opera / party / festival
+    kind = callback.data.split(":", 1)[1]  # film / theatre / opera / party / festival / standup
     await callback.answer()
-
-    # DB category mapping
-    db_category_map = {
-        "film": "cinema",
-        "theatre": "theatre",
-        "opera": "opera",
-        "party": "party",      # փաբ / փարթի / standup
-        "festival": "festival",
-    }
-
-    db_cat = db_category_map.get(kind)
-    if db_cat is None:
-        await callback.message.answer("Չեմ հասկացել ինչ event ես ուզում տեսնել 🙂")
-        return
-
-    rows = get_today_events_by_category(db_cat)
-    events = list(rows)
-
-    if not events:
-        await callback.message.answer("Այսօր այդ ուղղությամբ միջոցառումներ չեմ գտել 🙂")
-        return
-
-    # random 5
-    k = min(5, len(events))
-    chosen = random.sample(events, k=k)
-
-    lines = []
-    for row in chosen:
-        title = row["title"]
-        date_str = row["date"]
-        time_str = row.get("time") or ""
-        place = row["place"]
-        nice_time = f"{date_str} • 🕒 {time_str}" if time_str else date_str
-
-        line = (
-            f"🎫 <b>{title}</b>\n"
-            f"📅 {nice_time}\n"
-            f"📍 {place}"
-        )
-        lines.append(line)
-
-    await callback.message.answer("\n\n".join(lines))
+    
+    # events.py-ից արդեն formatted text + random logic
+    text = await get_events_by_category(kind)
+    
+    await callback.message.answer(text)
 
 
 # ========== Նոր անդամ / լքող անդամ ==========
