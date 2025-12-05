@@ -1,6 +1,6 @@
 # backend/armenia/events_sources.py
 
-from datetime import date
+from datetime import date, datetime
 from typing import List, Dict, Any
 
 import requests
@@ -67,7 +67,7 @@ def _scrape_one_tomsarkgh_event(url: str) -> Dict[str, Any] | None:
         return None
     title = title_tag.get_text(strip=True)
 
-    # Սկզբի ամսաթիվ/ժամ
+    # Սկզբի ամսաթիվ/ժամ (ISO datetime)
     start_meta = soup.select_one("meta[itemprop=startDate]")
     raw_dt = start_meta["content"].strip() if start_meta and start_meta.has_attr("content") else ""
     date_part, time_part = None, None
@@ -197,20 +197,16 @@ def fetch_misc_events_from_tomsarkgh(limit: int = 20) -> List[Dict[str, Any]]:
 
 # ---------- ՇԱԲԱԹԱԿԱՆ REFRESH (երկուշաբթի 03:00) ----------
 
-async def refresh_week_events():
+async def refresh_week_events() -> None:
     """
     Ամեն երկուշաբթի 03:00.
     - Մաքրում է 14 օրից հին event-ները;
-    - Քաշում է Tomsarkgh-ից առաջիկա օրերի event-ները
-      բոլոր հիմնական կատեգորիաների համար (մինչև 20 event մեկ կատեգորիայում) և
-      պահում է DB-ում:
+    - Քաշում է Tomsarkgh-ից շաբաթվա (այժմյան category էջերում երևացող)
+      event-ները բոլոր հիմնական կատեգորիաների համար (մինչև 20 event
+      մեկ կատեգորիայում) և պահում է DB-ում:
     """
-
     # 1) ջնջել 14 օրից հին event-ները
     cleanup_old_events(days=14)
-
-    # Եթե ուզում ես լիովին նստարք անել ու ամեն շաբաթ զրոյից լցնել՝
-    # _delete_all_events()
 
     # 2) Քաշել նոր շաբաթվա event-ները ըստ ուղղությունների
 
@@ -237,8 +233,9 @@ async def refresh_week_events():
 
 def _delete_today_events(today_iso: str) -> None:
     """
-    Ջնջում է events table-ից տվյալ օրվա բոլոր գրառումները
-    (քանի որ refresh_today_events-ը օրվա ամբողջ data-ն նորից է լցնելու)։
+    Ջնջում է events table-ից տվյալ օրվա բոլոր գրառումները.
+    Սա հիմա direct չենք օգտագործում, բայց թողնում ենք, եթե երբևէ
+    նորից պետք լինի օրական refresh:
     """
     from backend.database import get_connection  # local import to avoid cycles
 
@@ -253,7 +250,11 @@ def _delete_today_events(today_iso: str) -> None:
 
 def get_today_events_by_category(category: str, city: str = "Yerevan"):
     """
-    Վերադարձնում է տվյալ օրվա event-ները ըստ category-ի (cinema/theatre/party/...).
+    Վերադարձնում է տվյալ քաղաքի event-ները ըստ category-ի,
+    որոնք պահված են DB-ում (շաբաթական refresh-ից հետո)՝
+    հիմնականում «այսօրը և մոտակա օրերը» համար։
+    Հիմա DB query-ն նույնն է, իսկ օրերի ընտրությունը անում ենք
+    events.py-ում (`_pick_events_for_range`).
     """
     rows = get_today_events(city=city, category=category)
     return rows
