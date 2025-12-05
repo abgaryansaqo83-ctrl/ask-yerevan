@@ -29,8 +29,7 @@ from backend.database import (
     count_violations,
     count_similar_listings,
 )
-from backend.armenia.events import get_events_by_category  # ← ՆՈՐ import
-from backend.armenia.events_sources import get_today_events_by_category
+from backend.armenia.events import get_events_by_category
 from backend.database import init_db
 
 init_db()
@@ -156,10 +155,8 @@ async def cmd_news(message: Message):
 async def handle_news_callback(callback: CallbackQuery):
     kind = callback.data.split(":", 1)[1]  # film / theatre / opera / party / festival / standup
     await callback.answer()
-    
-    # events.py-ից արդեն formatted text + random logic
+
     text = await get_events_by_category(kind)
-    
     await callback.message.answer(text)
 
 
