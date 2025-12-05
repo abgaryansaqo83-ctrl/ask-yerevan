@@ -3,7 +3,7 @@
 import datetime
 from typing import Literal
 import random
-from backend.armenia.events_sources import get_today_events_by_category
+from backend.armenia.events_sources import fetch_live_events_for_category
 
 EventCategory = Literal[
     "premiere",  # պրեմիերա
@@ -181,7 +181,7 @@ async def get_next_day_films_and_plays(
 
 
 CATEGORY_LABELS_HY: dict[EventCategory, str] = {
-    "premiere": "Պրেমիերա",
+    "premiere": "Պրեմիերա",
     "film": "Ֆիլմ",
     "theatre": "Թատրոն",
     "opera": "Օպերա",
@@ -197,57 +197,63 @@ async def get_events_by_category(
 ) -> str:
     """
     Օգտագործվում է /news մենյուի time-ում.
-    Վերցնում է տվյալ category-ով event-ներ այսօրից սկսած (date >= today),
-    դրանցից random մինչև `limit` հատ և ցույց է տալիս:
+    LIVE ռեժիմով քաշում է event-ներ անմիջապես Tomsarkgh-ից,
+    առանց DB-ի:
+      - film  -> cinema category
+      - theatre / opera / party / standup / festival -> իրենց բաժինները
     """
     label = CATEGORY_LABELS_HY.get(category, "Իրադարձություններ")
 
-    db_category_map = {
+    # map /news կոճակների դեպի Tomsarkgh բաժինները
+    live_category_map = {
         "film": "cinema",
         "theatre": "theatre",
         "opera": "opera",
         "party": "party",
-        "standup": "party",
+        "standup": "party",      # stand-up-ը քաշում ենք party բաժնից
         "festival": "festival",
-        "premiere": "cinema",
+        # premiere-ը հիմա առանձին fixed բլոկ է, live-ով չենք քաշում
     }
 
-    db_cat = db_category_map.get(category)
-    if db_cat is None:
+    kind = live_category_map.get(category)
+    if kind is None:
         return f"😕 Այս պահին {label.lower()} ուղղությամբ միջոցառումներ չեն գտնվել։"
 
-    # Բերում ենք տվյալ կատեգորիայի բոլոր event-ները (բոլոր օրերով)
-    rows = list(get_today_events_by_category(db_cat))
+    # LIVE events from Tomsarkgh
+    events = fetch_live_events_for_category(kind, limit=20)
 
-    if not rows:
+    if not events:
         return f"😕 Այս պահին {label.lower()} ուղղությամբ միջոցառումներ չեն գտնվել։"
 
+    # Թողնում ենք միայն այսօրից սկսած event-ները, եթե հնարավոր է
     today = datetime.date.today()
-
-    # Թողնենք միայն event-ները, որոնց date >= today
     future_events: list[dict] = []
-    for ev in rows:
+    for ev in events:
         try:
-            d = datetime.date.fromisoformat(ev["date"])
+            d = datetime.date.fromisoformat(ev.get("date", ""))
         except Exception:
             continue
         if d >= today:
             future_events.append(ev)
 
-    if not future_events:
-        return f"😕 Այս պահին {label.lower()} ուղղությամբ միջոցառումներ չեն գտնվել։"
+    if future_events:
+        source_list = future_events
+        day_label = "մոտակա օրերից"
+    else:
+        # եթե ոչինչ չգտնվեց >= today, fallback՝ վերցնել ամբողջ events list-ը
+        source_list = events
+        day_label = "վերջին միջոցառումներից"
 
-    # Random max `limit` հատ
-    k = min(limit, len(future_events))
-    chosen = random.sample(future_events, k=k)
+    k = min(limit, len(source_list))
+    chosen = random.sample(source_list, k=k)
 
-    header = f"🎭 {label} — {k} տարբերակ մոտակա օրերից\n\n"
+    header = f"🎭 {label} — {k} տարբերակ ({day_label})\n\n"
 
     lines: list[str] = []
     for ev in chosen:
         title = ev["title"]
-        venue = ev["place"]
-        date_str = ev["date"]
+        venue = ev.get("place") or "Վայր նշված չէ"
+        date_str = ev.get("date") or ""
         time_str = ev.get("time") or ""
         nice_time = f"{date_str} {time_str}".strip()
         price = "գինը նշված չէ"
