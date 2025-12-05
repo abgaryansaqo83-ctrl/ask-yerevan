@@ -138,7 +138,6 @@ async def cmd_news(message: Message):
             ],
             [
                 InlineKeyboardButton(text="🎉 Event‑ներ", callback_data="news:festival"),
-                InlineKeyboardButton(text="😂 Ստենդ-ափ", callback_data="news:standup"),
             ],
         ]
     )
@@ -147,7 +146,6 @@ async def cmd_news(message: Message):
         "Ընտրիր, թե ինչի մասին event‑ներ ես ուզում տեսնել․",
         reply_markup=keyboard,
     )
-
 
 # ========== /news callback handler ==========
 
