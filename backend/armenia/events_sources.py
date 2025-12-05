@@ -1,43 +1,13 @@
 # backend/armenia/events_sources.py
 
-from datetime import date, datetime
+from datetime import datetime
 from typing import List, Dict, Any
 
 import requests
 from bs4 import BeautifulSoup
 
-from backend.database import save_event, cleanup_old_events, get_today_events
 
-
-# ---------- Dummy cinema events (test phase) ----------
-
-def get_dummy_film_events() -> List[Dict[str, Any]]:
-    today = date.today()
-    return [
-        {
-            "title": "Կինոերեկո «Երևան by Night»",
-            "date": today.isoformat(),
-            "time": "19:30",
-            "place": "Մոսկվա կինոթատրոն",
-            "city": "Yerevan",
-            "category": "cinema",
-            "url": "https://example.com/event/yerevan-by-night",
-            "source": "dummy",
-        },
-        {
-            "title": "Արտհաուս ֆիլմերի մարաթոն",
-            "date": today.isoformat(),
-            "time": "20:00",
-            "place": "Կինոակումբ «Հին Երևան»",
-            "city": "Yerevan",
-            "category": "cinema",
-            "url": "https://example.com/event/arthouse-marathon",
-            "source": "dummy",
-        },
-    ]
-
-
-# ---------- Real fetchers from Tomsarkgh ----------
+# ---------- Real fetchers from Tomsarkgh (LIVE) ----------
 
 CINEMA_CATEGORY_URL = "https://www.tomsarkgh.am/hy/category/%D4%BF%D5%AB%D5%B6%D5%B8"
 THEATRE_CATEGORY_URL = "https://www.tomsarkgh.am/hy/category/%D4%B9%D5%A1%D5%BF%D6%80%D5%B8%D5%B6"
@@ -67,14 +37,14 @@ def _scrape_one_tomsarkgh_event(url: str) -> Dict[str, Any] | None:
         return None
     title = title_tag.get_text(strip=True)
 
-    # Սկզբի ամսաթիվ/ժամ (ISO datetime)
+    # Սկզբի ամսաթիվ/ժամ (ISO datetime կամ date)
     start_meta = soup.select_one("meta[itemprop=startDate]")
     raw_dt = start_meta["content"].strip() if start_meta and start_meta.has_attr("content") else ""
     date_part, time_part = None, None
     if " " in raw_dt:
         date_part, time_part = raw_dt.split(" ", 1)
     else:
-        date_part = raw_dt
+        date_part = raw_dt or None
 
     if not date_part:
         return None
@@ -89,7 +59,7 @@ def _scrape_one_tomsarkgh_event(url: str) -> Dict[str, Any] | None:
         "time": time_part,
         "place": place,
         "city": "Yerevan",
-        "category": "cinema",  # default, հետո fetch_*-երը կփոխեն
+        # category դաշտը կդրվի fetch_* ֆունկցիաներում
         "url": url,
         "source": "tomsarkgh",
     }
@@ -126,9 +96,7 @@ def _collect_event_links(category_url: str, limit: int) -> list[str]:
 
 
 def fetch_cinema_from_tomsarkgh(limit: int = 20) -> List[Dict[str, Any]]:
-    """
-    Կինոների category էջից քաշում է մինչև `limit` ֆիլմերի event-ներ։
-    """
+    """Կինոների category էջից քաշում է մինչև `limit` ֆիլմերի event-ներ (LIVE)."""
     events: List[Dict[str, Any]] = []
     links = _collect_event_links(CINEMA_CATEGORY_URL, limit=limit)
 
@@ -142,6 +110,7 @@ def fetch_cinema_from_tomsarkgh(limit: int = 20) -> List[Dict[str, Any]]:
 
 
 def fetch_theatre_from_tomsarkgh(limit: int = 20) -> List[Dict[str, Any]]:
+    """Թատրոնի բաժնի event-ներ (LIVE)."""
     events: List[Dict[str, Any]] = []
     links = _collect_event_links(THEATRE_CATEGORY_URL, limit=limit)
 
@@ -154,6 +123,7 @@ def fetch_theatre_from_tomsarkgh(limit: int = 20) -> List[Dict[str, Any]]:
 
 
 def fetch_opera_from_tomsarkgh(limit: int = 10) -> List[Dict[str, Any]]:
+    """Օպերա / բալետ բաժնի event-ներ (LIVE)."""
     events: List[Dict[str, Any]] = []
     links = _collect_event_links(OPERA_CATEGORY_URL, limit=limit)
 
@@ -166,9 +136,7 @@ def fetch_opera_from_tomsarkgh(limit: int = 10) -> List[Dict[str, Any]]:
 
 
 def fetch_party_from_tomsarkgh(limit: int = 20) -> List[Dict[str, Any]]:
-    """
-    Ակումբ/փաբ/party բաժինից ընդհանուր nightlife event-ներ։
-    """
+    """Ակումբ / փաբ / party բաժնի nightlife event-ներ (LIVE)."""
     events: List[Dict[str, Any]] = []
     links = _collect_event_links(PARTY_CATEGORY_URL, limit=limit)
 
@@ -181,94 +149,49 @@ def fetch_party_from_tomsarkgh(limit: int = 20) -> List[Dict[str, Any]]:
 
 
 def fetch_misc_events_from_tomsarkgh(limit: int = 20) -> List[Dict[str, Any]]:
-    """
-    «Այլ» բաժնի stand-up, ցուցահանդես և նման event-ներ։
-    """
+    """«Այլ» բաժնի stand‑up, ցուցահանդես և նման event-ներ (LIVE)."""
     events: List[Dict[str, Any]] = []
     links = _collect_event_links(EVENTS_CATEGORY_URL, limit=limit)
 
     for url in links:
         ev = _scrape_one_tomsarkgh_event(url)
         if ev is not None:
-            ev["category"] = "festival"  # կամ "other"՝ ինչպես կուզես DB-ում պահել
+            ev["category"] = "festival"  # generic cultural events
             events.append(ev)
     return events
 
 
-# ---------- ՇԱԲԱԹԱԿԱՆ REFRESH (երկուշաբթի 03:00) ----------
+# ---------- Aggregated LIVE fetcher for /news ----------
 
-async def refresh_week_events() -> None:
+def fetch_live_events_for_category(kind: str, limit: int = 20) -> List[Dict[str, Any]]:
     """
-    Ամեն երկուշաբթի 03:00.
-    - Մաքրում է 14 օրից հին event-ները;
-    - Քաշում է Tomsarkgh-ից շաբաթվա (այժմյան category էջերում երևացող)
-      event-ները բոլոր հիմնական կատեգորիաների համար (մինչև 20 event
-      մեկ կատեգորիայում) և պահում է DB-ում:
+    Վերադարձնում է LIVE event-ների list տվյալ kind-ի համար՝
+    անմիջապես Tomsarkgh-ից, առանց DB-ի:
+      kind: cinema / theatre / opera / party / festival
     """
-    # 1) ջնջել 14 օրից հին event-ները
-    cleanup_old_events(days=14)
+    if kind == "cinema":
+        events = fetch_cinema_from_tomsarkgh(limit=limit)
+    elif kind == "theatre":
+        events = fetch_theatre_from_tomsarkgh(limit=limit)
+    elif kind == "opera":
+        events = fetch_opera_from_tomsarkgh(limit=limit)
+    elif kind == "party":
+        events = fetch_party_from_tomsarkgh(limit=limit)
+    elif kind == "festival":
+        events = fetch_misc_events_from_tomsarkgh(limit=limit)
+    else:
+        events = []
 
-    # 2) Քաշել նոր շաբաթվա event-ները ըստ ուղղությունների
+    # sort by date/time asc, որ մոտակա օրերն առաջնահերթ գան
+    def _dt_key(ev: Dict[str, Any]):
+        d = ev.get("date") or ""
+        t = ev.get("time") or ""
+        try:
+            if t:
+                return datetime.fromisoformat(f"{d} {t}")
+            return datetime.fromisoformat(d)
+        except Exception:
+            return datetime.max
 
-    # Կինո
-    for ev in fetch_cinema_from_tomsarkgh(limit=20):
-        save_event(ev)
-
-    # Թատրոն
-    for ev in fetch_theatre_from_tomsarkgh(limit=20):
-        save_event(ev)
-
-    # Օպերա / բալետ
-    for ev in fetch_opera_from_tomsarkgh(limit=10):
-        save_event(ev)
-
-    # Ակումբ / փաբ / party
-    for ev in fetch_party_from_tomsarkgh(limit=20):
-        save_event(ev)
-
-    # Այլ event-ներ (stand-up, ցուցահանդես և այլն)
-    for ev in fetch_misc_events_from_tomsarkgh(limit=20):
-        save_event(ev)
-
-
-def _delete_today_events(today_iso: str) -> None:
-    """
-    Ջնջում է events table-ից տվյալ օրվա բոլոր գրառումները.
-    Սա հիմա direct չենք օգտագործում, բայց թողնում ենք, եթե երբևէ
-    նորից պետք լինի օրական refresh:
-    """
-    from backend.database import get_connection  # local import to avoid cycles
-
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute("DELETE FROM events WHERE date = ?", (today_iso,))
-    conn.commit()
-    conn.close()
-
-
-# ---------- Օգտագործվող helpers /news-ի համար ----------
-
-def get_today_events_by_category(category: str, city: str = "Yerevan"):
-    """
-    Վերադարձնում է տվյալ քաղաքի event-ները ըստ category-ի,
-    որոնց date-ը այսօրից սկսած է (date >= today).
-    Օգտագործվում է /news-ի event-ների համար։
-    """
-    from datetime import date
-    from backend.database import get_connection
-
-    today = date.today().isoformat()
-    conn = get_connection()
-    cur = conn.cursor()
-
-    query = """
-        SELECT * FROM events
-        WHERE date >= ?
-          AND city = ?
-          AND category = ?
-        ORDER BY date, time
-    """
-    cur.execute(query, (today, city, category))
-    rows = cur.fetchall()
-    conn.close()
-    return rows
+    events.sort(key=_dt_key)
+    return events
