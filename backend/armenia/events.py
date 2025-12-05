@@ -5,7 +5,6 @@ from typing import Literal
 import random
 from backend.armenia.events_sources import get_today_events_by_category
 
-
 EventCategory = Literal[
     "premiere",  # պրեմիերա
     "film",      # ֆիլմ
@@ -16,8 +15,6 @@ EventCategory = Literal[
     "festival",  # փառատոն
 ]
 
-TOMSARKGH_URL = "https://www.tomsarkgh.am"
-
 
 # ================== HELPERS ==================
 
@@ -27,7 +24,7 @@ def _format_event_line(title: str, place: str, time_str: str, price: str) -> str
     Մեկ իրադարձության տողի ֆորմատ.
     🎫 Վերնագիր
     📍 Վայր
-    🕒 Ժամ
+    🕒 Ժամ կամ օր
     💸 Գին
     """
     return (
@@ -39,8 +36,62 @@ def _format_event_line(title: str, place: str, time_str: str, price: str) -> str
 
 
 def _footer_source() -> str:
-    """Աղբյուրի կարճ հիշատակում."""
-    return f"\n🔎 Լրիվ ցանկը՝ {TOMSARKGH_URL}"
+    """
+    Աղբյուրի հիշատակումն այժմ անջատված է։
+    Թողնում ենք ֆունկցիան, որ եթե պետք լինի՝ հետո հեշտ միացնենք։
+    """
+    return ""
+
+
+def _pick_events_for_range(
+    rows: list[dict],
+    today: datetime.date,
+    limit: int,
+) -> tuple[list[dict], str]:
+    """
+    Ընտրում է մինչև `limit` event այս կամ մոտակա օրերից.
+    - Սկզբում փորձում է բրել հենց այսօրվա event-ները
+    - Եթե այսօր չկան, վերցնում է ամենամոտ ապագա օրվա event-ները
+    Վերադարձնում է (events, human_readable_day_label)
+    """
+    if not rows:
+        return [], ""
+
+    # rows պահում ենք as-is, date-ը ISO string է
+    # 1) այսօր
+    today_iso = today.isoformat()
+    todays = [r for r in rows if r.get("date") == today_iso]
+
+    if todays:
+        chosen_source = todays
+        day_label = "այսօր"
+    else:
+        # 2) եթե այսօր չկա, գտնել ամենամոտ ապագա օրերը
+        future = []
+        for r in rows:
+            try:
+                d = datetime.date.fromisoformat(r.get("date", ""))
+            except Exception:
+                continue
+            if d >= today:
+                future.append((d, r))
+
+        if not future:
+            return [], ""
+
+        # sort by date, pick the nearest date
+        future.sort(key=lambda x: x[0])
+        nearest_date = future[0][0]
+        nearest_iso = nearest_date.isoformat()
+        nearest_rows = [r for (d, r) in future if d == nearest_date]
+
+        chosen_source = nearest_rows
+        # Label՝ օրինակ "մոտակա օրերից (Դեկտեմբեր 7, Շաբաթ)"
+        day_label = nearest_date.strftime("մոտակա օրերից (%d %B, %A)")
+
+    k = min(limit, len(chosen_source))
+    chosen = random.sample(chosen_source, k=k)
+    return chosen, day_label
 
 
 # ================== WEEK PREMIERE ==================
@@ -62,7 +113,7 @@ async def get_week_premiere() -> str:
     header = f"✨ Շաբաթվա պրեմիերա #{week_label}\n\n"
     body = _format_event_line(title, venue, time, price)
 
-    return header + body + _footer_source()
+    return header + body  # footer հանված է
 
 
 # ================== NEXT DAY EVENTS ==================
@@ -73,14 +124,14 @@ async def get_next_day_films_and_plays(
 ) -> list[str]:
     """
     Չորեքշաբթիից կիրակի, ամեն օր 09:00.
-    Հաջորդ օրվա 2 ֆիլմ + 2–3 ներկայացում, առանձին հաղորդագրություններով։
+    Հաջորդ օրվա 2 ֆիլմ + 2–3 ներկայացում, առանձին հաղորդագրություններով (mock).
     """
     if target_date is None:
         target_date = datetime.date.today() + datetime.timedelta(days=1)
 
     weekday_label = target_date.strftime("%d %B, %A")
 
-    # MOCK տվյալներ
+    # MOCK տվյալներ (մինչև DB‑ով կապենք)
     films = [
         {
             "title": "Ֆիլմ. «Երևանյան գիշերներ»",
@@ -121,7 +172,7 @@ async def get_next_day_films_and_plays(
             ev["time"],
             ev["price"],
         )
-        messages.append(header + body + _footer_source())
+        messages.append(header + body)  # footer հանված է
 
     return messages
 
@@ -130,7 +181,7 @@ async def get_next_day_films_and_plays(
 
 
 CATEGORY_LABELS_HY: dict[EventCategory, str] = {
-    "premiere": "Պրեմիերա",
+    "premiere": "Պրেমիերա",
     "film": "Ֆիլմ",
     "theatre": "Թատրոն",
     "opera": "Օպերա",
@@ -146,8 +197,8 @@ async def get_events_by_category(
 ) -> str:
     """
     Օգտագործվում է /news մենյուի time-ում.
-    Տրված category-ով բերում է մինչև `limit` տարբերակ՝ DB-ից,
-    random ձևով ընտրված տվյալ օրվա event-ներից։
+    Սկզբում փորձում է բրել այսօրվա event-ները, եթե չկան՝
+    բերում է մոտակա օրերից ամենամոտ օրվա event-ներից random `limit` հատ։
     """
     label = CATEGORY_LABELS_HY.get(category, "Իրադարձություններ")
 
@@ -157,36 +208,31 @@ async def get_events_by_category(
         "theatre": "theatre",
         "opera": "opera",
         "party": "party",
-        "standup": "party",      # օրինակ՝ standup-ը նույն party category-ում
+        "standup": "party",      # standup-ը պահում ենք party category-ում
         "festival": "festival",
-        "premiere": "cinema",    # կամ ինչով որ որոշես
+        "premiere": "cinema",    # կարելի է fine-tune անել
     }
 
     db_cat = db_category_map.get(category)
     if db_cat is None:
-        return (
-            f"😕 Այս պահին {label.lower()} ուղղությամբ միջոցառումներ չեն գտնվել։\n"
-            f"{_footer_source()}"
-        )
+        return f"😕 Այս պահին {label.lower()} ուղղությամբ միջոցառումներ չեն գտնվել։"
 
-    # Վերցնում ենք տվյալ օրվա event-ները տվյալ կատեգորիայից
-    rows = get_today_events_by_category(db_cat)
-    events = list(rows)
+    # Վերցնում ենք տվյալ քաղաքի բոլոր today events-ը (ֆաքթո՝ refresh_today_events-ից)
+    rows = list(get_today_events_by_category(db_cat))
 
-    if not events:
-        return (
-            f"😕 Այս պահին {label.lower()} ուղղությամբ միջոցառումներ չեն գտնվել։\n"
-            f"{_footer_source()}"
-        )
+    today = datetime.date.today()
+    chosen, day_label = _pick_events_for_range(rows, today, limit)
 
-    k = min(limit, len(events))
-    chosen = random.sample(events, k=k)
+    if not chosen:
+        return f"😕 Այս պահին {label.lower()} ուղղությամբ միջոցառումներ չեն գտնվել։"
 
-    lines: list[str] = [f"🎭 {label} — {k} տարբերակ\n"]
+    # Վերնագիր՝ նշելով օրն ըստ logic-ի
+    header = f"🎭 {label} — {len(chosen)} տարբերակ ({day_label})\n\n"
+
+    lines: list[str] = []
     for ev in chosen:
         title = ev["title"]
         venue = ev["place"]
-        # date + time համադրում ենք
         date_str = ev["date"]
         time_str = ev.get("time") or ""
         nice_time = f"{date_str} {time_str}".strip()
@@ -203,8 +249,7 @@ async def get_events_by_category(
             )
         )
 
-    lines.append(_footer_source())
-    return "\n".join(lines)
+    return header + "\n".join(lines)  # footer հանված է
 
 
 # ================== FESTIVAL EVENTS (7 days) ==================
@@ -250,4 +295,4 @@ async def get_festival_events_7days() -> str:
             )
         )
 
-    return header + "\n".join(body_parts) + _footer_source()
+    return header + "\n".join(body_parts)  # footer հանված է
