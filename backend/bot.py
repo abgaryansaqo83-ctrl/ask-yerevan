@@ -1,6 +1,9 @@
 # bot.py
 
 import asyncio
+import logging
+import random
+
 
 from aiogram import Bot, Dispatcher, F
 from aiogram.client.default import DefaultBotProperties
