@@ -1,31 +1,35 @@
 ask-yerevan/
 │
 ├── backend/
+│   ├── __init__.py
 │   ├── bot.py
 │   ├── database.py
 │   ├── scheduler.py
 │   ├── jobs.py
 │   ├── languages.py
+│   ├── web_app.py
 │   │
 │   ├── ai/
-│   │   ├── response.py
-│   │   ├── tone_baji.py
-│   │   ├── tone_tati.py
-│   │   └── humor.py
-│   │
+│   │   ├── __init__.py
+│   │   └── response.py
+│   │   
 │   ├── armenia/
+│   │   ├── __init__.py
 │   │   ├── weather.py
 │   │   ├── traffic.py
+│   │   ├── events_sources.py
 │   │   ├── events.py
 │   │   ├── news.py
 │   │   └── recommend.py
 │   │
 │   └── utils/
+│       ├── listings.py
 │       ├── logger.py
 │       ├── helpers.py
 │       └── keyboards.py
 │
 ├── config/
+│   ├── __init__.py
 │   └── settings.py
 │
 ├── templates/
@@ -34,10 +38,9 @@ ask-yerevan/
 │
 ├── data/
 │
+├── .env
+├── .env.example
 ├── requirements.txt
 ├── Procfile
 ├── render.yaml
 └── README.md
-
-# ask-yerevan
-Ask-Yerevan — Smart Armenian Telegram Assistant Daily weather, traffic, local recommendations, events &amp; quick answers. Powered by hybrid AI and automation.
