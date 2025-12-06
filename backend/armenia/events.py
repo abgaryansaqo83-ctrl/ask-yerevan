@@ -15,9 +15,7 @@ EventCategory = Literal[
     "festival",  # փառատոն
 ]
 
-
 # ================== HELPERS ==================
-
 
 def _format_event_line(title: str, place: str, time_str: str, price: str) -> str:
     """
@@ -124,55 +122,45 @@ async def get_next_day_films_and_plays(
 ) -> list[str]:
     """
     Չորեքշաբթիից կիրակի, ամեն օր 09:00.
-    Հաջորդ օրվա 2 ֆիլմ + 2–3 ներկայացում, առանձին հաղորդագրություններով (mock).
+    Հաջորդ օրվա 3 ֆիլմ + 2 ներկայացում, առանձին հաղորդագրություններով (LIVE, Tomsarkgh).
     """
     if target_date is None:
         target_date = datetime.date.today() + datetime.timedelta(days=1)
 
+    target_iso = target_date.isoformat()
     weekday_label = target_date.strftime("%d %B, %A")
 
-    # MOCK տվյալներ (մինչև DB‑ով կապենք)
-    films = [
-        {
-            "title": "Ֆիլմ. «Երևանյան գիշերներ»",
-            "venue": "Մոսկվա կինոթատրոն",
-            "time": "19:30",
-            "price": "3000–7000",
-        },
-        {
-            "title": "Ֆիլմ. «Քայլ դեպի արևը»",
-            "venue": "Կինոպարկ Երևան Մոլ",
-            "time": "21:00",
-            "price": "3500–8000",
-        },
-    ]
+    # Քաշում ենք live կինո/թատրոն event-ները Tomsarkgh-ից
+    all_cinema = fetch_live_events_for_category("cinema", limit=50)
+    all_theatre = fetch_live_events_for_category("theatre", limit=50)
 
-    plays = [
-        {
-            "title": "Ներկայացում. «Իմ կնոջ ամուսինը»",
-            "venue": "Հ.Պարոնյանի անվ. երաժշտական կոմեդիայի թատրոն",
-            "time": "20:00",
-            "price": "3000–12000",
-        },
-        {
-            "title": "Ներկայացում. «Մեծ լռություն»",
-            "venue": "Հ.Ղափլանյանի անվ. դրամատիկական թատրոն",
-            "time": "19:00",
-            "price": "3000–4000",
-        },
-    ]
+    # Թողնենք միայն այն event-ները, որոնք հենց target օրվա համար են
+    films_rows = [ev for ev in all_cinema if ev.get("date") == target_iso]
+    plays_rows = [ev for ev in all_theatre if ev.get("date") == target_iso]
+
+    # Վերցնենք մինչև 3 ֆիլմ 2 ներկայացում random
+    
+    films = random.sample(films_rows, k=min(3, len(films_rows)))
+    plays = random.sample(plays_rows, k=min(2, len(plays_rows)))
+
+
+    if not films and not plays:
+        return [
+            f"📅 {weekday_label}\n\n"
+            "Այս պահին վաղվա համար կինո կամ թատրոնի ծրագրեր չեն գտնվել։"
+        ]
 
     messages: list[str] = []
 
     for ev in films + plays:
         header = f"📅 {weekday_label}\n\n"
-        body = _format_event_line(
-            ev["title"],
-            ev["venue"],
-            ev["time"],
-            ev["price"],
-        )
-        messages.append(header + body)  # footer հանված է
+        title = ev["title"]
+        venue = ev.get("place") or "Վայր նշված չէ"
+        time_str = ev.get("time") or "ժամը նշված չէ"
+        price = ev.get("price") or "գինը նշված չէ"
+
+        body = _format_event_line(title, venue, time_str, price)
+        messages.append(header + body)
 
     return messages
 
@@ -256,7 +244,7 @@ async def get_events_by_category(
         date_str = ev.get("date") or ""
         time_str = ev.get("time") or ""
         nice_time = f"{date_str} {time_str}".strip()
-        price = "գինը նշված չէ"
+        price = ev.get("price") or "գինը նշված չէ"
 
         lines.append(_format_event_line(title, venue, nice_time, price))
 
