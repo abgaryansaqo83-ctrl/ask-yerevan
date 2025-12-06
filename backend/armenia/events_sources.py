@@ -53,16 +53,23 @@ def _scrape_one_tomsarkgh_event(url: str) -> Dict[str, Any] | None:
     venue_span = soup.select_one("div.occurrence_venue span[itemprop=name]")
     place = venue_span.get_text(strip=True) if venue_span else "Unknown venue"
 
+    # Գին (փորձում ենք գտնել price block-ը, եթե չկա՝ թողնում ենք placeholder)
+    price_block = soup.select_one(".event-price, .event_prices, .prices, .event-price-block")
+    if price_block:
+        price_text = price_block.get_text(strip=True)
+    else:
+        price_text = "գինը նշված չէ"
+
     return {
-    "title": title,
-    "date": date_part,
-    "time": time_part,
-    "place": place,
-    "city": "Yerevan",
-    "price": price_text,
-    "url": url,
-    "source": "tomsarkgh",
-}
+        "title": title,
+        "date": date_part,
+        "time": time_part,
+        "place": place,
+        "city": "Yerevan",
+        "price": price_text,
+        "url": url,
+        "source": "tomsarkgh",
+    }
 
 def _collect_event_links(category_url: str, limit: int) -> list[str]:
     """
