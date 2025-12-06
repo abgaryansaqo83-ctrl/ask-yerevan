@@ -9,7 +9,6 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.events import EVENT_JOB_EXECUTED, EVENT_JOB_ERROR
 
-from backend.armenia.events_sources import refresh_week_events
 from .jobs import (
     send_morning_broadcast,
     send_week_premiere,
@@ -43,14 +42,6 @@ def create_scheduler() -> AsyncIOScheduler:
         send_traffic_report,
         CronTrigger(day_of_week="mon-fri", hour=8, minute=30, timezone=TIMEZONE),
         id="traffic_report",
-        replace_existing=True,
-    )
-
-    # Շաբաթական event refresh (բոլոր կատեգորիաների համար, երկուշաբթի 03:00)
-    scheduler.add_job(
-        refresh_week_events,
-        CronTrigger(day_of_week="mon", hour=3, minute=0, timezone=TIMEZONE),
-        id="events_refresh_week",
         replace_existing=True,
     )
 
