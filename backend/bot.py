@@ -232,17 +232,18 @@ async def on_chat_member_update(event: ChatMemberUpdated, state: FSMContext):
 
     # Նոր անդամ եկավ
     if new.status in ("member", "administrator") and old.status not in ("member", "administrator"):
-        # 1) mute ենք անում խմբում
+    # 1) mute ենք անում խմբում
         await bot.restrict_chat_member(
-            chat_id=chat_id,
-            user_id=user.id,
-            permissions=ChatPermissions(can_send_messages=False),
-        )
+              chat_id=chat_id,
+              user_id=user.id,
+              permissions=ChatPermissions(can_send_messages=False),
+    )
 
-        # 2) ուղարկում ենք emoji-թեստը DM-ով
-        await send_captcha_test(user.id, state, lang=lang)
+    # 2) ուղարկում ենք emoji-թեստը խմբում (mention-ով)
+        await send_captcha_test(chat_id, user.id, state, lang=lang)
 
         return
+
 
     # Լքող անդամ
     if old.status in ("member", "administrator") and new.status in ("left", "kicked"):
@@ -428,15 +429,19 @@ def build_captcha_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[[b] for b in buttons])
 
 
-async def send_captcha_test(user_id: int, state: FSMContext, lang: str = "hy"):
-    text = {
+async def send_captcha_test(chat_id: int, user_id: int, state: FSMContext, lang: str = "hy"):
+    text_base = {
         "hy": "Ընտրիր այն կենդանուն, որին սովորաբար չեն ուտում 🧐",
         "ru": "Выбери животное, которого обычно не едят 🧐",
         "en": "Choose the animal people usually do NOT eat 🧐",
     }.get(lang, "Ընտրիր այն կենդանուն, որին սովորաբար չեն ուտում 🧐")
 
+    # mention-ով, որ հասկանալի լինի ում մասին է խոսքը
+    mention = f"<a href=\"tg://user?id={user_id}\">օգտվող</a>"
+    text = f"{mention}, {text_base}"
+
     kb = build_captcha_keyboard()
-    await bot.send_message(user_id, text, reply_markup=kb)
+    await bot.send_message(chat_id, text, reply_markup=kb)
     await state.set_state(CaptchaForm.waiting_for_answer)
 
 
