@@ -14,6 +14,7 @@ from aiogram.types import (
     InlineKeyboardButton,
     ChatMemberUpdated,
     CallbackQuery,
+    ChatPermissions,
 )
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
@@ -28,12 +29,14 @@ from backend.database import (
     register_violation,
     count_violations,
     count_similar_listings,
+    init_db,
 )
 from backend.armenia.events import get_events_by_category
-from backend.database import init_db
 
 init_db()
 
+
+# ========== HELPERS ==========
 
 def detect_lang(message: Message) -> str:
     code = (message.from_user.language_code or "hy").lower()
@@ -51,20 +54,18 @@ bot = Bot(
 dp = Dispatcher()
 
 
-# ========== Admin FSM ==========
+# ========== FSM STATES ==========
 
 class AdminForm(StatesGroup):
     waiting_for_message = State()
 
 
-# ========== User FSM (AI հարց) ==========
-
 class UserQuestion(StatesGroup):
     waiting_for_question = State()
 
+
 class CaptchaForm(StatesGroup):
     waiting_for_answer = State()
-
 
 
 # ========== /start ==========
@@ -126,7 +127,7 @@ async def process_admin_message(message: Message, state: FSMContext):
     await state.clear()
 
 
-# ========== /news ==========
+# ========== /news command ==========
 
 @dp.message(Command("news", ignore_mention=True))
 async def cmd_news(message: Message):
@@ -151,15 +152,56 @@ async def cmd_news(message: Message):
         reply_markup=keyboard,
     )
 
+
 # ========== /news callback handler ==========
 
 @dp.callback_query(F.data.startswith("news:"))
 async def handle_news_callback(callback: CallbackQuery):
-    kind = callback.data.split(":", 1)[1]  # film / theatre / opera / party / festival / standup
+    kind = callback.data.split(":", 1)[1]  # film / theatre / opera / party / festival
     await callback.answer()
 
     text = await get_events_by_category(kind)
     await callback.message.answer(text)
+
+
+# ========== CAPTCHA callback handler ==========
+
+CAPTCHA_CORRECT = "lion"
+
+
+@dp.callback_query(F.data.startswith("captcha:"), CaptchaForm.waiting_for_answer)
+async def handle_captcha_answer(callback: CallbackQuery, state: FSMContext):
+    choice = callback.data.split(":", 1)[1]  # rabbit / pig / lamb / lion
+    user_id = callback.from_user.id
+    chat_id = settings.MAIN_CHAT_ID  # գլխավոր խմբի ID (settings-ում)
+
+    data = await state.get_data()
+    attempts = int(data.get("captcha_attempts", 0))
+
+    if choice == CAPTCHA_CORRECT:
+        # ճիշտ պատասխան → թույլ ենք տալիս գրել խմբում
+        await bot.restrict_chat_member(
+            chat_id=chat_id,
+            user_id=user_id,
+            permissions=ChatPermissions(
+                can_send_messages=True,
+                can_send_media_messages=True,
+                can_send_other_messages=True,
+            ),
+        )
+        await callback.message.edit_text(
+            "✅ Շնորհակալություն, թեստը հաջող անցար, հիմա կարող ես գրել խմբում։"
+        )
+        await state.clear()
+        await callback.answer()
+        return
+
+    # սխալ պատասխան
+    attempts += 1
+    await state.update_data(captcha_attempts=attempts)
+
+    # (հետագայում այստեղ կավելացնենք 8/12/24 ժամային սահմանափակումներ և սև ցուցակ)
+    await callback.answer("Սխալ ընտրություն է, փորձիր նորից 🙂", show_alert=True)
 
 
 # ========== Նոր անդամ / լքող անդամ ==========
@@ -217,7 +259,9 @@ async def handle_user_question(message: Message, state: FSMContext):
     lang = detect_lang(message)
 
     if "?" not in text and "՞" not in text:
-        await message.answer("Եթե ուզում ես, որ անհատական քեզ օգնի բոտը, գրիր հարցդ հարցականով 🙂")
+        await message.answer(
+            "Եթե ուզում ես, որ անհատական քեզ օգնի բոտը, գրիր հարցդ հարցականով 🙂"
+        )
         return
 
     reply = await generate_reply(text, lang=lang)
@@ -369,6 +413,34 @@ async def main_router(message: Message):
 
     return
 
+
+# ========== CAPTCHA helpers (keyboard + sender) ==========
+
+def build_captcha_keyboard() -> InlineKeyboardMarkup:
+    # երեք «ուտվող» + մեկ «չուտվող» կենդանի
+    buttons = [
+        InlineKeyboardButton(text="🐰", callback_data="captcha:rabbit"),
+        InlineKeyboardButton(text="🐷", callback_data="captcha:pig"),
+        InlineKeyboardButton(text="🐑", callback_data="captcha:lamb"),
+        InlineKeyboardButton(text="🦁", callback_data="captcha:lion"),
+    ]
+    random.shuffle(buttons)
+    return InlineKeyboardMarkup(inline_keyboard=[[b] for b in buttons])
+
+
+async def send_captcha_test(user_id: int, state: FSMContext, lang: str = "hy"):
+    text = {
+        "hy": "Ընտրիր այն կենդանուն, որին սովորաբար չեն ուտում 🧐",
+        "ru": "Выбери животное, которого обычно не едят 🧐",
+        "en": "Choose the animal people usually do NOT eat 🧐",
+    }.get(lang, "Ընտրիր այն կենդանուն, որին սովորաբար չեն ուտում 🧐")
+
+    kb = build_captcha_keyboard()
+    await bot.send_message(user_id, text, reply_markup=kb)
+    await state.set_state(CaptchaForm.waiting_for_answer)
+
+
+# ========== ENTRYPOINT ==========
 
 async def main():
     logger.info("AskYerevanBot started…")
