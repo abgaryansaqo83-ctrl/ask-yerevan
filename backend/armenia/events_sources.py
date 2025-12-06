@@ -54,16 +54,15 @@ def _scrape_one_tomsarkgh_event(url: str) -> Dict[str, Any] | None:
     place = venue_span.get_text(strip=True) if venue_span else "Unknown venue"
 
     return {
-        "title": title,
-        "date": date_part,
-        "time": time_part,
-        "place": place,
-        "city": "Yerevan",
-        # category դաշտը կդրվի fetch_* ֆունկցիաներում
-        "url": url,
-        "source": "tomsarkgh",
-    }
-
+    "title": title,
+    "date": date_part,
+    "time": time_part,
+    "place": place,
+    "city": "Yerevan",
+    "price": price_text,
+    "url": url,
+    "source": "tomsarkgh",
+}
 
 def _collect_event_links(category_url: str, limit: int) -> list[str]:
     """
