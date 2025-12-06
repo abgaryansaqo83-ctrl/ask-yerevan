@@ -62,6 +62,10 @@ class AdminForm(StatesGroup):
 class UserQuestion(StatesGroup):
     waiting_for_question = State()
 
+class CaptchaForm(StatesGroup):
+    waiting_for_answer = State()
+
+
 
 # ========== /start ==========
 
@@ -161,7 +165,7 @@ async def handle_news_callback(callback: CallbackQuery):
 # ========== Նոր անդամ / լքող անդամ ==========
 
 @dp.chat_member()
-async def on_chat_member_update(event: ChatMemberUpdated):
+async def on_chat_member_update(event: ChatMemberUpdated, state: FSMContext):
     logger.info(
         "chat_member update: chat=%s user=%s old=%s new=%s",
         event.chat.id,
@@ -173,7 +177,9 @@ async def on_chat_member_update(event: ChatMemberUpdated):
     old = event.old_chat_member
     new = event.new_chat_member
     user = new.user
+    chat_id = event.chat.id
 
+    # Լեզվի detect (welcome / goodbye տեքստերի համար)
     lang_code = (user.language_code or "hy").lower()
     if lang_code.startswith("ru"):
         lang = "ru"
@@ -182,13 +188,21 @@ async def on_chat_member_update(event: ChatMemberUpdated):
     else:
         lang = "hy"
 
-    chat_id = event.chat.id
-
+    # Նոր անդամ եկավ
     if new.status in ("member", "administrator") and old.status not in ("member", "administrator"):
-        text = get_text("welcome_new_member", lang).format(name=user.full_name)
-        await bot.send_message(chat_id, text)
+        # 1) mute ենք անում խմբում
+        await bot.restrict_chat_member(
+            chat_id=chat_id,
+            user_id=user.id,
+            permissions=ChatPermissions(can_send_messages=False),
+        )
+
+        # 2) ուղարկում ենք emoji-թեստը DM-ով
+        await send_captcha_test(user.id, state, lang=lang)
+
         return
 
+    # Լքող անդամ
     if old.status in ("member", "administrator") and new.status in ("left", "kicked"):
         text = get_text("goodbye_member", lang).format(name=user.full_name)
         await bot.send_message(chat_id, text)
