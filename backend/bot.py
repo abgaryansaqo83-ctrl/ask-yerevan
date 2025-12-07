@@ -173,7 +173,7 @@ CAPTCHA_CORRECT = "lion"
 async def handle_captcha_answer(callback: CallbackQuery, state: FSMContext):
     choice = callback.data.split(":", 1)[1]  # rabbit / pig / lamb / lion
     user_id = callback.from_user.id
-    chat_id = settings.MAIN_CHAT_ID  # գլխավոր խմբի ID (settings-ում)
+    chat_id = callback.message.chat.id  # unmute նույն չատում, որտեղ եկել է captcha-ն
 
     data = await state.get_data()
     attempts = int(data.get("captcha_attempts", 0))
