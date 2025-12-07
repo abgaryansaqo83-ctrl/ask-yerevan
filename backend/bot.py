@@ -190,12 +190,21 @@ async def handle_captcha_answer(callback: CallbackQuery, state: FSMContext):
                 can_send_other_messages=True,
             ),
         )
-        await callback.message.edit_text(
-            "✅ Շնորհակալություն, թեստը հաջող անցար, հիմա կարող ես գրել խմբում։"
+        lang = "hy"  # կամ detect_lang(callback.message) եթե ուզես
+        welcome = get_text("welcome_new_member", lang).format(
+            name=callback.from_user.full_name
         )
+
+        combined = (
+            "✅ Շնորհակալություն, թեստը հաջող անցար, հիմա կարող ես գրել խմբում։\n\n"
+            + welcome
+        )
+
+        await callback.message.edit_text(combined)
         await state.clear()
         await callback.answer()
         return
+
 
     # սխալ պատասխան
     attempts += 1
