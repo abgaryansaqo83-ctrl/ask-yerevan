@@ -16,18 +16,19 @@ from aiogram.types import (
     ChatMemberUpdated,
     CallbackQuery,
     ChatPermissions,
+    ReplyKeyboardMarkup,
+    KeyboardButton,
+    ReplyKeyboardRemove,
 )
-
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
 from config.settings import settings
 from backend.utils.logger import logger
 from backend.languages import get_text
 from backend.ai.response import generate_reply
 from backend.utils.listings import detect_listing_category
-from backend.database import save_user  # եթե արդեն import չէ
+from backend.database import save_user
 from backend.database import (
     save_listing,
     register_violation,
@@ -35,10 +36,10 @@ from backend.database import (
     count_similar_listings,
     init_db,
 )
-
 from backend.armenia.events import get_events_by_category
 
 init_db()
+
 
 # ========== HELPERS ==========
 
@@ -50,28 +51,33 @@ def detect_lang(message: Message) -> str:
         return "en"
     return "hy"
 
+
 bot = Bot(
     token=settings.BOT_TOKEN,
     default=DefaultBotProperties(parse_mode=ParseMode.HTML),
 )
 dp = Dispatcher()
 
+
 # ========== FSM STATES ==========
 
 class LanguageForm(StatesGroup):
     waiting_for_choice = State()
 
+
 class AdminForm(StatesGroup):
     waiting_for_message = State()
+
 
 class UserQuestion(StatesGroup):
     waiting_for_question = State()
 
+
 class CaptchaForm(StatesGroup):
     waiting_for_answer = State()
 
-# ========== /start ==========
 
+# ========== Լեզվի ընտրություն ==========
 @dp.message(LanguageForm.waiting_for_choice)
 async def handle_language_choice(message: Message, state: FSMContext):
     text = (message.text or "").strip()
@@ -102,10 +108,13 @@ async def handle_language_choice(message: Message, state: FSMContext):
     )
     await state.clear()
 
+
+# ========== /start ==========
+
 @dp.message(CommandStart(ignore_mention=True))
 async def cmd_start(message: Message, state: FSMContext):
     lang = detect_lang(message)
-    
+
     await message.answer(get_text("start", lang))
 
     text = (
@@ -118,6 +127,7 @@ async def cmd_start(message: Message, state: FSMContext):
     await message.answer(text)
 
     await state.set_state(UserQuestion.waiting_for_question)
+
 
 # ========== /admin ==========
 
@@ -133,6 +143,7 @@ async def cmd_admin(message: Message, state: FSMContext):
         "Խնդրում եմ, հաջորդ հաղորդագրությամբ գրեք ձեր հարցը կամ առաջարկը։"
     )
     await message.answer(text)
+
 
 @dp.message(AdminForm.waiting_for_message)
 async def process_admin_message(message: Message, state: FSMContext):
@@ -154,6 +165,7 @@ async def process_admin_message(message: Message, state: FSMContext):
     await message.answer("Շնորհակալություն, ձեր հաղորդագրությունը ուղարկվեց ադմինին ✅")
 
     await state.clear()
+
 
 # ========== /news command ==========
 
@@ -180,6 +192,7 @@ async def cmd_news(message: Message):
         reply_markup=keyboard,
     )
 
+
 # ========== /news callback handler ==========
 
 @dp.callback_query(F.data.startswith("news:"))
@@ -190,9 +203,11 @@ async def handle_news_callback(callback: CallbackQuery):
     text = await get_events_by_category(kind)
     await callback.message.answer(text)
 
+
 # ========== CAPTCHA callback handler ==========
 
 CAPTCHA_CORRECT = "lion"
+
 
 @dp.callback_query(F.data.startswith("captcha:"), CaptchaForm.waiting_for_answer)
 async def handle_captcha_answer(callback: CallbackQuery, state: FSMContext):
@@ -246,7 +261,7 @@ async def handle_captcha_answer(callback: CallbackQuery, state: FSMContext):
         )
 
         # Միավորում ենք հաջողության տեքստը և welcome-ը
-        lang = "hy"  # հետո այստեղ կարող ենք detect անել ըստ user.language_code-ի
+        lang = "hy"  # հետո կարող ենք փոխել detect-ի վրա
         welcome = get_text("welcome_new_member", lang).format(
             name=callback.from_user.full_name
         )
@@ -260,9 +275,9 @@ async def handle_captcha_answer(callback: CallbackQuery, state: FSMContext):
         # Լեզվի ընտրություն՝ private chat-ում
         kb = build_language_keyboard()
         await bot.send_message(
-           callback.from_user.id,
-           "Ընտրիր, թե որ լեզվով ես ուզում, որ բոտը քեզ հետ խոսի․",
-           reply_markup=kb,
+            callback.from_user.id,
+            "Ընտրիր, թե որ լեզվով ես ուզում, որ բոտը քեզ հետ խոսի․",
+            reply_markup=kb,
         )
 
         await state.set_state(LanguageForm.waiting_for_choice)
@@ -319,6 +334,7 @@ async def handle_captcha_answer(callback: CallbackQuery, state: FSMContext):
         show_alert=True,
     )
 
+
 # ========== Նոր անդամ / լքող անդամ ==========
 
 @dp.chat_member()
@@ -350,17 +366,17 @@ async def on_chat_member_update(event: ChatMemberUpdated, state: FSMContext):
 
         data = await state.get_data()
         if data.get("captcha_passed"):
-           # արդեն անցել է captcha, այլևս չենք mute անում
-           return
-        
-    # 1) mute ենք անում խմբում
-        await bot.restrict_chat_member(
-              chat_id=chat_id,
-              user_id=user.id,
-              permissions=ChatPermissions(can_send_messages=False),
-    )
+            # արդեն անցել է captcha, այլևս չենք mute անում
+            return
 
-    # 2) ուղարկում ենք emoji-թեստը խմբում (mention-ով)
+        # 1) mute ենք անում խմբում
+        await bot.restrict_chat_member(
+            chat_id=chat_id,
+            user_id=user.id,
+            permissions=ChatPermissions(can_send_messages=False),
+        )
+
+        # 2) ուղարկում ենք emoji-թեստը խմբում (mention-ով)
         await send_captcha_test(chat_id, user.id, state, lang=lang)
 
         return
@@ -370,6 +386,7 @@ async def on_chat_member_update(event: ChatMemberUpdated, state: FSMContext):
         text = get_text("goodbye_member", lang).format(name=user.full_name)
         await bot.send_message(chat_id, text)
         return
+
 
 # ========== /start-ից հետո AI հարց ==========
 
@@ -387,6 +404,7 @@ async def handle_user_question(message: Message, state: FSMContext):
     reply = await generate_reply(text, lang=lang)
     await message.answer(reply)
     await state.clear()
+
 
 # ========== Սովորական տեքստեր (fallback router) ==========
 
@@ -411,6 +429,7 @@ SPAM_POLITICS_KEYWORDS = [
     "constitution", "corruption", "regime", "authoritarian",
     "oligarch", "diplomac", "propaganda", "lobby", "policy",
 ]
+
 
 @dp.message()
 async def main_router(message: Message):
@@ -531,6 +550,7 @@ async def main_router(message: Message):
 
     return
 
+
 # ========== CAPTCHA helpers (keyboard + sender) ==========
 
 def build_captcha_keyboard() -> InlineKeyboardMarkup:
@@ -543,6 +563,7 @@ def build_captcha_keyboard() -> InlineKeyboardMarkup:
     ]
     random.shuffle(buttons)
     return InlineKeyboardMarkup(inline_keyboard=[[b] for b in buttons])
+
 
 async def send_captcha_test(chat_id: int, user_id: int, state: FSMContext, lang: str = "hy"):
     text_base = {
@@ -573,11 +594,13 @@ def build_language_keyboard() -> ReplyKeyboardMarkup:
         one_time_keyboard=True,
     )
 
+
 # ========== ENTRYPOINT ==========
 
 async def main():
     logger.info("AskYerevanBot started…")
     await dp.start_polling(bot)
+
 
 if __name__ == "__main__":
     asyncio.run(main())
