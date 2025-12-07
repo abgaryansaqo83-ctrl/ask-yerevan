@@ -179,15 +179,17 @@ async def handle_captcha_answer(callback: CallbackQuery, state: FSMContext):
     attempts = int(data.get("captcha_attempts", 0))
 
     if choice == CAPTCHA_CORRECT:
-        # ճիշտ պատասխան → թույլ ենք տալիս գրել խմբում
-        await bot.restrict_chat_member(
-            chat_id=chat_id,
-            user_id=user_id,
-            permissions=ChatPermissions(
-                can_send_messages=True,
-                can_send_media_messages=True,
-                can_send_other_messages=True,
-            ),
+    await state.update_data(captcha_passed=True)
+
+    await bot.restrict_chat_member(
+        chat_id=chat_id,
+        user_id=user_id,
+        permissions=ChatPermissions(
+            can_send_messages=True,
+            can_send_media_messages=True,
+            can_send_other_messages=True,
+        ),
+    )
         )
         await callback.message.edit_text(
             "✅ Շնորհակալություն, թեստը հաջող անցար, հիմա կարող ես գրել խմբում։"
@@ -232,6 +234,12 @@ async def on_chat_member_update(event: ChatMemberUpdated, state: FSMContext):
 
     # Նոր անդամ եկավ
     if new.status in ("member", "administrator") and old.status not in ("member", "administrator"):
+
+        data = await state.get_data()
+    if data.get("captcha_passed"):
+        # արդեն անցել է captcha, այլևս չենք mute անում
+        return
+        
     # 1) mute ենք անում խմբում
         await bot.restrict_chat_member(
               chat_id=chat_id,
