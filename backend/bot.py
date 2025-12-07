@@ -233,9 +233,9 @@ async def on_chat_member_update(event: ChatMemberUpdated, state: FSMContext):
     if new.status in ("member", "administrator") and old.status not in ("member", "administrator"):
 
         data = await state.get_data()
-    if data.get("captcha_passed"):
-        # արդեն անցել է captcha, այլևս չենք mute անում
-        return
+        if data.get("captcha_passed"):
+           # արդեն անցել է captcha, այլևս չենք mute անում
+           return
         
     # 1) mute ենք անում խմբում
         await bot.restrict_chat_member(
