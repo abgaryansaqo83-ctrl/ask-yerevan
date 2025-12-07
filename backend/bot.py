@@ -168,28 +168,27 @@ async def handle_news_callback(callback: CallbackQuery):
 
 CAPTCHA_CORRECT = "lion"
 
-
 @dp.callback_query(F.data.startswith("captcha:"), CaptchaForm.waiting_for_answer)
 async def handle_captcha_answer(callback: CallbackQuery, state: FSMContext):
-    choice = callback.data.split(":", 1)[1]  # rabbit / pig / lamb / lion
+    choice = callback.data.split(":", 1)[1]
     user_id = callback.from_user.id
-    chat_id = callback.message.chat.id  # unmute նույն չատում, որտեղ եկել է captcha-ն
+    chat_id = callback.message.chat.id
 
     data = await state.get_data()
     attempts = int(data.get("captcha_attempts", 0))
 
     if choice == CAPTCHA_CORRECT:
-    await state.update_data(captcha_passed=True)
+        # success flag
+        await state.update_data(captcha_passed=True)
 
-    await bot.restrict_chat_member(
-        chat_id=chat_id,
-        user_id=user_id,
-        permissions=ChatPermissions(
-            can_send_messages=True,
-            can_send_media_messages=True,
-            can_send_other_messages=True,
-        ),
-    )
+        await bot.restrict_chat_member(
+            chat_id=chat_id,
+            user_id=user_id,
+            permissions=ChatPermissions(
+                can_send_messages=True,
+                can_send_media_messages=True,
+                can_send_other_messages=True,
+            ),
         )
         await callback.message.edit_text(
             "✅ Շնորհակալություն, թեստը հաջող անցար, հիմա կարող ես գրել խմբում։"
@@ -201,8 +200,6 @@ async def handle_captcha_answer(callback: CallbackQuery, state: FSMContext):
     # սխալ պատասխան
     attempts += 1
     await state.update_data(captcha_attempts=attempts)
-
-    # (հետագայում այստեղ կավելացնենք 8/12/24 ժամային սահմանափակումներ և սև ցուցակ)
     await callback.answer("Սխալ ընտրություն է, փորձիր նորից 🙂", show_alert=True)
 
 
