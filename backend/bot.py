@@ -17,6 +17,7 @@ from aiogram.types import (
     CallbackQuery,
     ChatPermissions,
 )
+
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
@@ -34,6 +35,7 @@ from backend.database import (
     count_similar_listings,
     init_db,
 )
+
 from backend.armenia.events import get_events_by_category
 
 init_db()
