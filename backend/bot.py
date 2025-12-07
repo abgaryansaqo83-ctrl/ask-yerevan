@@ -3,6 +3,8 @@
 import asyncio
 import logging
 import random
+import datetime
+
 
 from aiogram import Bot, Dispatcher, F
 from aiogram.client.default import DefaultBotProperties
@@ -168,15 +170,44 @@ async def handle_news_callback(callback: CallbackQuery):
 
 CAPTCHA_CORRECT = "lion"
 
+
 @dp.callback_query(F.data.startswith("captcha:"), CaptchaForm.waiting_for_answer)
 async def handle_captcha_answer(callback: CallbackQuery, state: FSMContext):
-    choice = callback.data.split(":", 1)[1]
+    """
+    Emoji-թեստի callback.
+    Սխալ փորձերի սահմաններ.
+      - 1-ին սխալ -> անմիջապես նոր փորձ
+      - 2-րդ սխալ -> 8 ժամ սպասել
+      - 3-րդ սխալ -> 12 ժամ սպասել
+      - 4-րդ սխալ -> 24 ժամ սպասել (վերջին հնարավորություն)
+      - 5-րդ+ սխալ -> permanent restricted (մնում է mute, admin-ը պետք է բացի)
+    """
+    choice = callback.data.split(":", 1)[1]  # rabbit / pig / lamb / lion
     user_id = callback.from_user.id
     chat_id = callback.message.chat.id
 
+    # FSM data-ից վերցնում ենք նախորդ տվյալները
     data = await state.get_data()
     attempts = int(data.get("captcha_attempts", 0))
+    next_allowed_str = data.get("captcha_next_allowed")
 
+    now = datetime.datetime.now(datetime.timezone.utc)
+
+    # Եթե կա next_allowed և դեռ չի անցել, թույլ չենք տալիս նոր փորձ
+    if next_allowed_str:
+        try:
+            next_allowed = datetime.datetime.fromisoformat(next_allowed_str)
+        except Exception:
+            next_allowed = None
+        if next_allowed and now < next_allowed:
+            wait_hours = (next_allowed - now).total_seconds() // 3600 + 1
+            await callback.answer(
+                f"Հաջորդ փորձը հնարավոր կլինի մոտավորապես {int(wait_hours)} ժամից։",
+                show_alert=True,
+            )
+            return
+
+    # --------- ՃԻՇՏ ՊԱՏԱՍԽԱՆ ---------
     if choice == CAPTCHA_CORRECT:
         # success flag
         await state.update_data(captcha_passed=True)
@@ -190,11 +221,12 @@ async def handle_captcha_answer(callback: CallbackQuery, state: FSMContext):
                 can_send_other_messages=True,
             ),
         )
-        lang = "hy"  # կամ detect_lang(callback.message) եթե ուզես
+
+        # Միավորում ենք հաջողության տեքստը և welcome-ը
+        lang = "hy"  # հետո այստեղ կարող ենք detect անել ըստ user.language_code-ի
         welcome = get_text("welcome_new_member", lang).format(
             name=callback.from_user.full_name
         )
-
         combined = (
             "✅ Շնորհակալություն, թեստը հաջող անցար, հիմա կարող ես գրել խմբում։\n\n"
             + welcome
@@ -205,11 +237,56 @@ async def handle_captcha_answer(callback: CallbackQuery, state: FSMContext):
         await callback.answer()
         return
 
-
-    # սխալ պատասխան
+    # --------- ՍԽԱԼ ՊԱՏԱՍԽԱՆ ---------
     attempts += 1
-    await state.update_data(captcha_attempts=attempts)
-    await callback.answer("Սխալ ընտրություն է, փորձիր նորից 🙂", show_alert=True)
+
+    # Որոշում ենք հաջորդ թույլատրելի փորձի ժամանակը
+    wait_hours = 0
+    message_tail = ""
+
+    if attempts == 1:
+        # Առաջին սխալը՝ առանց սպասելու
+        wait_hours = 0
+        message_tail = "Սա առաջին սխալ փորձն է, կարող ես նորից ընտրել։"
+    elif attempts == 2:
+        wait_hours = 8
+        message_tail = "Սա երկրորդ սխալ փորձն է, հաջորդ հնարավորությունը կլինի 8 ժամից։"
+    elif attempts == 3:
+        wait_hours = 12
+        message_tail = "Արդեն երեք սխալ փորձ կա, հաջորդ հնարավորությունը կլինի 12 ժամից։"
+    elif attempts == 4:
+        wait_hours = 24
+        message_tail = (
+            "Սա չորրորդ սխալ փորձն է։ Հաջորդը կլինի վերջինը և հասանելի կլինի 24 ժամից։"
+        )
+    else:
+        # 5-րդ և ավել սխալ փորձեր -> permanent restricted
+        await state.update_data(
+            captcha_attempts=attempts,
+            captcha_next_allowed=None,
+            captcha_blacklisted=True,
+        )
+        await callback.answer(
+            "Դու բազմակի անգամ սխալ ես ընտրել։ Հիմա խմբում կմնաս առանց գրելու հնարավորության, "
+            "մինչև ադմինը որոշի բացել մուտքը։",
+            show_alert=True,
+        )
+        return
+
+    # Եթե պետք է սպասել, հաշվենք հաջորդ թույլատրելի ժամանակը
+    next_allowed = None
+    if wait_hours > 0:
+        next_allowed = now + datetime.timedelta(hours=wait_hours)
+
+    await state.update_data(
+        captcha_attempts=attempts,
+        captcha_next_allowed=next_allowed.isoformat() if next_allowed else None,
+    )
+
+    await callback.answer(
+        f"Սխալ ընտրություն է։ {message_tail}",
+        show_alert=True,
+    )
 
 
 # ========== Նոր անդամ / լքող անդամ ==========
