@@ -3,6 +3,12 @@
 import datetime
 from typing import Literal
 import random
+
+from .events_sources import (
+    fetch_cinema_from_tomsarkgh,
+    fetch_theatre_from_tomsarkgh,
+    fetch_opera_from_tomsarkgh,
+)
 from backend.armenia.events_sources import fetch_live_events_for_category
 
 EventCategory = Literal[
@@ -97,21 +103,49 @@ def _pick_events_for_range(
 
 async def get_week_premiere() -> str:
     """
-    Երկուշաբթի առավոտվա 08:30 հրապարակում.
-    «Շաբաթվա պրեմիերա» ֆիլմ կամ ներկայացում՝ 1 հատ։ (mock)
+    Երկուշաբթի 08:30 – «Շաբաթվա պրեմիերա».
+    Փորձում է գտնել առաջիկա օրերի կինո/թատրոն/օպերա live event-ներից մեկը.
+    Եթե չի ստացվում, վերադարձնում է info-տեքստ, որ այս շաբաթ պրեմիերա չի գտնվել։
     """
     today = datetime.date.today()
     week_label = today.isocalendar().week
 
-    title = "Շաբաթվա պրեմիերա. «Կարապի լիճը»"
-    venue = "Ա.Սպենդիարյանի անվան օպերայի և բալետի թատրոն"
-    time = "Այս շաբաթ՝ 19:00"
-    price = "5000–25000"
+    # 1) Քաշում ենք live event-ները (sync scraper-ներ են, կարող են մի քիչ դանդաղ լինել)
+    cinema = fetch_cinema_from_tomsarkgh(limit=20)
+    theatre = fetch_theatre_from_tomsarkgh(limit=20)
+    opera = fetch_opera_from_tomsarkgh(limit=20)
+
+    all_events = cinema + theatre + opera
+    if not all_events:
+        return f"✨ Շաբաթվա պրեմիերա #{week_label}\n\nԱյս շաբաթ նոր պրեմիերա չեմ գտել 🙂"
+
+    # 2) Sort by ближайшая дата/ժամ
+    def _dt_key(ev: dict):
+        d = ev.get("date") or ""
+        t = ev.get("time") or ""
+        try:
+            if t:
+                return datetime.datetime.fromisoformat(f"{d} {t}")
+            return datetime.datetime.fromisoformat(d)
+        except Exception:
+            return datetime.datetime.max
+
+    all_events.sort(key=_dt_key)
+
+    # 3) Վերցնենք ամենամոտիկը (կամ random առաջին մի քանիից)
+    candidates = all_events[:5]
+    ev = random.choice(candidates)
+
+    title = ev["title"]
+    venue = ev["place"]
+    date_str = ev.get("date") or ""
+    time_str = ev.get("time") or ""
+    nice_time = f"{date_str} • 🕒 {time_str}" if time_str else date_str or "ժամը նշված չէ"
 
     header = f"✨ Շաբաթվա պրեմիերա #{week_label}\n\n"
-    body = _format_event_line(title, venue, time, price)
+    body = _format_event_line(title, venue, nice_time, "գինը նշված չէ")
 
-    return header + body  # footer հանված է
+    return header + body
 
 
 # ================== NEXT DAY EVENTS ==================
