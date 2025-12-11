@@ -115,20 +115,40 @@ def _get_day_forecast_advice(min_temp: float, max_temp: float, weather_main: str
         return "🌤️ Ամբողջ օրը կայուն եղանակ"
 
 
+# weather.py (_format_weather_message-ի սկզբում կամ վերևում)
+WEATHER_DESC_HY = {
+    "dense fog": "Խիտ մառախուղ",
+    "fog": "Մառախուղ",
+    "mist": "մառախուղ",
+    "smoke": "ծխածածկ",
+    "haze": "մեղմ մշուշ",
+    "overcast clouds": "ամպամած",
+    "scattered clouds": "մասնամբ ամպամած",
+    "broken clouds": "ամպամածություն",
+    "clear sky": "արդ և պարզ երկինք",
+    # եթե API-ից ռուսերեն էլ գա, դրանց էլ կարող ես մապ անել
+    "плотный туман": "Խիտ մառախուղ",
+    "туман": "Մառախուղ",
+}
+
 def _format_weather_message(current: dict, forecast: Optional[dict] = None) -> str:
     temp = current["main"]["temp"]
     feels_like = current["main"]["feels_like"]
     weather_main = current["weather"][0]["main"]
-    weather_desc = current["weather"][0]["description"]
+    raw_desc = current["weather"][0]["description"] or ""
     city_name = current["name"]
+
+    # ՆՈՐ՝ normalize + հայերեն
+    key = raw_desc.lower()
+    weather_desc = WEATHER_DESC_HY.get(key, raw_desc)
 
     emoji = _get_weather_emoji(weather_main)
 
     current_line = (
-        f"{emoji} {city_name}\n"
-        f"🌡️ Ջերմաստիճան՝ {temp:.0f}°C\n"
-        f"😎 Զգացողություն՝ {feels_like:.0f}°C\n"
-        f"📝 {weather_desc.title()}"
+        f"{emoji} Երևան\n"          # fix city-ը, եթե ուզում ես միշտ Երևան
+        f"🌡 Ցերեկայինը՝ {temp:.0f}°C\n"
+        f"😎 Զգացողությունը՝ {feels_like:.0f}°C\n"
+        f"📝 {weather_desc}"
     )
 
     # Humor advice
