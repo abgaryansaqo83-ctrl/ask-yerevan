@@ -132,8 +132,8 @@ async def get_week_premiere() -> str:
 
     all_events.sort(key=_dt_key)
 
-    # 3) Վերցնենք ամենամոտիկը (կամ random առաջին մի քանիից)
-    candidates = all_events[:5]
+    # 3) Վերցնենք ամենամոտիկը (կամ random առաջին մի քանիսից)
+    candidates = all_events[:3]
     ev = random.choice(candidates)
 
     title = ev["title"]
@@ -215,7 +215,7 @@ CATEGORY_LABELS_HY: dict[EventCategory, str] = {
 
 async def get_events_by_category(
     category: EventCategory,
-    limit: int = 5,
+    limit: int = 3,
 ) -> str:
     """
     Օգտագործվում է /news մենյուի time-ում.
@@ -290,42 +290,60 @@ async def get_events_by_category(
 
 async def get_festival_events_7days() -> str:
     """
-    Եթե կան փառատոններ, չորեքշաբթի օրը հրապարակվող
-    մոտակա 7 օրվա բոլոր միջոցառումները տվյալ փառատոնի շուրջ։ (mock)
+    Չորեքշաբթի 09:30 – մոտակա 7 օրվա իրական փառատոնային միջոցառումներ (Tomsarkgh LIVE):
+
+    - Քաշում է festival category-ի live event-ները TomSarkgh-ից
+    - Թողնում է միայն այն, որոնց օրը այսօրից մինչև +7 օր է
+    - Եթե ոչինչ չկա, ազնիվ info մեսեջ է տալիս, ոչ թե ֆեյք
     """
     today = datetime.date.today()
     end_date = today + datetime.timedelta(days=7)
 
-    festival_name = "«Yerevan Jazz Festival»"
-    events = [
-        {
-            "title": "Օպենինգ համերգ",
-            "venue": "Կ.Դեմիրճյանի անվ. Մարզահամերգային համալիր",
-            "time": f"{today.strftime('%d %B')} — 20:00",
-            "price": "8000–30000",
-        },
-        {
-            "title": "Jam Session Night",
-            "venue": "Քաղաքի ջազ ակումբ",
-            "time": f"{(today + datetime.timedelta(days=2)).strftime('%d %B')} — 21:00",
-            "price": "5000–12000",
-        },
-    ]
+    # LIVE fetch Tomsarkgh-ից
+    all_events = fetch_live_events_for_category("festival", limit=100)
+
+    # Ֆիլտր միայն այսօր..+7 օր միջակայքի համար
+    events: list[dict] = []
+    for ev in all_events:
+        try:
+            d = datetime.date.fromisoformat(ev.get("date", ""))
+        except Exception:
+            continue
+        if today <= d <= end_date:
+            events.append(ev)
+
+    if not events:
+        return (
+            "🎉 Մոտակա 7 օրում ֆիքսված փառատոններ չեն գտնվել։\n"
+            "Եթե ունես հետաքրքիր փառատոնի մասին ինֆո, գրի՛ր Խոսում է Երևանը բետ-ին։"
+        )
+
+    # Օպցիա․ եթե ուզում ես առավելագույնը 3–5 event, սահմանափակի այստեղ
+    events.sort(key=lambda ev: ev.get("date", ""))
+    chosen = events[:3]
 
     header = (
-        f"🎉 Փառատոնային շաբաթ՝ {festival_name}\n"
+        "🎉 Փառատոնային շաբաթ\n"
         f"📅 {today.strftime('%d %B')} — {end_date.strftime('%d %B')}\n\n"
     )
 
     body_parts: list[str] = []
-    for ev in events:
+    for ev in chosen:
+        title = ev.get("title") or "Անվերնագիր իրադարձություն"
+        venue = ev.get("place") or "Վայր նշված չէ"
+        date_str = ev.get("date") or ""
+        time_str = ev.get("time") or ""
+        nice_time = f"{date_str} {time_str}".strip()
+        price = ev.get("price") or "գինը նշված չէ"
+
         body_parts.append(
             _format_event_line(
-                ev["title"],
-                ev["venue"],
-                ev["time"],
-                ev["price"],
+                title,
+                venue,
+                nice_time,
+                price,
             )
         )
 
-    return header + "\n".join(body_parts)  # footer հանված է
+    return header + "\n".join(body_parts)
+
