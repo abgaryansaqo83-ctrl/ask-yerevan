@@ -1,8 +1,61 @@
-/* static/css/main.css */
-body { margin: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-.container { max-width: 960px; margin: 0 auto; padding: 1rem; }
-.site-header, .site-footer { background: #111; color: #fff; }
-.site-header a, .site-footer a { color: inherit; text-decoration: none; }
-.nav a { margin-left: 1rem; }
-.hero { padding: 3rem 0; }
-.btn-primary { display: inline-block; padding: 0.6rem 1.2rem; background: #0077ff; color: #fff; border-radius: 4px; text-decoration: none; }
+/* Վերևի շերտը — մուգ երկնագույն */
+.site-header {
+  background: #101a33; /* նորմալ կապույտից կես տոն մուգ */
+  color: #fff;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-family: "Caveat", "Segoe Script", system-ui, sans-serif; /* ձեռագիր ոճ */
+  font-size: 2rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #000; /* սև տեքստ */
+}
+
+.logo a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Հայաստանի եռագույն դրոշի փոքր կայծ */
+.flag-armenia {
+  display: inline-block;
+  width: 28px;
+  height: 18px;
+  border-radius: 2px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.3);
+}
+.flag-armenia::before,
+.flag-armenia::after {
+  content: "";
+  display: block;
+}
+.flag-armenia {
+  background: linear-gradient(
+    to bottom,
+    #d90012 0 33%,
+    #0033a0 33% 66%,
+    #f2a800 66% 100%
+  );
+}
+
+/* menu item-ներն էլ ձեռագիր հայատառ feel */
+.nav a {
+  margin-left: 1rem;
+  text-decoration: none;
+  color: #f0f0f0;
+  font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
+  font-size: 1.1rem;
+}
+.nav a:hover {
+  text-decoration: underline;
+}
