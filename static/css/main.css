@@ -1,0 +1,8 @@
+/* static/css/main.css */
+body { margin: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.container { max-width: 960px; margin: 0 auto; padding: 1rem; }
+.site-header, .site-footer { background: #111; color: #fff; }
+.site-header a, .site-footer a { color: inherit; text-decoration: none; }
+.nav a { margin-left: 1rem; }
+.hero { padding: 3rem 0; }
+.btn-primary { display: inline-block; padding: 0.6rem 1.2rem; background: #0077ff; color: #fff; border-radius: 4px; text-decoration: none; }
