@@ -44,13 +44,22 @@
 }
 
 .logo {
-  font-family: "Caveat", "Segoe Script", system-ui, sans-serif; /* ձեռագիր ոճ */
+  font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
   font-size: 2rem;
   margin: 0;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #000; /* սև տեքստ */
+  background: linear-gradient(
+    90deg,
+    #d90012 0%,
+    #f2a800 35%,
+    #0033a0 70%,
+    #d90012 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent; /* որպեսզի gradient-ը լցնի տառերը */
 }
 
 .logo a {
@@ -89,6 +98,19 @@
   font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
   font-size: 1.1rem;
 }
+
 .nav a:hover {
   text-decoration: underline;
+}
+
+.site-footer {
+  background: url("/static/img/rug-texture.jpg") center/cover no-repeat;
+  color: #fff;
+  font-size: 0.85rem;
+}
+
+.site-footer .container {
+  padding: 0.5rem 1rem;
+  text-align: center;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
