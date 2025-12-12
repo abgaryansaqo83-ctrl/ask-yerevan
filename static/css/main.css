@@ -1,55 +1,35 @@
+/* Ընդհանուր մարմին */
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: #fafafa;
+}
+
+/* Վերևի շերտը — կապույտ header */
 .site-header {
-  background: #243967;        /* ավելի բաց կապույտ */
+  background: #243967;        /* ավելի բաց մուգ կապույտ */
   color: #fff;
-  padding: 0.6rem 0.2rem;
+  padding: 0.6rem 0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
+
 .header-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.header-left {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.tg-link {
-  font-size: 0.9rem;
-  color: #e0f0ff;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-.tg-link:hover {
-  text-decoration: underline;
-}
-
-.tg-icon {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: #26a8ff;
-  color: #fff;
-  font-size: 10px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
+/* AskYerevan լոգո՝ եռագույն gradient-ով */
 .logo {
   font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
   font-size: 2rem;
   margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
   background: linear-gradient(
     90deg,
     #d90012 0%,
@@ -59,50 +39,56 @@
   );
   -webkit-background-clip: text;
   background-clip: text;
-  color: transparent; /* որպեսզի gradient-ը լցնի տառերը */
+  color: transparent;
 }
 
-.logo a {
-  color: inherit;
-  text-decoration: none;
+/* Վերին մենյու + Telegram հղում աջում */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
-/* Հայաստանի եռագույն դրոշի փոքր կայծ */
-.flag-armenia {
-  display: inline-block;
-  width: 28px;
-  height: 18px;
-  border-radius: 2px;
-  overflow: hidden;
-  box-shadow: 0 0 0 1px rgba(0,0,0,0.3);
-}
-.flag-armenia::before,
-.flag-armenia::after {
-  content: "";
-  display: block;
-}
-.flag-armenia {
-  background: linear-gradient(
-    to bottom,
-    #d90012 0 33%,
-    #0033a0 33% 66%,
-    #f2a800 66% 100%
-  );
-}
-
-/* menu item-ներն էլ ձեռագիր հայատառ feel */
+/* Սովորական menu item-ներ */
 .nav a {
-  margin-left: 1rem;
   text-decoration: none;
   color: #f0f0f0;
   font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
 }
 
 .nav a:hover {
   text-decoration: underline;
 }
 
+/* Telegram հատուկ հղում՝ աջ կողմում */
+.nav-tg-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+}
+
+.tg-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #26a8ff;
+  color: #fff;
+  font-size: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Գլխավոր էջի hero բաժին */
+.hero {
+  padding: 2.5rem 1rem;
+}
+
+/* Footer՝ հայկական գորգի ֆոնով */
 .site-footer {
   background: url("/static/img/rug-texture.jpg") center/cover no-repeat;
   color: #fff;
@@ -111,6 +97,6 @@
 
 .site-footer .container {
   padding: 0.5rem 1rem;
-  text-align: center;
+  text-align: left;
   text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
