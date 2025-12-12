@@ -1,15 +1,10 @@
 {% extends "base.html" %}
 {% block title %}AskYerevan · Գլխավոր{% endblock %}
 
-<section class="columns">
-  <div>
-    <h3>Ի՞նչ է անում բոտը</h3>
-    <p>Կարճ նկարագրություն բոտի մասին։ Հետո կարող ես սա խմբագրել template-ի մեջ՝ ինչպես ուզի։</p>
-  </div>
-  <div>
-    <h3>Վերջին նորությունները</h3>
-    <p>Ապագայում այստեղ կարող ենք բերել իրական event-ներ կամ blog-ի վերջին գրառումները։</p>
-  </div>
+{% block content %}
+<section class="hero">
+  <h2>Երևանը մի հասցեում</h2>
+  <p>AskYerevan-ը Երևանի մասին արագ ուղեցույց է․ Telegram բոտ + այս կայք։</p>
+  <a class="btn-primary" href="https://t.me/AskYerevan">Միացիր Telegram խմբին</a>
 </section>
 {% endblock %}
-
