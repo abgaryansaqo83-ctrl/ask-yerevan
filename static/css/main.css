@@ -5,11 +5,10 @@ body {
   background: #fafafa;
 }
 
-.site-header {
-  background: #243967;
-  color: #fff;
-  padding: 0.6rem 0;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: #fafafa;
 }
 
 .container {
@@ -18,20 +17,28 @@ body {
   padding: 0 1rem;
 }
 
+/* -------- HEADER -------- */
+
+.site-header {
+  background: #243967;
+  color: #fff;
+  padding: 0.6rem 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
 .header-inner {
   display: flex;
-  align-items: flex-start;   /* logo-ն վերևում */
+  align-items: flex-start;      /* logo վերևի գծին հավասար */
   justify-content: space-between;
 }
 
-/* Logo + menu block ձախում */
 .header-left {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.25rem;
 }
 
-/* AskYerevan logo՝ վերևից ներքև եռագույն gradient + բարակ սև կոնտուր */
+/* Logo՝ վերևի ձախ անկյունում, vertical gradient + սև բարակ եզրագիծ */
 .logo {
   font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
   font-size: 2.1rem;
@@ -39,77 +46,64 @@ body {
   background: linear-gradient(
     to bottom,
     #d90012 0%,
-    #f2a800 40%,
-    #0033a0 80%
+    #f2a800 45%,
+    #0033a0 90%
   );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  text-shadow: 0 0 1px #000;  /* բարակ սև եզրագիծ, որ չկորչի ֆոնի մեջ */
+  text-shadow: 0 0 1px #000;   /* կոնտուր, որ չկորչի կապույտի վրա */
 }
 
-/* Menu links logo-ի տակ */
+/* Menu՝ logo-ի տակ, ձախից ոչ շատ ներս */
 .nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.9rem;
+  gap: 1rem;
 }
 
 .nav a {
   text-decoration: none;
   color: #f0f0f0;
   font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
-  font-size: 1.05rem;
+  font-size: 1rem;
 }
 
 .nav a:hover {
   text-decoration: underline;
 }
 
-/* Telegram հղումը աջ վերևի անկյունում */
+/* Telegram հղում՝ աջ վերևի անկյունում, մի տող, փոքրիկ */
 .nav-tg-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.08);
+  gap: 0.25rem;
   color: #eaf4ff;
-  font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
-  font-size: 0.95rem;  /* մենյուից մի քիչ փոքր */
+  font-size: 0.9rem;                  /* մենյուից փոքր */
   text-decoration: none;
 }
 
 .nav-tg-link:hover {
-  background: rgba(255,255,255,0.15);
+  text-decoration: underline;
 }
 
 .tg-icon {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   background: #26a8ff;
   color: #fff;
-  font-size: 10px;
+  font-size: 9px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Գլխավոր էջի hero բաժին */
-.hero {
-  padding: 2.5rem 1rem;
+/* «AskYerevan» բառը link-ի մեջ թողվի ձեռագիր, «խմբին»՝ սովորական */
+.tg-text-script {
+  font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
+}
+.tg-text {
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
-/* Footer՝ հայկական գորգի ֆոնով */
-.site-footer {
-  background: url("/static/img/rug-texture.jpg") center/cover no-repeat;
-  color: #fff;
-  font-size: 0.85rem;
-}
-
-.site-footer .container {
-  padding: 0.5rem 1rem;
-  text-align: left;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-}
