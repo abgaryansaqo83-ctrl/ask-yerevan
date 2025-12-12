@@ -1,17 +1,46 @@
-/* Վերևի շերտը — մուգ երկնագույն */
 .site-header {
-  background: #1c2f5c;      /* մուգ երկնագույն, մի քայլ ավելի բաց քան հիմա */
+  background: #243967;        /* ավելի բաց կապույտ */
   color: #fff;
-  padding: 0.8rem 0;        /* բարձրությունն ավելի մեծ */
+  padding: 0.6rem 0.2rem;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 }
-
 .header-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.tg-link {
+  font-size: 0.9rem;
+  color: #e0f0ff;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.tg-link:hover {
+  text-decoration: underline;
+}
+
+.tg-icon {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #26a8ff;
+  color: #fff;
+  font-size: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .logo {
