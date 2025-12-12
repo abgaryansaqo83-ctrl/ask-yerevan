@@ -1,11 +1,1 @@
-.site-footer {
-  background: url("/static/img/rug-texture.jpg") center/cover no-repeat;
-  color: #fff;
-  font-size: 0.85rem;
-}
 
-.site-footer .container {
-  padding: 0.5rem 1rem;
-  text-align: left;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-}
