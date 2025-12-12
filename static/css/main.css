@@ -56,21 +56,20 @@ main.container {
   gap: 0.25rem;
 }
 
-/* Logo՝ վերևի ձախ անկյունում, vertical gradient + սև բարակ եզրագիծ */
 .logo {
   font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
   font-size: 2.1rem;
   margin: 0;
   background: linear-gradient(
-    to bottom,
-    #d90012 0%,
-    #f2a800 45%,
-    #0033a0 90%
+    to bottom,           /* վերևից ներքև */
+    #ff4a4a 0%,          /* փափուկ կարմիր */
+    #3366cc 90%          /* ավելի մեղմ կապույտ */
+    #ffb347 45%,         /* տաք նարնջագույն */
   );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  text-shadow: 0 0 1px #000;   /* կոնտուր, որ չկորչի կապույտի վրա */
+  text-shadow: 0 0 1px #000;   /* բարակ սև եզրագիծ */
 }
 
 /* Menu՝ logo-ի տակ, ձախից ոչ շատ ներս */
