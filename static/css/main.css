@@ -5,9 +5,8 @@ body {
   background: #fafafa;
 }
 
-/* Վերևի շերտը — կապույտ header */
 .site-header {
-  background: #243967;        /* ավելի բաց մուգ կապույտ */
+  background: #243967;
   color: #fff;
   padding: 0.6rem 0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
@@ -21,35 +20,41 @@ body {
 
 .header-inner {
   display: flex;
-  align-items: center;
+  align-items: flex-start;   /* logo-ն վերևում */
   justify-content: space-between;
 }
 
-/* AskYerevan լոգո՝ եռագույն gradient-ով */
+/* Logo + menu block ձախում */
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+/* AskYerevan logo՝ վերևից ներքև եռագույն gradient + բարակ սև կոնտուր */
 .logo {
   font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
-  font-size: 2rem;
+  font-size: 2.1rem;
   margin: 0;
   background: linear-gradient(
-    90deg,
+    to bottom,
     #d90012 0%,
-    #f2a800 35%,
-    #0033a0 70%,
-    #d90012 100%
+    #f2a800 40%,
+    #0033a0 80%
   );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  text-shadow: 0 0 1px #000;  /* բարակ սև եզրագիծ, որ չկորչի ֆոնի մեջ */
 }
 
-/* Վերին մենյու + Telegram հղում աջում */
+/* Menu links logo-ի տակ */
 .nav {
   display: flex;
-  align-items: center;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.9rem;
 }
 
-/* Սովորական menu item-ներ */
 .nav a {
   text-decoration: none;
   color: #f0f0f0;
@@ -61,7 +66,7 @@ body {
   text-decoration: underline;
 }
 
-/* Telegram հատուկ հղում՝ աջ կողմում */
+/* Telegram հղումը աջ վերևի անկյունում */
 .nav-tg-link {
   display: inline-flex;
   align-items: center;
@@ -69,6 +74,14 @@ body {
   padding: 0.2rem 0.6rem;
   border-radius: 999px;
   background: rgba(255,255,255,0.08);
+  color: #eaf4ff;
+  font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
+  font-size: 0.95rem;  /* մենյուից մի քիչ փոքր */
+  text-decoration: none;
+}
+
+.nav-tg-link:hover {
+  background: rgba(255,255,255,0.15);
 }
 
 .tg-icon {
