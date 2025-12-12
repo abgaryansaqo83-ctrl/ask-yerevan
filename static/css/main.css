@@ -96,6 +96,18 @@ main.container {
   justify-content: center;
 }
 
+.site-footer {
+  background: url("/static/img/rug-texture.jpg") center/cover no-repeat;
+  color: #fff;
+  font-size: 0.85rem;
+}
+
+.site-footer .container {
+  padding: 0.5rem 1rem;
+  text-align: left;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+}
+
 /* «AskYerevan» բառը link-ի մեջ թողվի ձեռագիր, «խմբին»՝ սովորական */
 .tg-text-script {
   font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
@@ -103,4 +115,5 @@ main.container {
 .tg-text {
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
+
 
