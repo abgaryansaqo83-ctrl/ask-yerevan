@@ -187,6 +187,33 @@ main.container {
   border-radius: 4px;
 }
 
+           /* Եկեղեցիների ենթամենյու */
+
+.subnav {
+  margin: 1rem 0 2rem;
+  display: inline-flex;
+  gap: 0.75rem;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.subnav-link {
+  padding: 0.25rem 0.75rem;
+  text-decoration: none;
+  color: #333;
+  font-size: 0.95rem;
+  border-radius: 999px 999px 0 0;
+}
+
+.subnav-link.active {
+  background: #3f5fae;
+  color: #fff;
+}
+
+/* Հետագայում, եթե ուզես JS-ով թաքցնել/ցուցադրել */
+.church-section--hidden {
+  display: none;
+}
+
 /* Այստեղ հետագայում կարող ես ավելացնել .church-section, .church-block, .church-text և այլն */
 
 /* ===========================
