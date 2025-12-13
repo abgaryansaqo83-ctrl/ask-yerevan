@@ -2,7 +2,14 @@
 {% block title %}AskYerevan · Churches{% endblock %}
 
 {% block content %}
-<section class="church-section">
+<h1>Churches</h1>
+
+<nav class="subnav">
+  <a href="#old" class="subnav-link active">Old</a>
+  <a href="#new" class="subnav-link">New</a>
+</nav>
+
+<section id="old" class="church-section">
   <div class="church-block">
     <div class="church-image church-image--column">
       <img src="/static/img/churches/etchmiadzin-old-1.jpg" alt="Etchmiadzin Mother Cathedral – general view">
@@ -24,5 +31,10 @@
       </p>
     </div>
   </div>
+</section>
+
+
+<section id="new" class="church-section church-section--hidden">
+  <p>The section about newer churches is not ready yet.</p>
 </section>
 {% endblock %}
