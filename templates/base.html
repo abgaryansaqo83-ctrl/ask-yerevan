@@ -7,34 +7,39 @@
   <link rel="stylesheet" href="/static/css/main.css">
 </head>
 <body>
- <header class="site-header">
+<header class="site-header">
   <div class="container header-inner">
     <div class="header-left">
       <h1 class="logo">AskYerevan</h1>
       <nav class="nav">
-        <a href="/">Գլխավոր</a>
-        <a href="/events">Տեսարժան վայրեր</a>
-        <a href="/churches">Եկեղեցիներ</a>
-        <a href="/news">Նորություններ</a>
-        <a href="/places">Ժամանցի վայրեր</a>
-        <a href="/about">AskYerevan խմբի մասին</a>
+        <a href="/hy">Գլխավոր</a>
+        <a href="/hy/events">Տեսարժան վայրեր</a>
+        <a href="/hy/churches">Եկեղեցիներ</a>
+        <a href="/hy/news">Նորություններ</a>
+        <a href="/hy/places">Ժամանցի վայրեր</a>
+        <a href="/hy/about">AskYerevan խմբի մասին</a>
       </nav>
-    <div class="lang-switch">
-        <a href="/hy/">Հայ</a> | <a href="/en/">EN</a>
     </div>
-    <a class="nav-tg-link" href="https://t.me/AskYerevan" target="_blank" rel="noopener">
-      <span class="tg-icon">▶</span>
-      <span class="tg-text">
-        Միացիր <span class="tg-text-script">AskYerevan</span> խմբին
-      </span>
-    </a>
+
+    <div class="header-right">
+      <a class="nav-tg-link" href="https://t.me/AskYerevan" target="_blank" rel="noopener">
+        <span class="tg-icon">▶</span>
+        <span class="tg-text">
+          Միացիր <span class="tg-text-script">AskYerevan</span> խմբին
+        </span>
+      </a>
+      <div class="lang-switch">
+        <a href="/hy">Հայ</a> | <a href="/en">EN</a>
+      </div>
+    </div>
   </div>
 </header>
-  <main class="container">
-    {% block content %}{% endblock %}
-  </main>
 
-  <footer class="site-footer">
+<main class="container">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
   <div class="container">
     <p>© AskYerevan · Telegram խումբ · կայքը փորձնական է</p>
   </div>
