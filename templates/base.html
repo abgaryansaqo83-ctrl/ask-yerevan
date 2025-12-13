@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="hy">
+<html lang="{{ lang or 'hy' }}">
 <head>
   <meta charset="UTF-8">
   <title>{% block title %}AskYerevan{% endblock %}</title>
@@ -12,8 +12,19 @@
     <div class="header-left">
       <h1 class="logo">
         <img src="/static/img/logo/forgetmenot.png" alt="Forget-me-not" class="logo-flower">
-         AskYerevan
+        AskYerevan
       </h1>
+
+      {% if lang == 'en' %}
+      <nav class="nav">
+        <a href="/en">Home</a>
+        <a href="/en/events">Places</a>
+        <a href="/en/churches">Churches</a>
+        <a href="/en/news">News</a>
+        <a href="/en/places">Entertainment</a>
+        <a href="/en/about">About AskYerevan</a>
+      </nav>
+      {% else %}
       <nav class="nav">
         <a href="/hy">Գլխավոր</a>
         <a href="/hy/events">Տեսարժան վայրեր</a>
@@ -22,17 +33,29 @@
         <a href="/hy/places">Ժամանցի վայրեր</a>
         <a href="/hy/about">AskYerevan խմբի մասին</a>
       </nav>
+      {% endif %}
     </div>
 
     <div class="header-right">
       <a class="nav-tg-link" href="https://t.me/AskYerevan" target="_blank" rel="noopener">
         <span class="tg-icon">▶</span>
+        {% if lang == 'en' %}
+        <span class="tg-text">
+          Join <span class="tg-text-script">AskYerevan</span> group
+        </span>
+        {% else %}
         <span class="tg-text">
           Միացիր <span class="tg-text-script">AskYerevan</span> խմբին
         </span>
+        {% endif %}
       </a>
+
       <div class="lang-switch">
-        <a href="/hy">Հայ</a> | <a href="/en">EN</a>
+        {% if lang == 'en' %}
+          <a href="/hy">Հայ</a> | <strong>EN</strong>
+        {% else %}
+          <strong>Հայ</strong> | <a href="/en">EN</a>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -44,7 +67,11 @@
 
 <footer class="site-footer">
   <div class="container">
-    <p>© AskYerevan · Telegram խումբ · կայքը փորձնական է</p>
+    {% if lang == 'en' %}
+      <p>© AskYerevan · Telegram group · experimental website</p>
+    {% else %}
+      <p>© AskYerevan · Telegram խումբ · կայքը փորձնական է</p>
+    {% endif %}
   </div>
 </footer>
 </body>
