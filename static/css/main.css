@@ -143,14 +143,43 @@ main.container {
    5. Churches page
    =========================== */
 
+/* Churches page layout */
+.church-section {
+  padding: 2rem 0;
+}
+
+.church-block {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+/* Հաջորդ բլոկների համար՝ հակառակ դասավորություն */
+.church-block--reverse {
+  flex-direction: row-reverse;
+}
+
+.church-image {
+  flex: 1 1 260px;
+}
+
+.church-text {
+  flex: 1 1 260px;
+}
+
+/* Երկու փոքր նկար՝ սյունակով */
 .church-image--column {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
+
 .church-image--column img {
   width: 100%;
+  max-width: 320px;   /* որ շատ մեծ չլինի */
   height: auto;
+  border-radius: 4px;
 }
 
 /* Այստեղ հետագայում կարող ես ավելացնել .church-section, .church-block, .church-text և այլն */
