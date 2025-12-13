@@ -9,10 +9,6 @@ app = FastAPI(title="AskYerevan Web")
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-@app.get("/", response_class=HTMLResponse)
-async def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
-
 @app.get("/hy", response_class=HTMLResponse)
 async def index_hy(request: Request):
     return templates.TemplateResponse("index_hy.html", {"request": request})
