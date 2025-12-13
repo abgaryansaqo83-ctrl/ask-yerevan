@@ -13,19 +13,37 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-@app.get("/events", response_class=HTMLResponse)
-async def events_page(request: Request):
-    # ուզում ես՝ այստեղ կարող ես կպցնել get_events_by_category(...),
-    # չի ուզում՝ թող մաքուր ձեռքով գրված content լինի template-ում
-    return templates.TemplateResponse("events.html", {"request": request})
+@app.get("/hy", response_class=HTMLResponse)
+async def index_hy(request: Request):
+    return templates.TemplateResponse("index_hy.html", {"request": request})
 
-@app.get("/blog", response_class=HTMLResponse)
-async def blog_page(request: Request):
-    return templates.TemplateResponse("blog.html", {"request": request})
+@app.get("/en", response_class=HTMLResponse)
+async def index_en(request: Request):
+    return templates.TemplateResponse("index_en.html", {"request": request})
 
-@app.get("/about", response_class=HTMLResponse)
-async def about_page(request: Request):
-    return templates.TemplateResponse("about.html", {"request": request})
+@app.get("/hy/churches", response_class=HTMLResponse)
+async def churches_hy(request: Request):
+    return templates.TemplateResponse("churches_hy.html", {"request": request})
+
+@app.get("/en/churches", response_class=HTMLResponse)
+async def churches_en(request: Request):
+    return templates.TemplateResponse("churches_en.html", {"request": request})
+
+@app.get("/hy/events", response_class=HTMLResponse)
+async def events_hy(request: Request):
+    return templates.TemplateResponse("events_hy.html", {"request": request})
+
+@app.get("/en/events", response_class=HTMLResponse)
+async def events_en(request: Request):
+    return templates.TemplateResponse("events_en.html", {"request": request})
+
+@app.get("/hy/about", response_class=HTMLResponse)
+async def about_hy(request: Request):
+    return templates.TemplateResponse("about_hy.html", {"request": request})
+
+@app.get("/en/about", response_class=HTMLResponse)
+async def about_en(request: Request):
+    return templates.TemplateResponse("about_en.html", {"request": request})
 
 @app.get("/health")
 async def health():
