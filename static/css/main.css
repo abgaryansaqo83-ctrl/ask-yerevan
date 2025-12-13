@@ -33,7 +33,6 @@ main.container {
 /* Լեզվի քուիչ */
 .lang-switch {
   font-size: 0.9rem;
-  margin-left: 1rem;
 }
 .lang-switch a {
   color: #f0f0f0;
@@ -57,10 +56,11 @@ main.container {
   justify-content: space-between;
 }
 
-.header-left {
+.header-right {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  align-items: flex-end;  /* TG + լեզուն աջից հավասար */
+  gap: 0.3rem;
 }
 
 /* AskYerevan logo՝ կարմիր-կապույտ-նարնջագույն, վերևից ներքև */
