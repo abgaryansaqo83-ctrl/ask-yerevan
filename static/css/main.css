@@ -63,6 +63,7 @@ main.container {
   gap: 0.3rem;
 }
 
+/* Logo՝ ձեռագիր */
 .logo {
   display: inline-flex;
   align-items: center;
@@ -70,8 +71,8 @@ main.container {
   font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
   font-size: 2.1rem;
   margin: 0;
-  color: #4b1f6f; /* ավելի մուգ մանուշակագույն */
-  text-shadow: 0 0 2px rgba(0, 0, 0, 0.8);  /* ավելի նկատելի եզրագիծ */
+  color: #4b1f6f;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
 }
 
 .logo-flower {
@@ -86,10 +87,11 @@ main.container {
   gap: 1rem;
 }
 
+/* Մենյուն՝ սովորական system-ui */
 .nav a {
   text-decoration: none;
   color: #f0f0f0;
-  font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   font-size: 1rem;
 }
 
