@@ -18,6 +18,18 @@ main.container {
 
 /* -------- HEADER -------- */
 
+.lang-switch {
+  font-size: 0.9rem;
+  margin-left: 1rem;
+}
+.lang-switch a {
+  color: #f0f0f0;
+  text-decoration: none;
+}
+.lang-switch a:hover {
+  text-decoration: underline;
+}
+
 .site-header {
   background: #243967;
   color: #fff;
