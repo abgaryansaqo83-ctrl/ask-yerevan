@@ -44,7 +44,7 @@ main.container {
 
 /* Վերնախագիր */
 .site-header {
-  background: #243967;
+  background: #2f467d;  /* ավելի բաց, քան #243967 */
   color: #fff;
   padding: 0.6rem 0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
@@ -70,8 +70,8 @@ main.container {
   font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
   font-size: 2.1rem;
   margin: 0;
-  color: #5b2b82;
-  text-shadow: 0 0 1px rgba(0, 0, 0, 0.3);
+  color: #4b1f6f; /* ավելի մուգ մանուշակագույն */
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.8);  /* ավելի նկատելի եզրագիծ */
 }
 
 .logo-flower {
