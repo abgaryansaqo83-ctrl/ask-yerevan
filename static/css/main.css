@@ -63,21 +63,15 @@ main.container {
   gap: 0.3rem;
 }
 
-/* AskYerevan logo՝ կարմիր-կապույտ-նարնջագույն, վերևից ներքև */
 .logo {
   font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
   font-size: 2.1rem;
   margin: 0;
-  background: linear-gradient(
-    to bottom,
-    #d90012 0%,    /* կարմիր */
-    #0033a0 50%,   /* կապույտ */
-    #f2a800 100%   /* նարնջագույն */
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 0 0 1px #000;  /* բարակ սև եզրագիծ */
+  color: #5b2b82;           /* Forget-me-not ոճի մանուշակագույն */
+  background: none;         /* հանում ենք gradient-ը */
+  -webkit-background-clip: initial;
+  background-clip: initial;
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.3);
 }
 
 /* Գլխավոր մենյու */
