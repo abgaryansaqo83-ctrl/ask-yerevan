@@ -1,3 +1,7 @@
+/* ===========================
+   1. Base / Reset / Layout
+   =========================== */
+
 /* Ընդհանուր մարմին */
 body {
   margin: 0;
@@ -16,8 +20,17 @@ main.container {
   padding: 0 1rem;
 }
 
-/* -------- HEADER -------- */
+/* ===========================
+   2. Typography
+   =========================== */
 
+/* Այստեղ կարող ես հետո դնել h1, h2, p, a ընդհանուր ոճեր */
+
+/* ===========================
+   3. Header & Navigation
+   =========================== */
+
+/* Լեզվի քուիչ */
 .lang-switch {
   font-size: 0.9rem;
   margin-left: 1rem;
@@ -30,6 +43,7 @@ main.container {
   text-decoration: underline;
 }
 
+/* Վերնախագիր */
 .site-header {
   background: #243967;
   color: #fff;
@@ -66,7 +80,7 @@ main.container {
   text-shadow: 0 0 1px #000;  /* բարակ սև եզրագիծ */
 }
 
-/* Menu՝ logo-ի տակ */
+/* Գլխավոր մենյու */
 .nav {
   display: flex;
   flex-wrap: wrap;
@@ -84,7 +98,7 @@ main.container {
   text-decoration: underline;
 }
 
-/* Telegram հղում՝ աջ վերևի անկյունում */
+/* Telegram հղում՝ աջ վերև */
 .nav-tg-link {
   display: inline-flex;
   align-items: center;
@@ -110,7 +124,7 @@ main.container {
   justify-content: center;
 }
 
-/* «AskYerevan» բառը link-ի մեջ թողվի ձեռագիր, «խմբին»՝ սովորական */
+/* «AskYerevan» բառը ձեռագիր, «խմբին»՝ սովորական */
 .tg-text-script {
   font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
 }
@@ -118,7 +132,44 @@ main.container {
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
-/* Footer՝ հայկական գորգի տեքստուրայով */
+/* ===========================
+   4. Hero / Index page
+   =========================== */
+
+/* Այստեղ կարող ես ձևավորել .hero, .hero h2, .hero p */
+
+/* ===========================
+   5. Churches page
+   =========================== */
+
+.church-image--column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.church-image--column img {
+  width: 100%;
+  height: auto;
+}
+
+/* Այստեղ հետագայում կարող ես ավելացնել .church-section, .church-block, .church-text և այլն */
+
+/* ===========================
+   6. Events page
+   =========================== */
+
+/* Այստեղ հետո կգան .events-list, .event-card, և այլն */
+
+/* ===========================
+   7. About page
+   =========================== */
+
+/* Այստեղ հետո կդնես about-ի հատուկ ոճերը */
+
+/* ===========================
+   8. Footer
+   =========================== */
+
 .site-footer {
   background: url("/static/img/rug-texture.jpg") center/cover no-repeat;
   color: #fff;
@@ -130,3 +181,9 @@ main.container {
   text-align: left;
   text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
+
+/* ===========================
+   9. Utilities / Helpers
+   =========================== */
+
+/* Այստեղ կարող ես ավելացնել .text-center, .mt-*, .hidden և այլն */
