@@ -44,7 +44,7 @@ main.container {
 
 /* Վերնախագիր */
 .site-header {
-  background: #243967;
+  background: #3f5fae;  /* ավելի երկնագույն երանգ */
   color: #fff;
   padding: 0.6rem 0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
