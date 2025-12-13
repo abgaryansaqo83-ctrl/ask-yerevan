@@ -1,13 +1,18 @@
 # backend/web_app.py
 
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(title="AskYerevan Web")
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# 👉 Root՝ always ուղղում է դեպի հայերեն գլխավոր
+@app.get("/", response_class=HTMLResponse)
+async def root_redirect(request: Request):
+    return RedirectResponse(url="/hy")
 
 @app.get("/hy", response_class=HTMLResponse)
 async def index_hy(request: Request):
