@@ -2,7 +2,14 @@
 {% block title %}AskYerevan · Եկեղեցիներ{% endblock %}
 
 {% block content %}
-<section class="church-section">
+<h1>Եկեղեցիներ</h1>
+
+<nav class="subnav">
+  <a href="#old" class="subnav-link active">Հին</a>
+  <a href="#new" class="subnav-link">Նոր</a>
+</nav>
+
+<section id="old" class="church-section">
   <div class="church-block">
     <div class="church-image church-image--column">
       <img src="/static/img/churches/etchmiadzin-old-1.jpg" alt="Էջմիածնի Մայր Տաճար՝ ընդհանուր տեսարան">
@@ -33,5 +40,9 @@
       <!-- հաջորդ եկեղեցու մասին տեքստ -->
     </div>
   </div>
+</section>
+
+<section id="new" class="church-section church-section--hidden">
+  <p>Նոր եկեղեցիների բաժինը դեռ պատրաստ չէ։</p>
 </section>
 {% endblock %}
