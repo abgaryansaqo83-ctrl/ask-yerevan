@@ -51,10 +51,11 @@
       </a>
 
       <div class="lang-switch">
+        {% set path = request.url.path %}
         {% if lang == 'en' %}
-          <a href="/hy">Հայ</a> | <strong>EN</strong>
+          <a href="{{ path.replace('/en', '/hy') }}">Հայ</a> | <strong>EN</strong>
         {% else %}
-          <strong>Հայ</strong> | <a href="/en">EN</a>
+          <strong>Հայ</strong> | <a href="{{ path.replace('/hy', '/en') }}">EN</a>
         {% endif %}
       </div>
     </div>
