@@ -2,11 +2,26 @@
    1. Base / Reset / Layout
    =========================== */
 
-/* Ընդհանուր մարմին */
+/* Ընդհանուր ֆոն մյուս էջերի համար */
 body {
   margin: 0;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  background: #fafafa;
+  background: #f2f2f2;  /* շատ բաց մոխրագույն / "сланцевый" զգացողություն */
+}
+
+/* Գլխավոր էջ hero */
+.hero {
+  padding: 3rem 1rem;
+  border-radius: 12px;
+  margin-top: 1.5rem;
+  background: #ffffff;
+}
+
+/* Գլխավոր էջ hero՝ նկարով */
+.hero--with-bg {
+  color: #ffffff;
+  background: url("/static/img/home-hero.jpg") center/cover no-repeat;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.7);
 }
 
 main.container {
