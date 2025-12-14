@@ -11,8 +11,8 @@ body {
 
 .hero--with-bg {
   position: relative;
-  padding: 3.2rem 2rem;  /* մեծ vertical padding */
-  min-height: 360px;     /* կարող ես փորձել 280–320px */
+  padding: 4rem 2rem;   /* 3.2-ի փոխարեն 4 */
+  min-height: 420px;    /* 400-ից մի քիչ ավել */
   border-radius: 12px;
   margin-top: 1.5rem;
   color: #ffffff;
@@ -95,24 +95,17 @@ main.container {
 .logo {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.5rem;
   font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
-  font-size: 2.2rem;
+  font-size: 2.4rem;   /* թող էսքան մնա */
   font-weight: 700;
   margin: 0;
-  position: relative;
-
-  background-image: url("/static/img/logo/stone-texture.png.webp");
-  background-size: cover;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;   /* որ քարը երևա տեքստի մեջ */
+  color: #424242;      /* basalt մուգ մոխրագույն */
 }
 
 .logo-flower {
-  width: 1.8rem;
-  height: 1.8rem;
-  display: block;
+  width: 3rem;    /* մոտ 48px */
+  height: 3rem;
 }
 
 /* Գլխավոր մենյու */
