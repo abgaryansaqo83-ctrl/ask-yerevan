@@ -71,7 +71,7 @@ main.container {
 /* Վերնախագիր */
 
 .site-header {
-  background: #4b64d8;  /* բաց կապույտ */
+  background: #6fa8ff;  /* բաց կապույտ */
   color: #fff;
   padding: 0.6rem 0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
@@ -108,15 +108,7 @@ main.container {
   font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
   font-size: 2.6rem;
   font-weight: 700;
-
-  background-image: url("/static/img/logo/mramr.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: #f4f2ec;   /* էսը փոխիր հենց քո body-ի ֆոնի իրական գույնով */
 }
 
 /* Գլխավոր մենյու */
