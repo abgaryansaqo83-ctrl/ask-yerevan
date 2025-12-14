@@ -9,19 +9,28 @@ body {
   background: #f2f2f2;  /* շատ բաց մոխրագույն / "сланцевый" զգացողություն */
 }
 
-/* Գլխավոր էջ hero */
-.hero {
+.hero--with-bg {
+  position: relative;
   padding: 3rem 1rem;
   border-radius: 12px;
   margin-top: 1.5rem;
-  background: #ffffff;
+  color: #ffffff;
+  overflow: hidden;
 }
 
-/* Գլխավոր էջ hero՝ նկարով */
-.hero--with-bg {
-  color: #ffffff;
+.hero--with-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
   background: url("/static/img/home-hero.jpg.png") center/cover no-repeat;
-  text-shadow: 0 2px 6px rgba(0,0,0,0.7);
+  opacity: 0.25;        /* 25% թափանցիկություն */
+  z-index: -1;
+}
+
+.hero--with-bg h2,
+.hero--with-bg p {
+  position: relative;
+  z-index: 1;
 }
 
 main.container {
@@ -86,8 +95,8 @@ main.container {
   font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
   font-size: 2.1rem;
   margin: 0;
-  color: #4b1f6f;
-  text-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
+  color: #8b4a2f;
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
 }
 
 .logo-flower {
