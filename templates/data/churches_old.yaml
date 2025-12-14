@@ -1,0 +1,44 @@
+- id: etchmiadzin
+  name_hy: "Էջմիածնի Մայր Տաճար"
+  name_en: "Etchmiadzin Mother Cathedral"
+  period: "Հին"
+  century: "IV դար"
+  year: 301
+  location_hy: "Վաղարշապատ (Էջմիածին), Արմավիրի մարզ"
+  location_en: "Vagharshapat (Etchmiadzin), Armavir Province"
+  unesco: true
+  coordinates:
+    lat: 40.1596
+    lon: 44.2919
+  image_old: "/static/img/churches/etchmiadzin-old-1.jpg"
+  image_new: "/static/img/churches/etchmiadzin-old-2.jpg"
+
+- id: artashat-octagon
+  name_hy: "Արտաշատի ութանկյուն եկեղեցի"
+  name_en: "Artashat Octagonal Church"
+  period: "Հին"
+  century: "IV դար"
+  year: 330
+  location_hy: "Հին Արտաշատ (Արտաքսատ), Արարատի մարզ"
+  location_en: "Ancient Artashat (Artaxata), Ararat Province"
+  unesco: false
+  coordinates:
+    lat: 39.9010
+    lon: 44.5720
+  image_old: "/static/img/churches/artashat-octagon-1.jpg"
+  image_new: "/static/img/churches/artashat-octagon-2.jpg"
+
+- id: hripsime
+  name_hy: "Սուրբ Հռիփսիմե եկեղեցի"
+  name_en: "Saint Hripsime Church"
+  period: "Հին"
+  century: "VII դար"
+  year: 618
+  location_hy: "Վաղարշապատ (Էջմիածին), Արմավիրի մարզ"
+  location_en: "Vagharshapat (Etchmiadzin), Armavir Province"
+  unesco: true
+  coordinates:
+    lat: 40.1611
+    lon: 44.2919
+  image_old: "/static/img/churches/old/hripsime-old.jpg"
+  image_new: "/static/img/churches/new/hripsime-new.jpg"
