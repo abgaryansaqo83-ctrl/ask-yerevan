@@ -71,7 +71,7 @@ main.container {
 /* Վերնախագիր */
 
 .site-header {
-  background: #3F51B5;  /* նոր կապույտ */
+  background: #4b64d8;  /* բաց կապույտ */
   color: #fff;
   padding: 0.6rem 0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
@@ -97,7 +97,7 @@ main.container {
   align-items: center;
   gap: 0.5rem;
   font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
-  font-size: 2.6rem;              /* հիմա մոտավորապես էսքան թողնենք */
+  font-size: 2.6rem;
   font-weight: 700;
   margin: 0;
 
@@ -106,9 +106,9 @@ main.container {
   background-position: center;
   background-repeat: no-repeat;
 
-  -webkit-background-clip: text;
+  -webkit-background-clip: text;  /* Chrome/Safari */
   background-clip: text;
-  color: transparent;             /* որ քարը երևա տառերի մեջ */
+  color: transparent;             /* եթե սա չդնես, քարն էլ չի երևա */
 }
 
 .logo-flower {
