@@ -6,16 +6,19 @@
 body {
   margin: 0;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  background: #f2f2f2;  /* շատ բաց մոխրագույն / "сланцевый" զգացողություն */
+  background: #e2e2e2;  /* նախորդից մի աստիճան ավելի մուգ */
 }
 
 .hero--with-bg {
   position: relative;
-  padding: 3rem 1rem;
+  padding: 2.2rem 1.5rem;  /* փոքր-ինչ քիչ, քան 3rem */
   border-radius: 12px;
   margin-top: 1.5rem;
   color: #ffffff;
   overflow: hidden;
+}
+.hero--with-bg {
+  max-height: 260px;
 }
 
 .hero--with-bg::before {
@@ -23,7 +26,7 @@ body {
   position: absolute;
   inset: 0;
   background: url("/static/img/home-hero.jpg.png") center/cover no-repeat;
-  opacity: 0.25;        /* 25% թափանցիկություն */
+  opacity: 0.75;        /* 25% թափանցիկություն */
   z-index: -1;
 }
 
