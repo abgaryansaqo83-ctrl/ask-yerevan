@@ -6,7 +6,7 @@
 body {
   margin: 0;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  background: #e2e2e2;  /* կամ #e5e7eb, ինչն ավելի դուր գա աչքին */
+  background: #f5efe4;  /* կամ #e5e7eb, ինչն ավելի դուր գա աչքին */
 }
 
 .hero--with-bg {
@@ -71,7 +71,7 @@ main.container {
 /* Վերնախագիր */
 
 .site-header {
-  background: #6fa8ff;  /* բաց կապույտ */
+  background: #5b8ff5;  /* #4f84f0; մի քիչ էլ մուգ, բայց ոչ already մուգ կապույտ */
   color: #fff;
   padding: 0.6rem 0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
