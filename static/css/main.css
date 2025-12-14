@@ -11,14 +11,12 @@ body {
 
 .hero--with-bg {
   position: relative;
-  padding: 3.2rem 2rem;   /* մեծացրու vert padding-ը */
+  padding: 3.2rem 2rem;  /* մեծ vertical padding */
+  min-height: 320px;     /* կարող ես փորձել 280–320px */
   border-radius: 12px;
   margin-top: 1.5rem;
   color: #ffffff;
   overflow: hidden;
-}
-.hero--with-bg {
-  min-height: 260px;      /* կամ 280px, փորձի համար */
 }
 
 .hero--with-bg::before {
@@ -26,7 +24,7 @@ body {
   position: absolute;
   inset: 0;
   background: url("/static/img/home-hero.jpg.png") center/cover no-repeat;
-  opacity: 0.75;        /* 25% թափանցիկություն */
+  opacity: 0.75;
   z-index: -1;
 }
 
