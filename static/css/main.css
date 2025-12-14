@@ -96,24 +96,27 @@ main.container {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  margin: 0;
+}
+
+.logo-flower {
+  width: 2.4rem;
+  height: 2.4rem;
+}
+
+.logo-text {
   font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
   font-size: 2.6rem;
   font-weight: 700;
-  margin: 0;
 
   background-image: url("/static/img/logo/mramr.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 
-  -webkit-background-clip: text;  /* Chrome/Safari */
+  -webkit-background-clip: text;
   background-clip: text;
-  color: transparent;             /* եթե սա չդնես, քարն էլ չի երևա */
-}
-
-.logo-flower {
-  width: 3rem;    /* մոտ 48px */
-  height: 3rem;
+  color: transparent;
 }
 
 /* Գլխավոր մենյու */
