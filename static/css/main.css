@@ -79,9 +79,17 @@ main.container {
 
 .header-inner {
   display: flex;
-  align-items: flex-start;   /* logo վերևի գծին հավասար */
   justify-content: space-between;
+  align-items: center;
 }
+
+/* Մինչև ~768px՝ հեռախոսներ */
+@media (max-width: 768px) {
+  .header-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
 
 .header-right {
   display: flex;
@@ -112,10 +120,12 @@ main.container {
 }
 
 /* Գլխավոր մենյու */
+   
 .nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
 }
 
 /* Մենյուն՝ սովորական system-ui */
