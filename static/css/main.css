@@ -12,7 +12,7 @@ body {
 .hero--with-bg {
   position: relative;
   padding: 3.2rem 2rem;  /* մեծ vertical padding */
-  min-height: 320px;     /* կարող ես փորձել 280–320px */
+  min-height: 360px;     /* կարող ես փորձել 280–320px */
   border-radius: 12px;
   margin-top: 1.5rem;
   color: #ffffff;
@@ -99,13 +99,14 @@ main.container {
   font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
   font-size: 2.1rem;
   margin: 0;
-  color: #7B1FA2;      /* մաքուր մանուշակագույն, լավ է նայվում #3F51B5-ի վրա */
+  color: #A04918;
 }
 
 
 .logo-flower {
-  width: 1.8rem;   /* մոտավորապես նույն բարձրությունը, ինչ տառերինը */
+  width: 1.8rem;
   height: 1.8rem;
+  display: block;
 }
 
 /* Գլխավոր մենյու */
