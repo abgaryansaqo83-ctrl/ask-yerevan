@@ -6,19 +6,19 @@
 body {
   margin: 0;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  background: #e2e2e2;  /* նախորդից մի աստիճան ավելի մուգ */
+  background: #e2e2e2;  /* կամ #e5e7eb, ինչն ավելի դուր գա աչքին */
 }
 
 .hero--with-bg {
   position: relative;
-  padding: 2.2rem 1.5rem;  /* փոքր-ինչ քիչ, քան 3rem */
+  padding: 3.2rem 2rem;   /* մեծացրու vert padding-ը */
   border-radius: 12px;
   margin-top: 1.5rem;
   color: #ffffff;
   overflow: hidden;
 }
 .hero--with-bg {
-  max-height: 260px;
+  min-height: 260px;      /* կամ 280px, փորձի համար */
 }
 
 .hero--with-bg::before {
@@ -58,6 +58,7 @@ main.container {
    =========================== */
 
 /* Լեզվի քուիչ */
+
 .lang-switch {
   font-size: 0.9rem;
 }
@@ -70,8 +71,9 @@ main.container {
 }
 
 /* Վերնախագիր */
+
 .site-header {
-  background: #587cd0;  /* ավելի երկնագույն երանգ */
+  background: #3F51B5;  /* նոր կապույտ */
   color: #fff;
   padding: 0.6rem 0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
@@ -91,6 +93,7 @@ main.container {
 }
 
 /* Logo՝ ձեռագիր */
+
 .logo {
   display: inline-flex;
   align-items: center;
@@ -98,9 +101,9 @@ main.container {
   font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
   font-size: 2.1rem;
   margin: 0;
-  color: #8b4a2f;
-  text-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
+  color: #7B1FA2;      /* մաքուր մանուշակագույն, լավ է նայվում #3F51B5-ի վրա */
 }
+
 
 .logo-flower {
   width: 1.8rem;   /* մոտավորապես նույն բարձրությունը, ինչ տառերինը */
@@ -115,18 +118,20 @@ main.container {
 }
 
 /* Մենյուն՝ սովորական system-ui */
+
 .nav a {
   text-decoration: none;
-  color: #f0f0f0;
+  color: #f5f5ff;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   font-size: 1rem;
 }
 
 .nav a:hover {
-  text-decoration: underline;
+  color: #FFB74D;      /* բեժ accent */
 }
 
 /* Telegram հղում՝ աջ վերև */
+
 .nav-tg-link {
   display: inline-flex;
   align-items: center;
@@ -144,7 +149,7 @@ main.container {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #26A5E4;  /* Telegram-ի պաշտոնական կապույտի մոտ գույն */
+  background: #26A5E4;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -154,7 +159,7 @@ main.container {
 .tg-svg {
   width: 13px;
   height: 13px;
-  fill: #ffffff;       /* սպիտակ ինքնաթիռ */
+  fill: #ffffff;
 }
 
 /* «AskYerevan» բառը ձեռագիր, «խմբին»՝ սովորական */
