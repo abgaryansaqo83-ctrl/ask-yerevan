@@ -2,19 +2,11 @@
 {% block title %}AskYerevan · Գլխավոր{% endblock %}
 
 {% block content %}
-<section class="home-hero">
-
-  <header class="home-hero__header">
-    <h2>Հայաստանը մեկ հասցեում</h2>
-    <p>
-      AskYerevan-ը արագ ուղեցույց է Երևանի և Հայաստանի մասին՝ եկեղեցիներ, տեսարժան վայրեր,
-      նորություններ և ժամանցի վայրեր, մեկ էջում։
-    </p>
-  </header>
+<section class="home-hero hero--with-bg">
 
   <div class="home-hero__grid">
-    <!-- ՁԱԽ՝ 4 քարտերը որպես nested grid -->
-    <div class="home-hero__grid-left">
+    <!-- ՁԱԽ՝ 4 պատուհան, մեկ սյունակով -->
+    <div class="home-hero__left">
       <article class="home-card">
         <h3 class="home-card__title">Եկեղեցիներ</h3>
         <p class="home-card__snippet">
@@ -52,17 +44,27 @@
       </article>
     </div>
 
-    <!-- Աջ՝ պատմական բլոկ -->
-    <aside class="home-hero__aside">
-      <h3>Կարճ պատմություն</h3>
-      <ul class="home-hero__timeline">
-        <li><strong>մ․թ․ 301</strong> · Հայաստանը առաջինն է պաշտոնապես ընդունում քրիստոնեությունը։[web:276][web:295]</li>
-        <li><strong>մ․թ․ 405</strong> · Մեսրոպ Մաշտոցը ստեղծում է հայոց այբուբենը։[web:350]</li>
-        <li><strong>մ․թ․ 7-րդ դար</strong> · Կառուցվում են Հռիփսիմե և Գայանե եկեղեցիները։[web:276][web:315]</li>
-        <li><strong>մ․թ․ 20-րդ դար</strong> · Երևանը դառնում է ժամանակակից մայրաքաղաք՝ հին ու նոր շերտերով։[web:322]</li>
-      </ul>
+    <!-- ԱՋ՝ վերնագիր + կարճ նկարագրություն + պատմություն -->
+    <aside class="home-hero__right">
+      <header class="home-hero__header">
+        <h2>Հայաստանը մեկ հասցեում</h2>
+        <p>
+          AskYerevan-ը արագ ուղեցույց է Երևանի և Հայաստանի մասին՝ եկեղեցիներ,
+          տեսարժան վայրեր, նորություններ և ժամանցի վայրեր, մեկ էջում։
+        </p>
+      </header>
+
+      <div class="home-hero__history">
+        <h3>Կարճ պատմություն</h3>
+        <ul class="home-hero__timeline">
+          <li><strong>մ․թ․ 301</strong> · Հայաստանը առաջինն է պաշտոնապես ընդունում քրիստոնեությունը։[web:276][web:295]</li>
+          <li><strong>մ․թ․ 405</strong> · Մեսրոպ Մաշտոցը ստեղծում է հայոց այբուբենը։[web:350]</li>
+          <li><strong>մ․թ․ 7-րդ դար</strong> · Կառուցվում են Հռիփսիմե և Գայանե եկեղեցիները։[web:276][web:315]</li>
+          <li><strong>մ․թ․ 20-րդ դար</strong> · Երևանը դառնում է ժամանակակից մայրաքաղաք՝ հին ու նոր շերտերով։[web:322]</li>
+        </ul>
+      </div>
     </aside>
   </div>
-</section>
 
+</section>
 {% endblock %}
