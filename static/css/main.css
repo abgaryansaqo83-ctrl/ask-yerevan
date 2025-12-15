@@ -6,13 +6,13 @@
 body {
   margin: 0;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  background: #f5efe4;  /* կամ #e5e7eb, ինչն ավելի դուր գա աչքին */
+  background: #f5efe4;
 }
 
 .hero--with-bg {
   position: relative;
-  padding: 3.6rem 2rem;   /* 3.2 → 3.6, շատ չմեծացնենք */
-  min-height: 460px;      /* 400 → 460, էստեղ կզգաս տարբերությունը */
+  padding: 3.6rem 2rem;
+  min-height: 460px;
   border-radius: 12px;
   margin-top: 1.5rem;
   color: #ffffff;
@@ -35,7 +35,7 @@ body {
 }
 
 main.container {
-  min-height: 70vh;  /* որպիսի footer-ը իջնի ներքև */
+  min-height: 70vh;
   padding-bottom: 2rem;
 }
 
@@ -48,15 +48,13 @@ main.container {
 /* ===========================
    2. Typography
    =========================== */
-
-/* Այստեղ կարող ես հետո դնել h1, h2, p, a ընդհանուր ոճեր */
+/* h1, h2, p, a ընդհանուր ոճերը կարող ես հետո ավելացնել */
 
 /* ===========================
    3. Header & Navigation
    =========================== */
 
 /* Լեզվի քուիչ */
-
 .lang-switch {
   font-size: 0.9rem;
 }
@@ -69,9 +67,8 @@ main.container {
 }
 
 /* Վերնախագիր */
-
 .site-header {
-  background: #5b8ff5;  /* #4f84f0; մի քիչ էլ մուգ, բայց ոչ already մուգ կապույտ */
+  background: #5b8ff5;
   color: #fff;
   padding: 0.6rem 0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
@@ -83,23 +80,7 @@ main.container {
   align-items: center;
 }
 
-/* Մինչև ~768px՝ հեռախոսներ */
-@media (max-width: 768px) {
-  .header-inner {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.4rem;
-  }
-
-.header-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;  /* TG + լեզուն աջից հավասար */
-  gap: 0.3rem;
-}
-
 /* Logo՝ ձեռագիր */
-
 .logo {
   display: inline-flex;
   align-items: center;
@@ -108,9 +89,10 @@ main.container {
 }
 
 .logo-flower {
-  width: 2.6rem;      /* մոտ 42px, եթե փոքր ես ուզում՝ 2.2 կամ 2.4rem դուր */
-  height: auto;       /* aspect ratio-ն թող պահի */
-  max-height: 3rem;   /* ապահով բարձություն, որ header-ից չփախնի */
+  width: 2.4rem;     /* ~38px */
+  height: auto;
+  max-width: 3rem;
+  max-height: 3rem;
   display: block;
 }
 
@@ -118,19 +100,14 @@ main.container {
   font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
   font-size: 2.6rem;
   font-weight: 700;
-  color: #f4f2ec;   /* էսը փոխիր հենց քո body-ի ֆոնի իրական գույնով */
+  color: #f4f2ec;    /* մարմնագույն, ընդհանուր ֆոնին մոտ */
 }
 
 /* Գլխավոր մենյու */
-   
 .nav {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-  }
+  display: flex;
+  gap: 1.5rem;
 }
-
-/* Մենյուն՝ սովորական system-ui */
 
 .nav a {
   text-decoration: none;
@@ -140,17 +117,16 @@ main.container {
 }
 
 .nav a:hover {
-  color: #FFB74D;      /* բեժ accent */
+  color: #FFB74D;
 }
 
 /* Telegram հղում՝ աջ վերև */
-
 .nav-tg-link {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
   color: #eaf4ff;
-  font-size: 0.9rem;  /* մենյուից փոքր */
+  font-size: 0.9rem;
   text-decoration: none;
 }
 
@@ -175,7 +151,7 @@ main.container {
   fill: #ffffff;
 }
 
-/* «AskYerevan» բառը ձեռագիր, «խմբին»՝ սովորական */
+/* «AskYerevan» բառը ձեռագիր, «խմբին»՝ system-ui */
 .tg-text-script {
   font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
 }
@@ -183,10 +159,35 @@ main.container {
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
+/* Header right սյունակ՝ փոքր էկրանների համար էլ OK */
+.header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+}
+
+/* Մինչև ~768px՝ հեռախոսներ */
+@media (max-width: 768px) {
+  .header-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
+
+  .nav {
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .header-right {
+    align-items: flex-start;
+  }
+}
+
 /* ===========================
    4. Hero / Index page
    =========================== */
-
 /* Այստեղ կարող ես ձևավորել .hero, .hero h2, .hero p */
 
 /* ===========================
@@ -227,13 +228,12 @@ main.container {
 
 .church-image--column img {
   width: 100%;
-  max-width: 420px;   /* որ շատ մեծ չլինի */
+  max-width: 420px;
   height: auto;
   border-radius: 4px;
 }
 
-           /* Եկեղեցիների ենթամենյու */
-
+/* Եկեղեցիների ենթամենյու */
 .subnav {
   margin: 1rem 0 2rem;
   display: inline-flex;
@@ -259,19 +259,15 @@ main.container {
   display: none;
 }
 
-/* Այստեղ հետագայում կարող ես ավելացնել .church-section, .church-block, .church-text և այլն */
-
 /* ===========================
    6. Events page
    =========================== */
-
-/* Այստեղ հետո կգան .events-list, .event-card, և այլն */
+/* placeholder */
 
 /* ===========================
    7. About page
    =========================== */
-
-/* Այստեղ հետո կդնես about-ի հատուկ ոճերը */
+/* placeholder */
 
 /* ===========================
    8. Footer
@@ -292,5 +288,4 @@ main.container {
 /* ===========================
    9. Utilities / Helpers
    =========================== */
-
 /* Այստեղ կարող ես ավելացնել .text-center, .mt-*, .hidden և այլն */
