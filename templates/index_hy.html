@@ -3,65 +3,83 @@
 
 {% block content %}
 <section class="home-hero hero--with-bg">
-
   <div class="home-hero__grid">
-    <!-- ՁԱԽ՝ 4 պատուհան, մեկ սյունակով -->
-    
-    <div class="home-hero__left">
-     <article class="home-card">
-      <div class="home-card__inner">
-       <div class="home-card__thumb">
-         <img src="/static/img/churches/hripsime-old.jpg" alt="Վերջին հրապարակում՝ եկեղեցիներ">
-       </div>
-       <div class="home-card__body">
-         <h3 class="home-card__title">Եկեղեցիներ</h3>
-         <p class="home-card__snippet">
-           {{ last_church_post_excerpt }}
-         </p>
-         <a href="/hy/churches" class="home-card__link">Ավելին</a>
-        </div>
-       </div>
-      </article>
-      
-      <article class="home-card">
-       <div class="home-card__inner">
-        <div class="home-card__thumb">
-          <img src="/static/img/home-preview/sights-last.jpg" alt="Վերջին հրապարակում՝ տեսարժան վայրեր">
-        </div>
-       <div class="home-card__body">
-         <h3 class="home-card__title">Տեսարժան վայրեր</h3>
-         <p class="home-card__snippet">
-             {{ last_sight_post_excerpt }}
-         </p>
-         <a href="/hy/events" class="home-card__link">Ավելին</a>
-        </div>
-       </div>
-      </article>
 
-      
+    <!-- ՁԱԽ՝ 4 պատուհան, մեկ սյունակով -->
+    <div class="home-hero__left">
+
+      <!-- Եկեղեցիներ -->
       <article class="home-card">
         <div class="home-card__inner">
-         <div class="home-card__thumb">
-            <img src="/static/img/home-preview/sights-last.jpg" alt="Վերջին հրապարակում՝ տեսարժան վայրեր">
-         </div>
-        <div class="home-card__body">
-          <h3 class="home-card__title">Նորություններ</h3>
-          <p class="home-card__snippet">
-             {{ last_sight_post_excerpt }}
-          </p>
-          <a href="/hy/events" class="home-card__link">Ավելին</a>
-         </div>
+          <div class="home-card__thumb">
+            <img src="/static/img/churches/hripsime-old.jpg"
+                 alt="Վերջին հրապարակում՝ եկեղեցիներ">
+          </div>
+          <div class="home-card__body">
+            <h3 class="home-card__title">Եկեղեցիներ</h3>
+            <p class="home-card__snippet">
+              Վաղ քրիստոնեական տաճարներից մինչև քարայրային վանական համալիրներ․
+              բացահայտիր Հայաստանի եկեղեցիները մեկնարկելով Էջմիածնից ու Հռիփսիմեից․․․
+            </p>
+            <a href="/hy/churches" class="home-card__link">Ավելին</a>
+          </div>
         </div>
       </article>
 
+      <!-- Տեսարժան վայրեր -->
       <article class="home-card">
-        <h3 class="home-card__title">Ժամանցի վայրեր</h3>
-        <p class="home-card__snippet">
-          Սրճարաններ, բարեր, ակումբներ ու հանգիստ երեկոներ անցկացնելու cozy
-          տեղեր Երևանի տարբեր թաղամասերում․․․
-        </p>
-        <a href="/hy/places" class="home-card__link">Ավելին</a>
+        <div class="home-card__inner">
+          <div class="home-card__thumb">
+            <img src="/static/img/home-preview/sights-last.jpg"
+                 alt="Վերջին հրապարակում՝ տեսարժան վայրեր">
+          </div>
+          <div class="home-card__body">
+            <h3 class="home-card__title">Տեսարժան վայրեր</h3>
+            <p class="home-card__snippet">
+              Գառնու տաճար, Սևանա լիճ, Դիլիջանի անտառներ ու լեռնային ճանապարհներ․
+              երթուղիներ, որոնք արժե տեսնել գոնե մեկ անգամ․․․
+            </p>
+            <a href="/hy/events" class="home-card__link">Ավելին</a>
+          </div>
+        </div>
       </article>
+
+      <!-- Նորություններ -->
+      <article class="home-card">
+        <div class="home-card__inner">
+          <div class="home-card__thumb">
+            <img src="/static/img/home-preview/news-last.jpg"
+                 alt="Վերջին հրապարակում՝ նորություններ">
+          </div>
+          <div class="home-card__body">
+            <h3 class="home-card__title">Նորություններ</h3>
+            <p class="home-card__snippet">
+              Միջազգային փառատոններ, տոնական օրեր, նոր բացված թանգարաններ
+              ու քաղաքային նախաձեռնություններ Երևանում․․․
+            </p>
+            <a href="/hy/news" class="home-card__link">Ավելին</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Ժամանցի վայրեր -->
+      <article class="home-card">
+        <div class="home-card__inner">
+          <div class="home-card__thumb">
+            <img src="/static/img/home-preview/places-last.jpg"
+                 alt="Վերջին հրապարակում՝ ժամանցի վայրեր">
+          </div>
+          <div class="home-card__body">
+            <h3 class="home-card__title">Ժամանցի վայրեր</h3>
+            <p class="home-card__snippet">
+              Սրճարաններ, բարեր, ակումբներ ու հանգիստ երեկոներ անցկացնելու
+              cozy տեղեր Երևանի տարբեր թաղամասերում․․․
+            </p>
+            <a href="/hy/places" class="home-card__link">Ավելին</a>
+          </div>
+        </div>
+      </article>
+
     </div>
 
     <!-- ԱՋ՝ վերնագիր + կարճ նկարագրություն + պատմություն -->
@@ -84,7 +102,7 @@
         </ul>
       </div>
     </aside>
-  </div>
 
+  </div>
 </section>
 {% endblock %}
