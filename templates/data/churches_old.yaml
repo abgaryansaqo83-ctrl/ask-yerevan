@@ -40,5 +40,5 @@
   coordinates:
     lat: 40.1611
     lon: 44.2919
-  image_old: "/static/img/churches/old/hripsime-old.jpg"
-  image_new: "/static/img/churches/new/hripsime-new.jpg"
+  image_old: "/static/img/churches/hripsime-old.jpg"
+  image_new: "/static/img/churches/hripsime-new.jpg"
