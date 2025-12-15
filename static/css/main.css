@@ -196,9 +196,35 @@ main.container {
   padding: 1.5rem 0 1.5rem;
 }
 
+/* hero--with-bg արդեն ավելացնում է նկարն ու մութ շերտը */
+
+/* Երկու սյուն՝ ձախ պատուհաններ, աջ՝ տեքստ */
+.home-hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.6fr);
+  gap: 2rem;
+  width: 100%;
+}
+
+/* Ձախ՝ 4 քարտ, մեկ սյունակով */
+.home-hero__left {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Քարտը ինքն ունի իր ֆոնը, ոչ թե ամբողջ սյունակը */
+.home-card {
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 12px;
+  padding: 0.7rem 0.9rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+/* Քարտի ներսում՝ նկար + տեքստ կողք կողքի */
 .home-card__inner {
   display: grid;
-  grid-template-columns: 120px minmax(0, 1fr);
+  grid-template-columns: 110px minmax(0, 1fr);
   gap: 0.8rem;
   align-items: center;
 }
@@ -217,37 +243,13 @@ main.container {
   gap: 0.4rem;
 }
 
-/* hero--with-bg արդեն ավելացնում է background նկարը `::before`-ով */
-
-/* Երկու սյուն՝ ձախ պատուհաններ, աջ տեքստ + պատմություն */
-.home-hero__grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.6fr);
-  gap: 2rem;
-  width: 100%;
-}
-
-/* Ձախ՝ 4 քարտ, մեկ սյունակով */
-.home-hero__left {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.home-card {
-  background: rgba(255, 255, 255, 0.96);
-  border-radius: 12px;
-  padding: 1rem 1.2rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
-
 .home-card__title {
-  margin: 0 0 0.4rem;
+  margin: 0 0 0.2rem;
   font-size: 1.05rem;
 }
 
 .home-card__snippet {
-  margin: 0 0 0.6rem;
+  margin: 0 0 0.4rem;
   font-size: 0.9rem;
   line-height: 1.4;
 }
@@ -262,17 +264,15 @@ main.container {
   text-decoration: underline;
 }
 
-/* Աջ սյուն */
+/* Աջ սյուն՝ առանց սպիտակ ֆոնի, տեքստը նկարի վրա */
 .home-hero__right {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  /* background: rgba(251, 246, 235, 0.96);  ← սա ջնջիր */
+  padding: 0.5rem 0.5rem 0.5rem 0;
   background: none;
-  border-radius: 12px;
-  padding: 1.2rem 1.4rem;
-  box-shadow: none;  /* որպեսզի հատակը չմգանա */
-  color: #ffffff;    /* տեքստը մաքուր սպիտակ */
+  box-shadow: none;
+  color: #ffffff;
 }
 
 .home-hero__header h2 {
@@ -303,17 +303,21 @@ main.container {
 
 /* Մոբայլում՝ մեկ սյուն */
 @media (max-width: 768px) {
-  .home-card__inner {
-    grid-template-columns: 90px minmax(0, 1fr);
+  .home-hero {
+    min-height: auto;
   }
-}
 
   .home-hero__grid {
     grid-template-columns: 1fr;
   }
 
   .home-hero__right {
+    padding-left: 0.9rem;
     margin-top: 1rem;
+  }
+
+  .home-card__inner {
+    grid-template-columns: 90px minmax(0, 1fr);
   }
 }
 
