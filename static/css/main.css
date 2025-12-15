@@ -186,9 +186,146 @@ main.container {
 }
 
 /* ===========================
-   4. Hero / Index page
+   Home hero / dashboard
    =========================== */
-/* Այստեղ կարող ես ձևավորել .hero, .hero h2, .hero p */
+
+.home-hero {
+  min-height: calc(100vh - 140px); /* մոտավոր: header + footer ≈ 140px */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.5rem 0 1.5rem;
+}
+
+.home-hero__header {
+  margin-bottom: 1rem;
+}
+
+.home-hero__header h2 {
+  font-size: 2rem;
+  margin: 0 0 0.5rem;
+}
+
+.home-hero__header p {
+  margin: 0;
+  max-width: 38rem;
+}
+
+/* Գլխավոր grid՝ ձախ 4 քարտ, աջ՝ aside */
+.home-hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1.7fr);
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+/* 4 քարտերը՝ 2x2 grid */
+.home-hero__grid > .home-card:nth-child(-n+4) {
+  /* առաջին 4 էլեմենտը՝ ձախ սյուն */
+}
+
+.home-hero__grid > .home-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+/* Քարտերի wrapper՝ grid-ի ձախ սյունում */
+.home-hero__grid {
+  grid-template-areas:
+    "cards aside";
+}
+
+.home-card:nth-of-type(1),
+.home-card:nth-of-type(2),
+.home-card:nth-of-type(3),
+.home-card:nth-of-type(4) {
+  /* cards container */
+}
+
+.home-hero__grid {
+  grid-auto-rows: 1fr;
+}
+
+/* cards container որպես grid */
+.home-hero__grid::before {
+  content: "";
+}
+
+/* Ավելի պարզ տարբերակ՝ nested grid */
+.home-hero__grid {
+  grid-template-columns: 2fr 1.7fr;
+}
+
+.home-hero__grid-left {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
+  gap: 1rem;
+}
+
+/* Հարմարության համար՝ HTML-ում 4 քարտը փաթաթես div.home-hero__grid-left-ի մեջ,
+   բայց եթե չես ուզում, ներկայիս article-ներով էլ կաշխատի, ուղղակի ավելի բաց կլինեն. */
+
+.home-card__title {
+  margin: 0 0 0.4rem;
+  font-size: 1.05rem;
+}
+
+.home-card__snippet {
+  margin: 0 0 0.6rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.home-card__link {
+  font-size: 0.9rem;
+  color: #3f5fae;
+  text-decoration: none;
+}
+
+.home-card__link:hover {
+  text-decoration: underline;
+}
+
+/* Աջ՝ պատմական aside */
+.home-hero__aside {
+  background: #fbf6eb;
+  border-radius: 12px;
+  padding: 1rem 1.4rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.home-hero__aside h3 {
+  margin: 0 0 0.75rem;
+}
+
+.home-hero__timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.9rem;
+}
+
+.home-hero__timeline li + li {
+  margin-top: 0.4rem;
+}
+
+/* Մոբայլում՝ մեկ սյուն + scroll OK */
+@media (max-width: 768px) {
+  .home-hero {
+    min-height: auto;
+  }
+
+  .home-hero__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-hero__aside {
+    margin-top: 1rem;
+  }
+}
 
 /* ===========================
    5. Churches page
