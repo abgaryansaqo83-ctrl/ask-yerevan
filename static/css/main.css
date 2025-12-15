@@ -232,16 +232,16 @@ main.container {
 }
 
 .home-card__thumb {
-  background: rgba(255, 255, 255, 0.96);
-  border-radius: 12px;
-  padding: 0.4rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  background: none;      /* սպիտակ ֆոն չկա */
+  border-radius: 0;      /* կամ 8px, եթե ուզում ես կլոր անկյուն */
+  padding: 0;            /* եզրագիծը կորչի, կմնա մաքուր նկար */
+  box-shadow: none;
 }
 
 .home-card__thumb img {
   width: 100%;
   height: auto;
-  border-radius: 8px;
+  border-radius: 8px;    /* рисунка կլոր անկյուն, եթե սիրում ես */
   display: block;
   object-fit: cover;
 }
@@ -260,9 +260,8 @@ main.container {
 }
 
 .home-card__snippet {
-  margin: 0;
-  font-size: 0.9rem;
-  line-height: 1.4;
+  font-size: 0.95rem;  /* 0.9 → 0.95 */
+  line-height: 1.5;
 }
 
 .home-card__link {
@@ -287,13 +286,15 @@ main.container {
 }
 
 .home-hero__header h2 {
-  font-size: 2rem;
-  margin: 0 0 0.5rem;
+  font-size: 2.2rem;   /* 2.0 → 2.2 */
+  margin: 0 0 0.6rem;
 }
 
 .home-hero__header p {
-  margin: 0;
-  max-width: 32rem;
+  margin: 0 0 0.4rem;
+  max-width: 34rem;
+  font-size: 1rem;     /* 0.95–1.0 լավ диапазոն է */
+  line-height: 1.6;
 }
 
 .home-hero__history h3 {
