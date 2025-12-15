@@ -42,3 +42,18 @@
     lon: 44.2919
   image_old: "/static/img/churches/hripsime-old.jpg"
   image_new: "/static/img/churches/hripsime-new.jpg"
+
+- id: gayane
+  name_hy: "Սուրբ Գայանե եկեղեցի"
+  name_en: "Saint Gayane Church"
+  period: "Հին"
+  century: "VII դար"
+  year: 630
+  location_hy: "Վաղարշապատ (Էջմիածին), Արմավիրի մարզ"
+  location_en: "Vagharshapat (Etchmiadzin), Armavir Province"
+  unesco: true
+  coordinates:
+    lat: 40.1578
+    lon: 44.2911
+  image_old: "/static/img/churches/gayane-old.jpg"
+  image_new: "/static/img/churches/gayane-new.jpg"
