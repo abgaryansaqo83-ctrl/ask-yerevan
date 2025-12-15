@@ -2,8 +2,71 @@
 {% block title %}AskYerevan · Home{% endblock %}
 
 {% block content %}
-<section class="hero hero--with-bg">
-  <h2>Yerevan in one place</h2>
-  <p>AskYerevan is a quick guide to the city – events, places, and familiar corners of Yerevan.</p>
+<section class="home-hero">
+
+  <!-- HEADER / SLOGAN -->
+  <header class="home-hero__header">
+    <h2>Armenia in one place</h2>
+    <p>
+      AskYerevan is a quick guide to Yerevan and Armenia – churches, sights,
+      news, and places to go, all in one page.
+    </p>
+  </header>
+
+  <div class="home-hero__grid">
+    <!-- LEFT: 4 WINDOWS / SECTIONS -->
+
+    <!-- 1. Churches -->
+    <article class="home-card">
+      <h3 class="home-card__title">Churches</h3>
+      <p class="home-card__snippet">
+        From early Christian cathedrals to cave monasteries – discover
+        Armenia’s old and new churches․․․
+      </p>
+      <a href="/en/churches" class="home-card__link">Read more</a>
+    </article>
+
+    <!-- 2. Sights -->
+    <article class="home-card">
+      <h3 class="home-card__title">Places to visit</h3>
+      <p class="home-card__snippet">
+        Garni Temple, Lake Sevan, Dilijan and other places worth seeing
+        on a first trip or a new visit․․․
+      </p>
+      <a href="/en/events" class="home-card__link">Read more</a>
+    </article>
+
+    <!-- 3. News -->
+    <article class="home-card">
+      <h3 class="home-card__title">News</h3>
+      <p class="home-card__snippet">
+        Events, holidays, city initiatives and newly opened venues
+        in Yerevan and around Armenia․․․
+      </p>
+      <a href="/en/news" class="home-card__link">Read more</a>
+    </article>
+
+    <!-- 4. Entertainment -->
+    <article class="home-card">
+      <h3 class="home-card__title">Entertainment</h3>
+      <p class="home-card__snippet">
+        Cafés, bars, clubs and cozy places to spend an evening in
+        different parts of Yerevan․․․
+      </p>
+      <a href="/en/places" class="home-card__link">Read more</a>
+    </article>
+
+    <!-- RIGHT: ARMENIA IN ONE PLACE -->
+
+    <aside class="home-hero__aside">
+      <h3>Short history</h3>
+      <ul class="home-hero__timeline">
+        <li><strong>301 AD</strong> · Armenia becomes the first country to adopt Christianity as a state religion. [web:276][web:295]</li>
+        <li><strong>405 AD</strong> · Mesrop Mashtots creates the Armenian alphabet. [web:350]</li>
+        <li><strong>7th century</strong> · The churches of Hripsime and Gayane are built, shaping early medieval Armenian architecture. [web:276][web:315]</li>
+        <li><strong>20th century</strong> · Yerevan grows into a modern capital, mixing old quarters and new architecture. [web:322]</li>
+      </ul>
+    </aside>
+  </div>
 </section>
 {% endblock %}
