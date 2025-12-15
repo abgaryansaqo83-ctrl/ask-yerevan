@@ -108,8 +108,9 @@ main.container {
 }
 
 .logo-flower {
-  width: 2.4rem;
+  width: 2.4rem;   /* մոտ 38px */
   height: 2.4rem;
+  display: block;
 }
 
 .logo-text {
