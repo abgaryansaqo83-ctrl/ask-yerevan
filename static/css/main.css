@@ -100,7 +100,7 @@ main.container {
   font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
   font-size: 2.6rem;
   font-weight: 700;
-  color: #f4f2ec;    /* մարմնագույն, ընդհանուր ֆոնին մոտ */
+  color: #f4f2ec;
 }
 
 /* Գլխավոր մենյու */
@@ -159,7 +159,7 @@ main.container {
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
-/* Header right սյունակ՝ փոքր էկրանների համար էլ OK */
+/* Header right սյունակ */
 .header-right {
   display: flex;
   flex-direction: column;
@@ -211,7 +211,7 @@ main.container {
   max-width: 38rem;
 }
 
-/* Գլխավոր grid՝ ձախ 4 քարտ, աջ՝ aside */
+/* Գլխավոր 2 սյուն՝ ձախ քարտեր, աջ՝ aside */
 .home-hero__grid {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 1.7fr);
@@ -219,45 +219,7 @@ main.container {
   align-items: stretch;
 }
 
-/* 4 քարտերը՝ 2x2 grid */
-.home-hero__grid > .home-card:nth-child(-n+4) {
-  /* առաջին 4 էլեմենտը՝ ձախ սյուն */
-}
-
-.home-hero__grid > .home-card {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 1rem 1.2rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
-
-/* Քարտերի wrapper՝ grid-ի ձախ սյունում */
-.home-hero__grid {
-  grid-template-areas:
-    "cards aside";
-}
-
-.home-card:nth-of-type(1),
-.home-card:nth-of-type(2),
-.home-card:nth-of-type(3),
-.home-card:nth-of-type(4) {
-  /* cards container */
-}
-
-.home-hero__grid {
-  grid-auto-rows: 1fr;
-}
-
-/* cards container որպես grid */
-.home-hero__grid::before {
-  content: "";
-}
-
-/* Ավելի պարզ տարբերակ՝ nested grid */
-.home-hero__grid {
-  grid-template-columns: 2fr 1.7fr;
-}
-
+/* Ձախ՝ 4 քարտերը 2x2 grid */
 .home-hero__grid-left {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -265,8 +227,12 @@ main.container {
   gap: 1rem;
 }
 
-/* Հարմարության համար՝ HTML-ում 4 քարտը փաթաթես div.home-hero__grid-left-ի մեջ,
-   բայց եթե չես ուզում, ներկայիս article-ներով էլ կաշխատի, ուղղակի ավելի բաց կլինեն. */
+.home-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
 
 .home-card__title {
   margin: 0 0 0.4rem;
@@ -319,6 +285,10 @@ main.container {
   }
 
   .home-hero__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-hero__grid-left {
     grid-template-columns: 1fr;
   }
 
