@@ -2,8 +2,71 @@
 {% block title %}AskYerevan · Գլխավոր{% endblock %}
 
 {% block content %}
-<section class="hero hero--with-bg">
-  <h2>Երևանը մեկ հասցեում</h2>
-  <p>AskYerevan-ը Երևանի մասին արագ ուղեցույց է՝ միջոցառումների, վայրերի և քաղաքի ծանոթ անկյունների համար։</p>
+<section class="home-hero">
+
+  <!-- ՎԵՐՆԱԳԻՐ / ՍԼՈԳԱՆ -->
+  <header class="home-hero__header">
+    <h2>Հայաստանը մեկ հասցեում</h2>
+    <p>
+      AskYerevan-ը արագ ուղեցույց է Երևանի և Հայաստանի մասին՝ եկեղեցիներ, տեսարժան վայրեր,
+      նորություններ և ժամանցի վայրեր, մեկ էջում։
+    </p>
+  </header>
+
+  <div class="home-hero__grid">
+    <!-- ՁԱԽ՝ 4 ՊԱՏՈՒՀԱՆ / ՎԱՅՐԵՐ -->
+
+    <!-- 1. Եկեղեցիներ -->
+    <article class="home-card">
+      <h3 class="home-card__title">Եկեղեցիներ</h3>
+      <p class="home-card__snippet">
+        Վաղ քրիստոնեական տաճարներից մինչև քարայրային վանական համալիրներ՝
+        բացահայտիր Հին ու Նոր եկեղեցիները․․․
+      </p>
+      <a href="/hy/churches" class="home-card__link">Ավելին</a>
+    </article>
+
+    <!-- 2. Տեսարժան վայրեր -->
+    <article class="home-card">
+      <h3 class="home-card__title">Տեսարժան վայրեր</h3>
+      <p class="home-card__snippet">
+        Գառնու տաճար, Սևանա լիճ, Դիլիջան և այլ վայրեր, որոնք արժե տեսնել
+        առաջին այցի կամ վերստին բացահայտելու համար․․․
+      </p>
+      <a href="/hy/events" class="home-card__link">Ավելին</a>
+    </article>
+
+    <!-- 3. Նորություններ -->
+    <article class="home-card">
+      <h3 class="home-card__title">Նորություններ</h3>
+      <p class="home-card__snippet">
+        Միջոցառումներ, տոնական օրեր, քաղաքային նախաձեռնություններ և
+        նոր բացված վայրեր Երևանի ու Հայաստանի շուրջ․․․
+      </p>
+      <a href="/hy/news" class="home-card__link">Ավելին</a>
+    </article>
+
+    <!-- 4. Ժամանցի վայրեր -->
+    <article class="home-card">
+      <h3 class="home-card__title">Ժամանցի վայրեր</h3>
+      <p class="home-card__snippet">
+        Սրճարաններ, բարեր, ակումբներ ու հանգիստ երեկոներ անցկացնելու cozy
+        տեղեր Երևանի տարբեր թաղամասերում․․․
+      </p>
+      <a href="/hy/places" class="home-card__link">Ավելին</a>
+    </article>
+
+    <!-- ԱՋ՝ «ՀԱՅԱՍՏԱՆԸ ՄԵԿ ՀԱՍՑԵՈՒՄ» ՊԱՏՄԱԿԱՆ ԲԼՈԿ -->
+
+    <aside class="home-hero__aside">
+      <h3>Կարճ պատմություն</h3>
+      <ul class="home-hero__timeline">
+        <li><strong>մ․թ․ 301</strong> · Հայաստանը առաջինն է պաշտոնապես ընդունում քրիստոնեությունը։[web:276][web:295]</li>
+        <li><strong>մ․թ․ 405</strong> · Մեսրոպ Մաշտոցը ստեղծում է հայոց այբուբենը։[web:350]</li>
+        <li><strong>մ․թ․ 7-րդ դար</strong> · Կառուցվում են Հռիփսիմե և Գայանե եկեղեցիները՝ վաղ միջնադարյան հատկանիշներով։[web:276][web:315]</li>
+        <li><strong>մ․թ․ 20-րդ դար</strong> · Երևանն աճում է որպես մայրաքաղաք՝ հին թաղամասերի ու նոր ճարտարապետության միաձուլմամբ։[web:322]</li>
+      </ul>
+    </aside>
+  </div>
 </section>
 {% endblock %}
