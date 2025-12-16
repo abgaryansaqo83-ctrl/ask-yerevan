@@ -12,7 +12,7 @@ body {
 .hero--with-bg {
   position: relative;
   padding: 3.6rem 2rem;
-  min-height: 580px;   /* 460 → 520 */
+  min-height: 520px;   /* 460 → 520 */
   border-radius: 12px;
   margin-top: 1.2rem;
   color: #ffffff;
@@ -72,7 +72,7 @@ main.container {
 .site-header {
   background: #071f33;
   color: #fff;
-  padding: 0.8rem 0;  /* 0.6 → 0.8, որ լոգոն չսեղմվի */
+  padding: 0.6rem 0;  /* 0.6 → 0.8, որ լոգոն չսեղմվի */
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
@@ -90,7 +90,7 @@ main.container {
 }
 
 .logo-image {
-  height: 8rem;   /* փորձիր 5–6rem диапазոնում */
+  height: 10rem;   /* փորձիր 5–6rem диапазոնում */
   width: auto;
   display: block;
 }
