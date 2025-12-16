@@ -42,7 +42,7 @@ main.container {
 }
 
 .container {
-  max-width: 1100px;
+  max-width: 1440px; /* կամ 1320px */
   margin: 0 auto;
   padding: 0 1rem;
 }
