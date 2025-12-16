@@ -24,7 +24,7 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background: url("/static/img/home-hero.jpg.png") center/100% no-repeat;
+  background: url("/static/img/home-hero.jpg.png") center/90% no-repeat;
   /* 120%՝ քիչ zoom, ոչ 150, որ չխեղվի */
   opacity: 0.65;
   z-index: -1;
@@ -43,7 +43,7 @@ main.container {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
   padding: 0 1rem;
 }
@@ -86,7 +86,7 @@ main.container {
 }
 
 .logo-image {
-  height: 5.5rem;
+  height: 8.5rem;
   width: auto;
   display: block;
 }
@@ -108,7 +108,7 @@ main.container {
 }
 
 .logo-person {
-  height: 1.8rem;          /* եթե պետք է, փոխիր 1.6–2.2rem диапазոնում */
+  height: 2.2rem;          /* եթե պետք է, փոխիր 1.6–2.2rem диапазոնում */
   width: auto;
   display: block;
 }
@@ -405,8 +405,7 @@ main.container {
    =========================== */
 
 .site-footer {
-  background: url("/static/img/logo/rug-texture.jpg") center top repeat-x;
-  background-size: auto 100%;
+  background: url("/static/img/logo/rug-texture.jpg") center/cover no-repeat;
   color: #fff;
   font-size: 0.85rem;
 }
@@ -416,3 +415,9 @@ main.container {
   text-align: left;
   text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
+
+/* ===========================
+   9. Utilities / Helpers
+   =========================== */
+/* Այստեղ կարող ես ավելացնել .text-center, .mt-*, .hidden և այլն */
+
