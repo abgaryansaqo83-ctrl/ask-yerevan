@@ -14,7 +14,7 @@ body {
   padding: 3.6rem 2rem;
   min-height: 520px;
   border-radius: 12px;
-  margin-top: 1.2rem;
+  margin: 1.2rem 1.2rem 1.2rem; /* վերև, աջ, ձախ, տակը նույնը */
   color: #ffffff;
   overflow: hidden;
 }
@@ -66,17 +66,17 @@ main.container {
 .site-header {
   background: #071f33;
   color: #fff;
-  padding: 0.4rem 0;
+  padding: 0.6rem 0 0.4rem;  /* մի քիչ ավելի բարձր վերևից, քիչ ներքևից */
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .header-inner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 0.5rem;              /* փոքր շունչ եզրերից */
+  padding: 0 0.5rem;
   display: flex;
   justify-content: space-between;
-  align-items: flex-end; /* NEW */
+  align-items: flex-end;     /* ամեն ինչ՝ ներքևի baseline-ին */
 }
 
 .header-left {
@@ -89,24 +89,25 @@ main.container {
 .logo {
   margin: 0;
   display: inline-flex;
-  align-items: flex-end; /* instead of flex-start */
+  align-items: flex-start;   /* լոգոն վերևից, որ մարդուկը իջնի ներքև */
 }
 
 .logo-stack {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.35rem;
+  margin-top: -0.3rem;       /* մի քիչ վեր կքաշի ամբողջ stack-ը */
 }
 
 .logo-image {
-  height: 5.2rem; /* 5.5-ից փոքր, որ header–ի մեջ լավ ոլորվի */
+  height: 10rem;             /* ~4× մեծ, կարելի է 9–11rem միջակայքում խաղալ */
   width: auto;
   display: block;
 }
 
 .logo-person {
-  height: 1.8rem;
+  height: 3.2rem;            /* մարդուկը նույնպես ավելի մեծ */
   width: auto;
   display: block;
 }
@@ -115,6 +116,8 @@ main.container {
 .nav {
   display: flex;
   gap: 1.5rem;
+  align-items: flex-end;     /* link-երը նստում են ներքևի եզրին */
+  padding-bottom: 0.2rem;    /* մի փոքր էլ ներքև քաշելու համար */
 }
 
 .nav a {
@@ -133,7 +136,7 @@ main.container {
   flex-direction: column;
   align-items: flex-end;
   gap: 0.3rem;
-  margin: 0;
+  margin-bottom: 0.15rem;  /* նույն մակարդակը պահելու համար */
 }
 
 /* Telegram link */
