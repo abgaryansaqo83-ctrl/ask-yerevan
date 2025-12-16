@@ -71,49 +71,48 @@ main.container {
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-/* Ոչ մի ներքին padding, որ logo-ն ու աջ բլոկը մոտենան եզրերին */
 .header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 0.5rem;              /* փոքր շունչ եզրերից */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0;
 }
 
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+/* Logo + մարդուկ */
 .logo {
+  margin: 0;
   display: inline-flex;
   align-items: flex-start;
-  margin: 0;
 }
 
-.logo-image {
-  height: 8.5rem;
-  width: auto;
-  display: block;
-}
-
-.header-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.3rem;
-  margin: 0;
-}
-
-/* Stack: վրևում logo, տակ մարդուկ */
 .logo-stack {
   display: flex;
   flex-direction: column;
-  align-items: center;     /* մարդուկը կենտրոնում logo-ի տակ */
+  align-items: center;
   gap: 0.25rem;
 }
 
-.logo-person {
-  height: 2.2rem;          /* եթե պետք է, փոխիր 1.6–2.2rem диапазոնում */
+.logo-image {
+  height: 5.5rem;
   width: auto;
   display: block;
 }
 
-/* Գլխավոր մենյու */
+.logo-person {
+  height: 1.8rem;
+  width: auto;
+  display: block;
+}
+
+/* Menu */
 .nav {
   display: flex;
   gap: 1.5rem;
@@ -122,7 +121,6 @@ main.container {
 .nav a {
   text-decoration: none;
   color: #f5f5ff;
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   font-size: 1rem;
 }
 
@@ -130,7 +128,16 @@ main.container {
   color: #FFB74D;
 }
 
-/* Telegram հղում */
+/* Աջ բլոկ */
+.header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+  margin: 0;
+}
+
+/* Telegram link */
 .nav-tg-link {
   display: inline-flex;
   align-items: center;
@@ -168,25 +175,37 @@ main.container {
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
-.header-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.3rem;
-  margin: 0;
+/* Լեզվի քուիչ */
+.lang-switch {
+  font-size: 0.9rem;
 }
 
-/* Մինչև ~768px */
+.lang-switch a {
+  color: #f0f0f0;
+  text-decoration: none;
+}
+
+.lang-switch a:hover {
+  text-decoration: underline;
+}
+
+/* Մոբայլ */
 @media (max-width: 768px) {
   .header-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .header-left {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.4rem;
   }
 
   .nav {
-    flex-direction: column;
-    gap: 0.2rem;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
   }
 
   .header-right {
