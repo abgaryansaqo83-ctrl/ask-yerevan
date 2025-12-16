@@ -76,7 +76,7 @@ main.container {
   padding: 0 0.5rem;              /* փոքր շունչ եզրերից */
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end; /* NEW */
 }
 
 .header-left {
@@ -89,7 +89,7 @@ main.container {
 .logo {
   margin: 0;
   display: inline-flex;
-  align-items: flex-start;
+  align-items: flex-end; /* instead of flex-start */
 }
 
 .logo-stack {
@@ -100,7 +100,7 @@ main.container {
 }
 
 .logo-image {
-  height: 5.5rem;
+  height: 5.2rem; /* 5.5-ից փոքր, որ header–ի մեջ լավ ոլորվի */
   width: auto;
   display: block;
 }
