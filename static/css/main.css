@@ -67,7 +67,7 @@ main.container {
 .site-header {
   background: #071f33;
   color: #fff;
-  padding: 0.4rem 0;        /* թեթև padding, բարձրությունը logo-ն է որոշելու */
+  padding: 0.5rem 0;        /* թեթև padding, բարձրությունը logo-ն է որոշելու */
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
@@ -80,12 +80,34 @@ main.container {
 /* Logo */
 .logo {
   display: inline-flex;
-  align-items: center;
+  align-items: flex-start;
   margin: 0;
 }
 
+/* լոգոյի ամբողջ փաթեթը մի քիչ աջ քաշելու համար */
+.header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+}
+
+/* Stack: վրևում logo, տակ մարդուկ */
+.logo-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;     /* մարդուկը կենտրոնում logo-ի տակ */
+  gap: 0.25rem;
+}
+
 .logo-image {
-  height: 5.5rem;           /* 8rem → 5.5rem, ավելի հավասարակշռված */
+  height: 5.5rem;
+  width: auto;
+  display: block;
+}
+
+.logo-person {
+  height: 1.8rem;          /* եթե պետք է, փոխիր 1.6–2.2rem диапазոնում */
   width: auto;
   display: block;
 }
@@ -150,6 +172,7 @@ main.container {
   flex-direction: column;
   align-items: flex-end;
   gap: 0.3rem;
+  margin: 0;
 }
 
 /* Մինչև ~768px */
