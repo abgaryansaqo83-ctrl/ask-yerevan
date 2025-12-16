@@ -1,6 +1,6 @@
 <!DOCTYPE html>
- <html lang="{{ lang or 'hy' }}">
-  <head>
+<html lang="{{ lang or 'hy' }}">
+<head>
   <meta charset="UTF-8">
   <title>{% block title %}AskYerevan{% endblock %}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,51 +8,85 @@
 </head>
 <body>
 <header class="site-header">
-  <div class="header-inner">
+  <div class="container header-inner">
     <div class="header-left">
       <h1 class="logo">
         <div class="logo-stack">
           <img src="/static/img/logo/logoi_orinak.png"
                alt="AskYerevan"
                class="logo-image">
-          <img src="/static/img/logo/mard_pajt.png"
+          <img src="{{ url_for('static', filename='img/logo/mard_pajt.png') }}"
                alt=""
                class="logo-person">
         </div>
       </h1>
 
+      {% if lang == 'en' %}
       <nav class="nav">
-        <a href="{{ url_for('index_hy') if lang == 'hy' else url_for('index_en') }}">Գլխավոր</a>
-        <a href="{{ url_for('places_hy') if lang == 'hy' else url_for('places_en') }}">Տեսարժան վայրեր</a>
-        <a href="{{ url_for('churches_hy') if lang == 'hy' else url_for('churches_en') }}">Եկեղեցիներ</a>
-        <a href="{{ url_for('news_hy') if lang == 'hy' else url_for('news_en') }}">Նորություններ</a>
-        <a href="{{ url_for('fun_hy') if lang == 'hy' else url_for('fun_en') }}">Ժամանցի վայրեր</a>
-        <a href="{{ url_for('about') }}">AskYerevan խումբ մասին</a>
+        <a href="/en">Home</a>
+        <a href="/en/events">Places</a>
+        <a href="/en/churches">Churches</a>
+        <a href="/en/news">News</a>
+        <a href="/en/places">Entertainment</a>
+        <a href="/en/about">About AskYerevan</a>
       </nav>
+      {% else %}
+      <nav class="nav">
+        <a href="/hy">Գլխավոր</a>
+        <a href="/hy/events">Տեսարժան վայրեր</a>
+        <a href="/hy/churches">Եկեղեցիներ</a>
+        <a href="/hy/news">Նորություններ</a>
+        <a href="/hy/places">Ժամանցի վայրեր</a>
+        <a href="/hy/about">AskYerevan խմբի մասին</a>
+      </nav>
+      {% endif %}
     </div>
 
     <div class="header-right">
-      <a href="https://t.me/AskYerevan" class="nav-tg-link" target="_blank" rel="noopener">
+      <a href="https://t.me/AskYerevan"
+         class="nav-tg-link"
+         target="_blank"
+         rel="noopener">
         <span class="tg-icon-svg" aria-hidden="true">
-          <!-- svg -->
+          <svg viewBox="0 0 24 24" class="tg-svg">
+            <path d="M9.5 16.8 9.7 13.4 16.7 7.2C17 7 16.6 6.9 16.3 7.1L7.9 12l-3.3-1.1c-.7-.2-.7-1.2.1-1.5l14.4-5.5c.6-.2 1.3.3 1.1 1l-2.5 14.4c-.1.7-.9 1-1.5.6l-4-3-2.3 1.9c-.3.3-.9.1-.9-.4z"/>
+          </svg>
         </span>
-        <span class="tg-text">
-          {% if lang == 'en' %}
+        {% if lang == 'en' %}
+          <span class="tg-text">
             Join the <span class="tg-text-script">AskYerevan</span> group
-          {% else %}
+          </span>
+        {% else %}
+          <span class="tg-text">
             Միացիր <span class="tg-text-script">AskYerevan</span> խմբին
-          {% endif %}
-        </span>
+          </span>
+        {% endif %}
       </a>
 
       <div class="lang-switch">
+        {% set path = request.url.path %}
         {% if lang == 'en' %}
-          <a href="{{ url_for('set_lang', lang='hy') }}">Հայ</a> | <strong>EN</strong>
+          <a href="{{ path.replace('/en', '/hy') }}">Հայ</a> | <strong>EN</strong>
         {% else %}
-          <strong>Հայ</strong> | <a href="{{ url_for('set_lang', lang='en') }}">EN</a>
+          <strong>Հայ</strong> | <a href="{{ path.replace('/hy', '/en') }}">EN</a>
         {% endif %}
       </div>
     </div>
   </div>
 </header>
 
+<main class="container">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    {% if lang == 'en' %}
+      <p>© AskYerevan · Telegram group · experimental website</p>
+    {% else %}
+      <p>© AskYerevan · Telegram խումբ · կայքը փորձնական է</p>
+    {% endif %}
+  </div>
+</footer>
+</body>
+</html>
