@@ -12,7 +12,7 @@ body {
 .hero--with-bg {
   position: relative;
   padding: 3.6rem 2rem;
-  min-height: 520px;   /* 460 → 520 */
+  min-height: 580px;   /* 460 → 520 */
   border-radius: 12px;
   margin-top: 1.2rem;
   color: #ffffff;
@@ -24,7 +24,7 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background: url("/static/img/home-hero.jpg.png") center/120% no-repeat;
+  background: url("/static/img/home-hero.jpg.png") center/150% no-repeat;
   opacity: 0.65;   /* փոխիր 0.6–0.85 диапазոնում՝ որքան ուզում ես թափանցիկ */
   z-index: -1;
 }
@@ -90,7 +90,7 @@ main.container {
 }
 
 .logo-image {
-  height: 5.5rem;   /* փորձիր 5–6rem диапазոնում */
+  height: 8rem;   /* փորձիր 5–6rem диапазոնում */
   width: auto;
   display: block;
 }
