@@ -11,8 +11,8 @@ body {
 /* Գլխավոր hero բլոկ */
 .hero--with-bg {
   position: relative;
-  padding: 3rem 2rem;      /* մի քիչ պակաս padding, որ նկարը մեծ թվա */
-  min-height: 560px;       /* 520 → 560, ավելի բարձր բլոկ */
+  padding: 3.6rem 2rem;
+  min-height: 520px;
   border-radius: 12px;
   margin-top: 1.2rem;
   color: #ffffff;
@@ -24,9 +24,8 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background: url("/static/img/home-hero.jpg.png") center/90% no-repeat;
-  /* 120%՝ քիչ zoom, ոչ 150, որ չխեղվի */
-  opacity: 0.65;
+  background: url("/static/img/home-hero.jpg.png") center/cover no-repeat;
+  opacity: 0.7;
   z-index: -1;
 }
 
@@ -221,7 +220,7 @@ main.container {
   min-height: calc(100vh - 140px);
   display: flex;
   align-items: stretch;
-  padding: 1.5rem 0 1.5rem;
+  padding: 0.5rem 0 1.5rem;
 }
 
 .home-hero__grid {
@@ -253,10 +252,10 @@ main.container {
 }
 
 .home-card__thumb {
-  background: none;
-  border-radius: 0;
-  padding: 0;
-  box-shadow: none;
+  background: rgba(255,255,255,0.96);
+  border-radius: 12px;
+  padding: 0.4rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 
 .home-card__thumb img {
@@ -273,6 +272,7 @@ main.container {
   gap: 0.3rem;
   color: #ffffff;
 }
+
 
 .home-card__title {
   margin: 0;
