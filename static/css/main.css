@@ -67,29 +67,36 @@ main.container {
 .site-header {
   background: #071f33;
   color: #fff;
-  padding: 0.5rem 0;        /* թեթև padding, բարձրությունը logo-ն է որոշելու */
+  padding: 0.4rem 0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
+/* Ոչ մի ներքին padding, որ logo-ն ու աջ բլոկը մոտենան եզրերին */
 .header-inner {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 0;
 }
 
-/* Logo */
 .logo {
   display: inline-flex;
   align-items: flex-start;
   margin: 0;
 }
 
-/* լոգոյի ամբողջ փաթեթը մի քիչ աջ քաշելու համար */
-.header-inner {
+.logo-image {
+  height: 5.5rem;
+  width: auto;
+  display: block;
+}
+
+.header-right {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+  margin: 0;
 }
 
 /* Stack: վրևում logo, տակ մարդուկ */
@@ -98,12 +105,6 @@ main.container {
   flex-direction: column;
   align-items: center;     /* մարդուկը կենտրոնում logo-ի տակ */
   gap: 0.25rem;
-}
-
-.logo-image {
-  height: 5.5rem;
-  width: auto;
-  display: block;
 }
 
 .logo-person {
@@ -399,4 +400,19 @@ main.container {
   display: none;
 }
 
-/* Footer ու մնացածը թող նույնը մնան */
+/* ===========================
+   8. Footer
+   =========================== */
+
+.site-footer {
+  background: url("/static/img/logo/rug-texture.jpg") center top repeat-x;
+  background-size: auto 100%;
+  color: #fff;
+  font-size: 0.85rem;
+}
+
+.site-footer .container {
+  padding: 0.5rem 1rem;
+  text-align: left;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+}
