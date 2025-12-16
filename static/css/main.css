@@ -70,7 +70,7 @@ main.container {
 
 /* Վերնախագիր */
 .site-header {
-  background: #5b8ff5;
+  background: #071f33;  /* լոգոյի ֆոնի գույնին մոտ մուգ կապույտ */
   color: #fff;
   padding: 0.6rem 0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
@@ -86,23 +86,13 @@ main.container {
 .logo {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
   margin: 0;
 }
 
-.logo-flower {
-  width: 2.4rem;     /* ~38px */
-  height: auto;
-  max-width: 3rem;
-  max-height: 3rem;
+.logo-image {
+  height: 3rem;   /* եթե մեծ/փոքր թվա, փորձիր 2.6rem կամ 3.4rem */
+  width: auto;
   display: block;
-}
-
-.logo-text {
-  font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
-  font-size: 2.6rem;
-  font-weight: 700;
-  color: #f4f2ec;
 }
 
 /* Գլխավոր մենյու */
