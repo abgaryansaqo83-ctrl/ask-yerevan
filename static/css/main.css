@@ -90,7 +90,7 @@ main.container {
 }
 
 .logo-image {
-  height: 10rem;   /* փորձիր 5–6rem диапазոնում */
+  height: 0.8rem;   /* փորձիր 5–6rem диапазոնում */
   width: auto;
   display: block;
 }
