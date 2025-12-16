@@ -2,17 +2,17 @@
    1. Base / Reset / Layout
    =========================== */
 
-/* Ընդհանուր ֆոն մյուս էջերի համար */
 body {
   margin: 0;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   background: #f5efe4;
 }
 
+/* Գլխավոր hero բլոկ */
 .hero--with-bg {
   position: relative;
-  padding: 3.6rem 2rem;
-  min-height: 520px;   /* 460 → 520 */
+  padding: 3rem 2rem;      /* մի քիչ պակաս padding, որ նկարը մեծ թվա */
+  min-height: 560px;       /* 520 → 560, ավելի բարձր բլոկ */
   border-radius: 12px;
   margin-top: 1.2rem;
   color: #ffffff;
@@ -24,8 +24,9 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background: url("/static/img/home-hero.jpg.png") center/150% no-repeat;
-  opacity: 0.65;   /* փոխիր 0.6–0.85 диапазոնում՝ որքան ուզում ես թափանցիկ */
+  background: url("/static/img/home-hero.jpg.png") center/100% no-repeat;
+  /* 120%՝ քիչ zoom, ոչ 150, որ չխեղվի */
+  opacity: 0.65;
   z-index: -1;
 }
 
@@ -48,15 +49,9 @@ main.container {
 }
 
 /* ===========================
-   2. Typography
-   =========================== */
-/* h1, h2, p, a ընդհանուր ոճերը կարող ես հետո ավելացնել */
-
-/* ===========================
    3. Header & Navigation
    =========================== */
 
-/* Լեզվի քուիչ */
 .lang-switch {
   font-size: 0.9rem;
 }
@@ -72,7 +67,7 @@ main.container {
 .site-header {
   background: #071f33;
   color: #fff;
-  padding: 0.8rem 0;  /* 0.6 → 0.8, որ լոգոն չսեղմվի */
+  padding: 0.4rem 0;        /* թեթև padding, բարձրությունը logo-ն է որոշելու */
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
@@ -82,7 +77,7 @@ main.container {
   align-items: center;
 }
 
-/* Logo՝ ձեռագիր */
+/* Logo */
 .logo {
   display: inline-flex;
   align-items: center;
@@ -90,7 +85,7 @@ main.container {
 }
 
 .logo-image {
-  height: 8rem;   /* փորձիր 5–6rem диапазոնում */
+  height: 5.5rem;           /* 8rem → 5.5rem, ավելի հավասարակշռված */
   width: auto;
   display: block;
 }
@@ -112,7 +107,7 @@ main.container {
   color: #FFB74D;
 }
 
-/* Telegram հղում՝ աջ վերև */
+/* Telegram հղում */
 .nav-tg-link {
   display: inline-flex;
   align-items: center;
@@ -143,7 +138,6 @@ main.container {
   fill: #ffffff;
 }
 
-/* «AskYerevan» բառը ձեռագիր, «խմբին»՝ system-ui */
 .tg-text-script {
   font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
 }
@@ -151,7 +145,6 @@ main.container {
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
-/* Header right սյունակ */
 .header-right {
   display: flex;
   flex-direction: column;
@@ -159,7 +152,7 @@ main.container {
   gap: 0.3rem;
 }
 
-/* Մինչև ~768px՝ հեռախոսներ */
+/* Մինչև ~768px */
 @media (max-width: 768px) {
   .header-inner {
     flex-direction: column;
@@ -182,15 +175,12 @@ main.container {
    =========================== */
 
 .home-hero {
-  min-height: calc(100vh - 140px); /* header + footer մոտավոր */
+  min-height: calc(100vh - 140px);
   display: flex;
   align-items: stretch;
   padding: 1.5rem 0 1.5rem;
 }
 
-/* hero--with-bg արդեն ավելացնում է նկարն ու մութ շերտը */
-
-/* Երկու սյուն՝ ձախ պատուհաններ, աջ՝ տեքստ */
 .home-hero__grid {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.6fr);
@@ -198,22 +188,20 @@ main.container {
   width: 100%;
 }
 
-/* Ձախ՝ 4 քարտ, մեկ սյունակով */
+/* Ձախ՝ 4 քարտ */
 .home-hero__left {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-/* Քարտը՝ միայն փոքր white «կղզի» նկարի շուրջ */
 .home-card {
-  background: none;              /* ← սպիտակ ֆոնը հանում ենք ամբողջ քարտից */
+  background: none;
   border-radius: 12px;
-  padding: 0.3rem 0;             /* քիչ վերև/ներքև, կողքերից ոչինչ */
+  padding: 0.3rem 0;
   box-shadow: none;
 }
 
-/* Քարտի ներսում՝ նկարը սպիտակ բլոկի մեջ, տեքստը՝ կողքին առանց ֆոնի */
 .home-card__inner {
   display: grid;
   grid-template-columns: 120px minmax(0, 1fr);
@@ -222,26 +210,25 @@ main.container {
 }
 
 .home-card__thumb {
-  background: none;      /* սպիտակ ֆոն չկա */
-  border-radius: 0;      /* կամ 8px, եթե ուզում ես կլոր անկյուն */
-  padding: 0;            /* եզրագիծը կորչի, կմնա մաքուր նկար */
+  background: none;
+  border-radius: 0;
+  padding: 0;
   box-shadow: none;
 }
 
 .home-card__thumb img {
   width: 100%;
   height: auto;
-  border-radius: 8px;    /* рисунка կլոր անկյուն, եթե սիրում ես */
+  border-radius: 8px;
   display: block;
   object-fit: cover;
 }
 
-/* Տեքստը՝ ուղղակի hero նկարի վրա */
 .home-card__body {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
-  color: #ffffff;               /* սպիտակ տեքստ՝ hero ֆոնի վրա */
+  color: #ffffff;
 }
 
 .home-card__title {
@@ -250,7 +237,7 @@ main.container {
 }
 
 .home-card__snippet {
-  font-size: 0.95rem;  /* 0.9 → 0.95 */
+  font-size: 0.95rem;
   line-height: 1.5;
 }
 
@@ -264,7 +251,7 @@ main.container {
   text-decoration: underline;
 }
 
-/* Աջ սյուն՝ առանց սպիտակ ֆոնի, տեքստը նկարի վրա */
+/* Աջ սյուն */
 .home-hero__right {
   display: flex;
   flex-direction: column;
@@ -276,14 +263,14 @@ main.container {
 }
 
 .home-hero__header h2 {
-  font-size: 2.2rem;   /* 2.0 → 2.2 */
+  font-size: 2.2rem;
   margin: 0 0 0.6rem;
 }
 
 .home-hero__header p {
   margin: 0 0 0.4rem;
   max-width: 34rem;
-  font-size: 1rem;     /* 0.95–1.0 լավ диапазոն է */
+  font-size: 1rem;
   line-height: 1.6;
 }
 
@@ -303,7 +290,7 @@ main.container {
   margin-top: 0.4rem;
 }
 
-/* Մոբայլում՝ մեկ սյուն */
+/* Մոբայլ */
 @media (max-width: 768px) {
   .home-hero {
     min-height: auto;
@@ -324,10 +311,9 @@ main.container {
 }
 
 /* ===========================
-   5. Churches page
+   Churches page
    =========================== */
 
-/* Churches page layout */
 .church-section {
   padding: 2rem 0;
 }
@@ -339,7 +325,6 @@ main.container {
   margin-bottom: 3rem;
 }
 
-/* Հաջորդ բլոկների համար՝ հակառակ դասավորություն */
 .church-block--reverse {
   flex-direction: row-reverse;
 }
@@ -352,7 +337,6 @@ main.container {
   flex: 1 1 260px;
 }
 
-/* Երկու փոքր նկար՝ սյունակով */
 .church-image--column {
   display: flex;
   flex-direction: column;
@@ -387,38 +371,9 @@ main.container {
   color: #fff;
 }
 
-/* Հետագայում, եթե ուզես JS-ով թաքցնել/ցուցադրել */
+/* Church hidden */
 .church-section--hidden {
   display: none;
 }
 
-/* ===========================
-   6. Events page
-   =========================== */
-/* placeholder */
-
-/* ===========================
-   7. About page
-   =========================== */
-/* placeholder */
-
-/* ===========================
-   8. Footer
-   =========================== */
-
-.site-footer {
-  background: url("/static/img/rug-texture.jpg") center/cover no-repeat;
-  color: #fff;
-  font-size: 0.85rem;
-}
-
-.site-footer .container {
-  padding: 0.5rem 1rem;
-  text-align: left;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-}
-
-/* ===========================
-   9. Utilities / Helpers
-   =========================== */
-/* Այստեղ կարող ես ավելացնել .text-center, .mt-*, .hidden և այլն */
+/* Footer ու մնացածը թող նույնը մնան */
