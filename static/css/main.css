@@ -101,16 +101,15 @@ main.container {
 }
 
 .logo-image {
-  height: 6rem;              /* 4.5 → 5.0, մի քիչ ավելի մեծ */
+  height: 4rem;   /* 4.0–4.5 միջակայքը սովորաբար կոմֆորտ է */
   width: auto;
   display: block;
 }
 
 .logo-person {
-  height: 4rem;          /* ՀԵՌՔԵՎԻՑ ՄԵԾ, որ աչքի պրծնի */
+  height: 1.8rem;     /* կամ ինչ չափ ուզում ես մարդուկի համար */
   width: auto;
   display: block;
-  outline: 2px solid red; /* ժամանակավոր, որ նույնիսկ առանց նկարի երևա բոքսը */
 }
 
 /* Menu */
