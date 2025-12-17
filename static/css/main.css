@@ -74,7 +74,7 @@ main.container {
 .header-inner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 0.1rem;           /* 1.5 → 1.0, որ ամբողջ header-ը ձախից մոտենա */
+  padding: 0 0rem;           /* 1.5 → 1.0, որ ամբողջ header-ը ձախից մոտենա */
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -83,7 +83,7 @@ main.container {
 .header-left {
   display: flex;
   align-items: flex-end;
-  gap: 1rem;               /* 1.5 → 1.2, լոգո–մենյու միջեւ հեռավորությունը փոքրացնի */
+  gap: 0.2rem;               /* 1.5 → 1.2, լոգո–մենյու միջեւ հեռավորությունը փոքրացնի */
 }
 
 /* Logo + մարդուկ */
