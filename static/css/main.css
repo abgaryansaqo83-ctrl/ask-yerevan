@@ -42,7 +42,7 @@ main.container {
 }
 
 .container {
-  max-width: 1320px; /* կամ 1320px */
+  max-width: 1320px;
   margin: 0 auto;
   padding: 0 1rem;
 }
@@ -67,14 +67,14 @@ main.container {
 .site-header {
   background: #071f33;
   color: #fff;
-  padding: 0.02rem 0;     /* 0.25 → 0.20, կապույտ գիծը մի փոքր նեղացրինք */
+  padding: 0.02rem 0; /* բարակ կապույտ գիծ */
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .header-inner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 0rem;           /* 1.5 → 1.0, որ ամբողջ header-ը ձախից մոտենա */
+  padding: 0 0rem;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -83,16 +83,15 @@ main.container {
 .header-left {
   display: flex;
   align-items: flex-end;
-  gap: 0.2rem;               /* 1.5 → 1.2, լոգո–մենյու միջեւ հեռավորությունը փոքրացնի */
+  gap: 0.2rem; /* logo ↔ menu */
 }
 
 /* Logo + մարդուկ */
-
 .logo {
   margin: 0;
   display: inline-flex;
   align-items: flex-end;
-  transform-origin: left bottom; /* ձախ-ներքևից մեծանա, կապույտը չլենանա շատ */
+  transform-origin: left bottom;
 }
 
 .logo-stack {
@@ -102,24 +101,24 @@ main.container {
   gap: 0.25rem;
 }
 
-/* Մարդուկ */
+.logo-image {
+  height: 6rem;
+  width: auto;
+  display: block;
+}
+
 .logo-person {
   height: 4rem;
   width: auto;
   display: block;
-  margin-top: -0.25rem;  /* մարդուկը լոգոյին ավելի մոտ, հեռախոսին մոտենա */
+  margin-top: -0.25rem;
 }
 
-.logo-image {
-  height: 6rem;        /* 4.6 → 4.8, լոգոն մի քիչ ավելի մեծ */
-  width: auto;
-  display: block;
-}
 /* Menu */
 .nav {
   display: flex;
   gap: 1.5rem;
-  align-items: flex-end;   /* բոլոր link-երը նույն baseline-ին */
+  align-items: flex-end;
   padding-bottom: 0.1rem;
 }
 .nav a {
@@ -127,20 +126,19 @@ main.container {
   color: #f5f5ff;
   font-size: 1rem;
 }
-
 .nav a:hover {
   color: #FFB74D;
 }
 
-/* Աջ բլոկ */
+/* Աջ բլոկ (միայն լեզվի switch) */
 .header-right {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.5rem;      /* փոքր ինտերվալ Telegram–ի և լեզվի միջեւ */
+  gap: 0.5rem;
 }
 
-/* Telegram link */
+/* Telegram կոճակ – կօգտագործվի footer-ում */
 .nav-tg-link {
   display: inline-flex;
   align-items: center;
@@ -148,10 +146,7 @@ main.container {
   color: #eaf4ff;
   font-size: 0.9rem;
   text-decoration: none;
-  align-self: flex-end;
-  margin-bottom: 1rem;   /* բարձրացնում է Telegram–ը լեզվի տողից մի քիչ վերև */
 }
-
 .nav-tg-link:hover {
   text-decoration: underline;
 }
@@ -198,7 +193,7 @@ main.container {
   .nav {
     flex-wrap: wrap;
     gap: 0.5rem 1rem;
-    padding-bottom: 0;         /* mobile-ում ոչ թե baseline, թե layouts */
+    padding-bottom: 0;
   }
 
   .header-right {
@@ -267,7 +262,6 @@ main.container {
   color: #ffffff;
 }
 
-
 .home-card__title {
   margin: 0;
   font-size: 1.05rem;
@@ -283,7 +277,6 @@ main.container {
   color: #ffeb9c;
   text-decoration: none;
 }
-
 .home-card__link:hover {
   text-decoration: underline;
 }
@@ -433,4 +426,3 @@ main.container {
    9. Utilities / Helpers
    =========================== */
 /* Այստեղ կարող ես ավելացնել .text-center, .mt-*, .hidden և այլն */
-
