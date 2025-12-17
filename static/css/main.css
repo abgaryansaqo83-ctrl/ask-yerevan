@@ -112,7 +112,7 @@ main.container {
 }
 
 .logo-image {
-  height: 5.5rem;        /* 4.6 → 4.8, լոգոն մի քիչ ավելի մեծ */
+  height: 20rem;        /* 4.6 → 4.8, լոգոն մի քիչ ավելի մեծ */
   width: auto;
   display: block;
 }
