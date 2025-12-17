@@ -207,8 +207,12 @@ main.container {
   }
 
   .header-right {
-    align-items: flex-start;
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+  margin-bottom: 0;      /* կամ -0.1rem, եթե մի քիչ էլ ավելի վերև ես ուզում */
+}
 }
 
 /* ===========================
@@ -234,6 +238,7 @@ main.container {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  margin-left: 1.5rem;   /* Նոր տող – փորձի 1rem, 1.5rem, 2rem */
 }
 
 .home-card {
