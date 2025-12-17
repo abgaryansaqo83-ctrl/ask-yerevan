@@ -54,7 +54,7 @@ main.container {
 
 /* Լեզվի քուիչ */
 .lang-switch {
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 .lang-switch a {
   color: #f0f0f0;
@@ -90,7 +90,7 @@ main.container {
 /* Logo + մարդուկ */
 
 .logo {
-  margin: -0.8rem 0 0 -0.3rem; /* վերև, աջ, ներքև, ձախ */
+  margin: 1rem 0 0 3rem; /* վերև, աջ, ներքև, ձախ */
   display: inline-flex;
   align-items: flex-start;    /* logo stack-ը բարձրից սկսի */
   transform-origin: left bottom;
@@ -100,22 +100,22 @@ main.container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0rem;
 }
 
 .logo-image {
-  height: 9rem;
+  height: 5rem;
   width: auto;
   display: block;
 }
 
 .logo-person {
-  height: 4rem;
+  height: 5rem;
   width: auto;
   display: block;
   margin-top: -0.4rem;   /* վերև/ներքև */
-  margin-left: 0rem;     /* ձախ */
-  margin-right: 0rem;    /* աջ */
+  margin-left: -4rem;     /* ձախ */
+  margin-right: rem;    /* աջ */
 }
 
 /* Menu */
