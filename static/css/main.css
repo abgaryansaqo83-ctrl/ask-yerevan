@@ -90,7 +90,7 @@ main.container {
 /* Logo + մարդուկ */
 
 .logo {
-  margin: 0.5rem 0 0 -3rem; /* վերև, աջ, ներքև, ձախ */
+  margin: 0.3rem 0 0 -3rem; /* վերև, աջ, ներքև, ձախ */
   display: inline-flex;
   align-items: flex-start;    /* logo stack-ը բարձրից սկսի */
   transform-origin: left bottom;
@@ -110,10 +110,10 @@ main.container {
 }
 
 .logo-person {
-  height: 3rem;
+  height: 4rem;
   width: auto;
   display: block;
-  margin-top: -0.4rem;   /* վերև/ներքև */
+  margin-top: 0rem;   /* վերև/ներքև */
   margin-left: -3rem;     /* ձախ */
   margin-right: rem;    /* աջ */
 }
