@@ -90,7 +90,7 @@ main.container {
 /* Logo + մարդուկ */
 
 .logo {
-  margin: 1rem 0 0 3rem; /* վերև, աջ, ներքև, ձախ */
+  margin: 0.5rem 0 0 -3rem; /* վերև, աջ, ներքև, ձախ */
   display: inline-flex;
   align-items: flex-start;    /* logo stack-ը բարձրից սկսի */
   transform-origin: left bottom;
@@ -104,17 +104,17 @@ main.container {
 }
 
 .logo-image {
-  height: 5rem;
+  height: 4rem;
   width: auto;
   display: block;
 }
 
 .logo-person {
-  height: 5rem;
+  height: 3rem;
   width: auto;
   display: block;
   margin-top: -0.4rem;   /* վերև/ներքև */
-  margin-left: -4rem;     /* ձախ */
+  margin-left: -3rem;     /* ձախ */
   margin-right: rem;    /* աջ */
 }
 
@@ -144,6 +144,7 @@ main.container {
   flex-direction: column;
   align-items: flex-end;
   gap: 0.5rem;
+  margin-top: 0.2rem;
 }
 
 /* Telegram կոճակ – կօգտագործվի footer-ում */
@@ -223,7 +224,7 @@ main.container {
 
 .home-hero__grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.6fr);
+  grid-template-columns: minmax(0, 1.8fr) minmax(0, 1.6fr);
   gap: 2rem;
   width: 100%;
 }
@@ -391,7 +392,7 @@ main.container {
 
 /* Եկեղեցիների ենթամենյու */
 .subnav {
-  margin: 1rem 0 2rem;
+  margin: 1rem 2rem;
   display: inline-flex;
   gap: 0.75rem;
   border-bottom: 1px solid rgba(0,0,0,0.1);
