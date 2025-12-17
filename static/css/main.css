@@ -8,14 +8,13 @@ body {
   background: #f5efe4;
 }
 
-
 /* Գլխավոր hero բլոկ */
 .hero--with-bg {
   position: relative;
   padding: 3.6rem 2rem;
   min-height: 520px;
   border-radius: 12px;
-  margin: 1.2rem 1.2rem 1.2rem; /* վերև, աջ, ձախ, տակը նույնը */
+  margin: 1.2rem 1.2rem 1.2rem;
   color: #ffffff;
   overflow: hidden;
 }
@@ -79,12 +78,12 @@ main.container {
   padding: 0 0rem;
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;   /* flex-end → flex-start */
+  align-items: flex-end;
 }
 
 .header-left {
   display: flex;
-  align-items: flex-end;   /* flex-end → flex-start, որ logo-ն բարձր լինի */
+  align-items: flex-end;
   gap: 0rem;
 }
 
@@ -93,7 +92,7 @@ main.container {
 .logo {
   margin: 0.3rem 0 0 -3rem; /* վերև, աջ, ներքև, ձախ */
   display: inline-flex;
-  align-items: flex-start;    /* logo stack-ը բարձրից սկսի */
+  align-items: flex-start;
   transform-origin: left bottom;
 }
 
@@ -114,9 +113,8 @@ main.container {
   height: 4rem;
   width: auto;
   display: block;
-  margin-top: 0rem;   /* վերև/ներքև */
-  margin-left: -3rem;     /* ձախ */
-  margin-right: rem;    /* աջ */
+  margin-top: 0rem;
+  margin-left: -3rem;
 }
 
 /* Menu */
@@ -125,7 +123,7 @@ main.container {
   display: flex;
   gap: 1.5rem;
   align-items: flex-end;
-  padding-bottom: 0.9rem;    /* 0.1-ից մեծ, որ link-երը ցած գան */
+  padding-bottom: 0.9rem;
 }
 
 .nav a {
@@ -138,14 +136,14 @@ main.container {
   color: #FFB74D;
 }
 
-/* Աջ բլոկ (միայն լեզվի switch) */
+/* Աջ բլոկ */
 
 .header-right {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 0.25rem;
-  margin-bottom: 0;          /* որ նորից չի քաշի ներքև */
+  margin-bottom: 0;
 }
 
 .nav-tg-link {
@@ -186,7 +184,7 @@ main.container {
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
-/* Մոբայլ */
+/* Մոբայլ header */
 @media (max-width: 768px) {
   .header-inner {
     flex-direction: column;
@@ -206,8 +204,8 @@ main.container {
     gap: 0.5rem 1rem;
     padding-bottom: 0;
   }
+}
 
-  
 /* ===========================
    Home hero / dashboard
    =========================== */
@@ -231,7 +229,7 @@ main.container {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  margin-left: 1.5rem;   /* Նոր տող – փորձի 1rem, 1.5rem, 2rem */
+  margin-left: 1.5rem;
 }
 
 .home-card {
@@ -328,7 +326,7 @@ main.container {
   margin-top: 0.4rem;
 }
 
-/* Մոբայլ */
+/* Մոբայլ hero */
 @media (max-width: 768px) {
   .home-hero {
     min-height: auto;
@@ -428,15 +426,14 @@ main.container {
   padding: 0.5rem 1rem;
   text-align: left;
   text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-
-  display: flex;                 /* NEW */
+  display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 /* Telegram կոճակը footer-ի աջում */
 .site-footer .nav-tg-link {
-  margin-left: auto;             /* քաշում է դեպի աջ եզր */
+  margin-left: auto;
 }
 
 /* ===========================
