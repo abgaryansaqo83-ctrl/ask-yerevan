@@ -102,14 +102,14 @@ main.container {
 
 /* Մարդուկ */
 .logo-person {
-  height: 2rem;        /* մոտ «2»–ն, որ ասեցիր */
+  height: 0.2rem;        /* մոտ «2»–ն, որ ասեցիր */
   width: auto;
   display: block;
   margin-top: -0.2rem; /* մարդուկը մի քիչ բարձրանա՝ լոգոյին մոտ նստի */
 }
 
 .logo-person {
-  height: 1.8rem;     /* կամ ինչ չափ ուզում ես մարդուկի համար */
+  height: 2rem;     /* կամ ինչ չափ ուզում ես մարդուկի համար */
   width: auto;
   display: block;
 }
