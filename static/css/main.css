@@ -101,25 +101,25 @@ main.container {
 }
 
 .logo-image {
-  height: 4.5rem;              /* լոգոյի bubble-ը */
+  height: 6rem;              /* 4.5 → 5.0, մի քիչ ավելի մեծ */
   width: auto;
   display: block;
 }
 
 .logo-person {
-  height: 1.8rem;              /* մարդուկը՝ լոգոյի տակ */
+  height: 4rem;          /* ՀԵՌՔԵՎԻՑ ՄԵԾ, որ աչքի պրծնի */
   width: auto;
   display: block;
+  outline: 2px solid red; /* ժամանակավոր, որ նույնիսկ առանց նկարի երևա բոքսը */
 }
 
 /* Menu */
 .nav {
   display: flex;
   gap: 1.5rem;
-  align-items: flex-end;       /* link-երը baseline-ին */
-  padding-bottom: 0.15rem;     /* մի քիչ ներքև քաշել */
+  align-items: flex-end;
+  padding-bottom: 0.1rem;    /* 0.15 → 0.10, որ link-երը քիչ բարձրանան */
 }
-
 .nav a {
   text-decoration: none;
   color: #f5f5ff;
