@@ -100,10 +100,12 @@ main.container {
   gap: 0.25rem;
 }
 
-.logo-image {
-  height: 4rem;   /* 4.0–4.5 միջակայքը սովորաբար կոմֆորտ է */
+/* Մարդուկ */
+.logo-person {
+  height: 2rem;        /* մոտ «2»–ն, որ ասեցիր */
   width: auto;
   display: block;
+  margin-top: -0.2rem; /* մարդուկը մի քիչ բարձրանա՝ լոգոյին մոտ նստի */
 }
 
 .logo-person {
