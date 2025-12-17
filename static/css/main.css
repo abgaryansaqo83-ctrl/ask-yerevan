@@ -90,7 +90,7 @@ main.container {
 /* Logo + մարդուկ */
 
 .logo {
-  margin: -0.9rem 0 0 0;      /* խաղա -0.5…-1.2 միջակայքում՝ վերև/ներքևի համար */
+  margin: -0.8rem 0 0 -0.3rem; /* վերև, աջ, ներքև, ձախ */
   display: inline-flex;
   align-items: flex-start;    /* logo stack-ը բարձրից սկսի */
   transform-origin: left bottom;
@@ -113,7 +113,9 @@ main.container {
   height: 4rem;
   width: auto;
   display: block;
-  margin-top: -3rem;        /* -ը՝ մոտացնի, +ը՝ հեռացնի լոգոյից */
+  margin-top: -0.4rem;   /* վերև/ներքև */
+  margin-left: 0rem;     /* ձախ */
+  margin-right: 0rem;    /* աջ */
 }
 
 /* Menu */
