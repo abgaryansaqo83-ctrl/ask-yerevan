@@ -88,10 +88,11 @@ main.container {
 }
 
 /* Logo + մարդուկ */
+
 .logo {
-  margin: -0.8rem 0 0 0;   /* ՎԵՐև քաշելու համար */
+  margin: -0.8rem 0 0 0;      /* խաղա -0.5…-1.2 միջակայքում՝ վերև/ներքևի համար */
   display: inline-flex;
-  align-items: flex-end;
+  align-items: flex-start;    /* logo stack-ը բարձրից սկսի */
   transform-origin: left bottom;
 }
 
@@ -112,26 +113,30 @@ main.container {
   height: 4rem;
   width: auto;
   display: block;
-  margin-top: -0.6rem;   /* մեծ բացասական, որ հաստատ տեսնես շարժումը */
+  margin-top: -0.6rem;        /* -ը՝ մոտացնի, +ը՝ հեռացնի լոգոյից */
 }
 
 /* Menu */
+
 .nav {
   display: flex;
   gap: 1.5rem;
   align-items: flex-end;
-  padding-bottom: 0.35rem;   /* 0.1 → 0.35, link-երը աչքով ներքև կիջնեն */
+  padding-bottom: 0.35rem;    /* 0.1-ից մեծ, որ link-երը ցած գան */
 }
+
 .nav a {
   text-decoration: none;
   color: #f5f5ff;
   font-size: 1rem;
 }
+
 .nav a:hover {
   color: #FFB74D;
 }
 
 /* Աջ բլոկ (միայն լեզվի switch) */
+
 .header-right {
   display: flex;
   flex-direction: column;
@@ -140,6 +145,7 @@ main.container {
 }
 
 /* Telegram կոճակ – կօգտագործվի footer-ում */
+
 .nav-tg-link {
   display: inline-flex;
   align-items: center;
