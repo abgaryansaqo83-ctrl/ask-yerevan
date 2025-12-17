@@ -67,7 +67,7 @@ main.container {
 .site-header {
   background: #071f33;
   color: #fff;
-  padding: 0.25rem 0;          /* բարակ կապույտ գիծ */
+  padding: 0.2rem 0;     /* 0.25 → 0.20, կապույտ գիծը մի փոքր նեղացրինք */
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
@@ -102,18 +102,17 @@ main.container {
 
 /* Մարդուկ */
 .logo-person {
-  height: 0.2rem;        /* մոտ «2»–ն, որ ասեցիր */
+  height: 2rem;
   width: auto;
   display: block;
-  margin-top: -0.2rem; /* մարդուկը մի քիչ բարձրանա՝ լոգոյին մոտ նստի */
+  margin-top: -0.25rem;  /* մարդուկը լոգոյին ավելի մոտ, հեռախոսին մոտենա */
 }
 
-.logo-person {
-  height: 2rem;     /* կամ ինչ չափ ուզում ես մարդուկի համար */
+.logo-image {
+  height: 4.8rem;        /* 4.6 → 4.8, լոգոն մի քիչ ավելի մեծ */
   width: auto;
   display: block;
 }
-
 /* Menu */
 .nav {
   display: flex;
