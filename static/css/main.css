@@ -5,8 +5,9 @@
 body {
   margin: 0;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  background: #f5efe4;
+  background: yellow !important;   /* DEBUG */
 }
+
 
 /* Գլխավոր hero բլոկ */
 .hero--with-bg {
