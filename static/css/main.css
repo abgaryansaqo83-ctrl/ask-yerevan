@@ -110,7 +110,7 @@ main.container {
 }
 
 .logo-person {
-  height: 4rem;
+  height: 3rem;
   width: auto;
   display: block;
   margin-top: 0rem;
@@ -142,7 +142,7 @@ main.container {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.25rem;
+  gap: 4rem;
   margin-bottom: 0;
 }
 
