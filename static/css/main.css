@@ -42,7 +42,7 @@ main.container {
 }
 
 .container {
-  max-width: 1200px; /* կամ 1320px */
+  max-width: 1320px; /* կամ 1320px */
   margin: 0 auto;
   padding: 0 1rem;
 }
@@ -67,14 +67,14 @@ main.container {
 .site-header {
   background: #071f33;
   color: #fff;
-  padding: 0.15rem 0;     /* 0.25 → 0.20, կապույտ գիծը մի փոքր նեղացրինք */
+  padding: 0.05rem 0;     /* 0.25 → 0.20, կապույտ գիծը մի փոքր նեղացրինք */
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .header-inner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1rem;           /* 1.5 → 1.0, որ ամբողջ header-ը ձախից մոտենա */
+  padding: 0 0.5rem;           /* 1.5 → 1.0, որ ամբողջ header-ը ձախից մոտենա */
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -83,7 +83,7 @@ main.container {
 .header-left {
   display: flex;
   align-items: flex-end;
-  gap: 1.2rem;               /* 1.5 → 1.2, լոգո–մենյու միջեւ հեռավորությունը փոքրացնի */
+  gap: 1rem;               /* 1.5 → 1.2, լոգո–մենյու միջեւ հեռավորությունը փոքրացնի */
 }
 
 /* Logo + մարդուկ */
@@ -92,7 +92,6 @@ main.container {
   margin: 0;
   display: inline-flex;
   align-items: flex-end;
-  transform: scale(1.15);      /* 15% zoom ամբողջ stack-ի վրա */
   transform-origin: left bottom; /* ձախ-ներքևից մեծանա, կապույտը չլենանա շատ */
 }
 
@@ -112,7 +111,7 @@ main.container {
 }
 
 .logo-image {
-  height: 20rem;        /* 4.6 → 4.8, լոգոն մի քիչ ավելի մեծ */
+  height: 15rem;        /* 4.6 → 4.8, լոգոն մի քիչ ավելի մեծ */
   width: auto;
   display: block;
 }
@@ -138,7 +137,7 @@ main.container {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.2rem;      /* փոքր ինտերվալ Telegram–ի և լեզվի միջեւ */
+  gap: 0.5rem;      /* փոքր ինտերվալ Telegram–ի և լեզվի միջեւ */
 }
 
 /* Telegram link */
@@ -150,7 +149,7 @@ main.container {
   font-size: 0.9rem;
   text-decoration: none;
   align-self: flex-end;
-  margin-bottom: 0.3rem;   /* բարձրացնում է Telegram–ը լեզվի տողից մի քիչ վերև */
+  margin-bottom: 1rem;   /* բարձրացնում է Telegram–ը լեզվի տողից մի քիչ վերև */
 }
 
 .nav-tg-link:hover {
