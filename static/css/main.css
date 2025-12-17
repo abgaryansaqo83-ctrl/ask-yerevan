@@ -102,14 +102,14 @@ main.container {
 
 /* Մարդուկ */
 .logo-person {
-  height: 4rem;
+  height: 3rem;
   width: auto;
   display: block;
   margin-top: -0.25rem;  /* մարդուկը լոգոյին ավելի մոտ, հեռախոսին մոտենա */
 }
 
 .logo-image {
-  height: 6rem;        /* 4.6 → 4.8, լոգոն մի քիչ ավելի մեծ */
+  height: 5.5rem;        /* 4.6 → 4.8, լոգոն մի քիչ ավելի մեծ */
   width: auto;
   display: block;
 }
@@ -135,7 +135,7 @@ main.container {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.15rem;      /* փոքր ինտերվալ Telegram–ի և լեզվի միջեւ */
+  gap: 0.2rem;      /* փոքր ինտերվալ Telegram–ի և լեզվի միջեւ */
 }
 
 /* Telegram link */
@@ -147,7 +147,7 @@ main.container {
   font-size: 0.9rem;
   text-decoration: none;
   align-self: flex-end;
-  margin-bottom: 0.25rem;   /* բարձրացնում է Telegram–ը լեզվի տողից մի քիչ վերև */
+  margin-bottom: 0.3rem;   /* բարձրացնում է Telegram–ը լեզվի տողից մի քիչ վերև */
 }
 
 .nav-tg-link:hover {
