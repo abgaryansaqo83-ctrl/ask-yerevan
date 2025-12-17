@@ -87,10 +87,13 @@ main.container {
 }
 
 /* Logo + մարդուկ */
+
 .logo {
   margin: 0;
   display: inline-flex;
   align-items: flex-end;
+  transform: scale(1.15);      /* 15% zoom ամբողջ stack-ի վրա */
+  transform-origin: left bottom; /* ձախ-ներքևից մեծանա, կապույտը չլենանա շատ */
 }
 
 .logo-stack {
