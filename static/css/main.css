@@ -77,20 +77,20 @@ main.container {
   padding: 0 0rem;
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;   /* flex-end → flex-start */
+  align-items: flex-start;   /* flex-end → flex-start */
 }
 
 .header-left {
   display: flex;
-  align-items: flex-end;   /* flex-end → flex-start, որ logo-ն բարձր լինի */
+  align-items: flex-start;   /* flex-end → flex-start, որ logo-ն բարձր լինի */
   gap: 0.2rem;
 }
 
 /* Logo + մարդուկ */
 .logo {
-  margin: 0;
+  margin-top: -0.4rem;
   display: inline-flex;
-  align-items: flex-start;
+  align-items: flex-end;
   transform-origin: left bottom;
 }
 
@@ -111,7 +111,7 @@ main.container {
   height: 4rem;
   width: auto;
   display: block;
-  margin-top: -0.25rem;
+  margin-top: 0.25rem;
 }
 
 /* Menu */
