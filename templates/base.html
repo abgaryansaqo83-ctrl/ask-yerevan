@@ -54,11 +54,15 @@
           </svg>
         </span>
         <span class="tg-text">
-          Մեր Telegram խումբը
+          {% if lang == 'en' %}
+            Our Telegram group
+          {% else %}
+            Մեր Telegram խումբը
+          {% endif %}
         </span>
-       </a>
-      
-       <div class="lang-switch">
+      </a>
+
+      <div class="lang-switch">
         {% set path = request.url.path %}
         {% if lang == 'en' %}
           <a href="{{ path.replace('/en', '/hy') }}">Հայ</a> | <strong>EN</strong>
@@ -83,16 +87,24 @@
         <p>© AskYerevan · Telegram խումբ · կայքը փորձնական է</p>
       {% endif %}
     </div>
-    
-        {% if lang == 'en' %}
-          <span class="tg-text">
+
+    <div class="footer-right">
+      <a href="https://t.me/AskYerevan"
+         class="nav-tg-link nav-tg-link--footer"
+         target="_blank"
+         rel="noopener">
+        <span class="tg-icon-svg" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="tg-svg">
+            <path d="M9.5 16.8 9.7 13.4 16.7 7.2C17 7 16.6 6.9 16.3 7.1L7.9 12l-3.3-1.1c-.7-.2-.7-1.2.1-1.5լ14.4-5.5c.6-.2 1.3.3 1.1 1լ-2.5 14.4c-.1.7-.9 1-1.5.6լ-4-3-2.3 1.9c-.3.3-.9.1-.9-.4z"/>
+          </svg>
+        </span>
+        <span class="tg-text">
+          {% if lang == 'en' %}
             Join the <span class="tg-text-script">AskYerevan</span> group
-          </span>
-        {% else %}
-          <span class="tg-text">
+          {% else %}
             Միացիր <span class="tg-text-script">AskYerevan</span> խմբին
-          </span>
-        {% endif %}
+          {% endif %}
+        </span>
       </a>
     </div>
   </div>
