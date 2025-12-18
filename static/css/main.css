@@ -377,6 +377,7 @@ main.container {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  align-items: center;      /* Կենտրոնացնում է child-երը կալոնայի ներսում */
 }
 
 .church-image--column img {
@@ -384,6 +385,7 @@ main.container {
   max-width: 420px;
   height: auto;
   border-radius: 4px;
+  margin: 0 auto;          /* Հաստատում է, որ նկարը կենտրոն լինի */
 }
 
 /* Եկեղեցիների ենթամենյու */
