@@ -105,7 +105,7 @@ main.container {
 /* Logo + մարդուկ */
 
 .logo {
-  margin: 0.3rem 0 0 -3rem; /* վերև, աջ, ներքև, ձախ */
+  margin: 0.3rem 0 0 -2rem; /* վերև, աջ, ներքև, ձախ */
   display: inline-flex;
   align-items: flex-start;
   transform-origin: left bottom;
@@ -257,15 +257,15 @@ main.container {
 
 .home-card__inner {
   display: grid;
-  grid-template-columns: 120px minmax(0, 1fr);
+  grid-template-columns: 180px minmax(0, 1fr);
   gap: 0.8rem;
   align-items: center;
 }
 
 .home-card__thumb {
-  background: rgba(255,255,255,0.96);
+  background: rgb(17 31 49 / 73%);
   border-radius: 12px;
-  padding: 0.4rem;
+  padding: 0.2rem;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 
