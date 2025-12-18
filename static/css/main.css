@@ -433,17 +433,30 @@ main.container {
    Sights page
    =========================== */
 
-.sights-section {
-  padding: 2rem 2rem;
+.sights-hero {
+  padding: 2rem 2rem 2.5rem;
 }
 
-.sights-block {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
+.sights-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.6fr);
+  gap: 2rem;
+  align-items: center;
   margin-bottom: 3rem;
 }
 
+/* շախմատաձև՝ even row-ում փոխենք սյուների հերթը */
+.sights-row.sights-row--reverse {
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.4fr);
+}
+
+.sights-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Նկարների սյուն */
 .sights-image--column {
   display: flex;
   flex-direction: column;
@@ -458,8 +471,28 @@ main.container {
   border-radius: 4px;
 }
 
-.sights-text {
-  flex: 1 1 260px;
+/* Տեքստի սյուն */
+.sights-col--text h2 {
+  margin: 0 0 0.6rem;
+  font-size: 2rem;
+}
+
+.sights-col--text h3 {
+  margin: 0 0 0.6rem;
+}
+
+.sights-col--text p {
+  margin: 0 0 0.6rem;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Մոբայլ */
+@media (max-width: 768px) {
+  .sights-row,
+  .sights-row.sights-row--reverse {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ===========================
