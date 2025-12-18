@@ -157,8 +157,8 @@ main.container {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.4rem;
-  margin-bottom: 0;
+  gap: 2.5rem;
+  margin-bottom: 0.9rem;
 }
 
 .nav-tg-link {
