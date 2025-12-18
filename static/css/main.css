@@ -25,7 +25,7 @@ body {
   position: absolute;
   inset: 0;
   background: url("/static/img/home-hero.jpg.png") center/cover no-repeat;
-  opacity: 0.7;
+  opacity: 0.5;
   z-index: -1;
 }
 
@@ -281,7 +281,7 @@ main.container {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
-  color: #ffffff;
+  color: #570101;
 }
 
 .home-card__title {
@@ -311,7 +311,7 @@ main.container {
   padding: 0.5rem 0.5rem 0.5rem 0;
   background: none;
   box-shadow: none;
-  color: #ffffff;
+  color: #570101;
 }
 
 .home-hero__header h2 {
@@ -335,7 +335,7 @@ main.container {
   margin: 0;
   padding: 0;
   font-size: 0.9rem;
-  color: #ffffff;
+  color: #570101;
 }
 
 .home-hero__timeline li + li {
