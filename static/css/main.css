@@ -54,7 +54,7 @@ main.container {
 /* Լեզվի քուիչ */
 .lang-switch {
   font-size: 1rem;
-  margin-top: -0.2rem;   /* -0.1 → -0.2, մի քիչ էլ ավելի վերև */
+  margin-top: -0.2rem;
 }
 .lang-switch a {
   color: #f0f0f0;
@@ -90,7 +90,7 @@ main.container {
 .header-inner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 0.25rem;   /* 0.5rem-ից դարձրած՝ մի քիչ ավելի լայն տարածք */
+  padding: 0 0.25rem;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -157,7 +157,7 @@ main.container {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 4rem;
+  gap: 0.4rem;
   margin-bottom: 0;
 }
 
@@ -366,7 +366,7 @@ main.container {
    =========================== */
 
 .church-section {
-  padding: 2rem 2rem;   /* առաջ 2rem 0 էր, աջ/ձախն էլ է ստանում padding */
+  padding: 2rem 2rem;
 }
 
 .church-block {
@@ -392,7 +392,7 @@ main.container {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  align-items: center;      /* Կենտրոնացնում է child-երը կալոնայի ներսում */
+  align-items: center;
 }
 
 .church-image--column img {
@@ -400,7 +400,7 @@ main.container {
   max-width: 420px;
   height: auto;
   border-radius: 4px;
-  margin: 0 auto;          /* Հաստատում է, որ նկարը կենտրոն լինի */
+  margin: 0 auto;
 }
 
 /* Եկեղեցիների ենթամենյու */
@@ -429,7 +429,9 @@ main.container {
   display: none;
 }
 
-/* -----«Տեսարժան վայրեր»-----*/
+/* ===========================
+   Sights page
+   =========================== */
 
 .sights-section {
   padding: 2rem 2rem;
@@ -479,12 +481,7 @@ main.container {
   align-items: center;
 }
 
-/* Telegram կոճակը footer-ի աջում */
-.site-footer .nav-tg-link {
-  margin-left: auto;
-}
-
 /* ===========================
    9. Utilities / Helpers
    =========================== */
-/* Այստեղ կարող ես ավելացնել .text-center, .mt-*, .hidden և այլն */
+/* Այստեղ կարող ես ավելացնել .text-center, .mt-*, .hidden
