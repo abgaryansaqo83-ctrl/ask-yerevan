@@ -68,8 +68,23 @@ main.container {
 .site-header {
   background: #071f33;
   color: #fff;
-  padding: 0.02rem 0; /* բարակ կապույտ գիծ */
+  padding: 0.02rem 0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: transform 0.2s ease-out;
+}
+
+/* scroll-down → թաքցնենք header-ը վերև */
+.site-header.header--hidden {
+  transform: translateY(-100%);
+}
+
+/* scroll-up կամ սկզբնական վիճակ → երևա նորմալ */
+.site-header.header--visible {
+  transform: translateY(0);
 }
 
 .header-inner {
