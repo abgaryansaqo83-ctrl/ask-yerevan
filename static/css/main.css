@@ -414,6 +414,37 @@ main.container {
   display: none;
 }
 
+/* -----«Տեսարժան վայրեր»-----*/
+
+.sights-section {
+  padding: 2rem 2rem;
+}
+
+.sights-block {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.sights-image--column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.sights-image--column img {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  border-radius: 4px;
+}
+
+.sights-text {
+  flex: 1 1 260px;
+}
+
 /* ===========================
    8. Footer
    =========================== */
