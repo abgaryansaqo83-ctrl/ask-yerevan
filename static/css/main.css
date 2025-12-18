@@ -169,6 +169,7 @@ main.container {
   font-size: 0.9rem;
   text-decoration: none;
   align-self: flex-end;
+  margin-bottom: 0.1rem;
 }
 
 .nav-tg-link:hover {
