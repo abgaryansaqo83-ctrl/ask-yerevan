@@ -7,41 +7,7 @@
   <link rel="stylesheet" href="/static/css/main.css">
 </head>
 <body>
-<script>
-  (function () {
-    const header = document.querySelector('.site-header');
-    if (!header) return;
-
-    let lastScrollY = window.scrollY;
-
-    function onScroll() {
-      const current = window.scrollY;
-
-      // քիչ scroll-ի դեպքում (վերևի մասում) թող միշտ երևա
-      if (current < 50) {
-        header.classList.remove('header--hidden');
-        header.classList.add('header--visible');
-        lastScrollY = current;
-        return;
-      }
-
-      if (current > lastScrollY) {
-        // scroll down → թաքցնենք
-        header.classList.remove('header--visible');
-        header.classList.add('header--hidden');
-      } else if (current < lastScrollY) {
-        // scroll up → ցույց տանք
-        header.classList.remove('header--hidden');
-        header.classList.add('header--visible');
-      }
-
-      lastScrollY = current;
-    }
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-  })();
-</script>
-
+  
 <header class="site-header">
   <div class="container header-inner">
     <div class="header-left">
@@ -143,6 +109,41 @@
     </div>
   </div>
 </footer>
+  
+<script>
+  (function () {
+    const header = document.querySelector('.site-header');
+    if (!header) return;
 
+    let lastScrollY = window.scrollY;
+
+    function onScroll() {
+      const current = window.scrollY;
+
+      // քիչ scroll-ի դեպքում (վերևի մասում) թող միշտ երևա
+      if (current < 50) {
+        header.classList.remove('header--hidden');
+        header.classList.add('header--visible');
+        lastScrollY = current;
+        return;
+      }
+
+      if (current > lastScrollY) {
+        // scroll down → թաքցնենք
+        header.classList.remove('header--visible');
+        header.classList.add('header--hidden');
+      } else if (current < lastScrollY) {
+        // scroll up → ցույց տանք
+        header.classList.remove('header--hidden');
+        header.classList.add('header--visible');
+      }
+
+      lastScrollY = current;
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+  })();
+</script>
+  
 </body>
 </html>
