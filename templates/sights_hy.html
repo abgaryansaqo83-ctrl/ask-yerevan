@@ -4,16 +4,20 @@
 {% block content %}
 <h1>Տեսարժան վայրեր Հայաստանում</h1>
 
-<section class="sights-section" id="garni-temple">
-  <div class="sights-block">
-    <div class="sights-image sights-image--column">
-      <img src="/static/img/sights/garni-old.jpg"
-           alt="Old photograph of Garni pagan temple">
-      <img src="/static/img/sights/garni-new.jpg"
-           alt="Garni Temple today, above the Azat gorge">
+<section class="sights-hero">
+
+  <!-- Garni · row 1 (նկար ձախ, տեքստ աջ) -->
+  <div class="sights-row">
+    <div class="sights-col sights-col--image">
+      <div class="sights-image sights-image--column">
+        <img src="/static/img/sights/garni-old.jpg"
+             alt="Old photograph of Garni pagan temple">
+        <img src="/static/img/sights/garni-new.jpg"
+             alt="Garni Temple today, above the Azat gorge">
+      </div>
     </div>
 
-    <div class="sights-text">
+    <div class="sights-col sights-col--text">
       <h2>Գառնիի հեթանոսական տաճար</h2>
       <h3>I դարի տաճար՝ Արտաշեսյանների ամառանոցում</h3>
 
@@ -36,6 +40,15 @@
       </p>
     </div>
   </div>
-</section>
+  
+    <div class="sights-row sights-row--reverse">
+        /* ... new images/text ... */
+    </div>
 
+
+  {# Հաջորդ sight–ը կավելացնես սա copy/paste անելով՝
+     sights-row–ին տալով class="sights-row sights-row--reverse",
+     որ նկարը գնա աջ, տեքստը՝ ձախ #}
+
+</section>
 {% endblock %}
