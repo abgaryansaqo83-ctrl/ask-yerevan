@@ -57,3 +57,33 @@
     lon: 44.2911
   image_old: "/static/img/churches/gayane-old.jpg"
   image_new: "/static/img/churches/gayane-new.jpg"
+
+- id: saint-gregory-yerevan
+  name_hy: "Սուրբ Գրիգոր Լուսավորիչ մայր տաճար"
+  name_en: "Saint Gregory the Illuminator Cathedral"
+  period: "Նոր"
+  century: "XXI դար"
+  year: 2001
+  location_hy: "Երևան, Կենտրոն վարչական շրջան (Երվանդ Քոչարի փողոց, «Գեներալ Անդրանիկ» մետրոյի հարևանությամբ)"
+  location_en: "Yerevan, Kentron District (Yervand Kochar Street, next to General Andranik metro station)"
+  unesco: false
+  coordinates:
+    lat: 40.1719
+    lon: 44.5169
+  image_old: "/static/img/churches/Saint-Gregory_1.jpg"
+  image_new: "/static/img/churches/Saint_Gregory_2.webp"
+
+- id: saint-anna-yerevan
+  name_hy: "Սուրբ Աննա եկեղեցի"
+  name_en: "Saint Anna Church"
+  period: "Նոր"
+  century: "XXI դար"
+  year: 2015
+  location_hy: "Երևան, Կենտրոն վարչական շրջան (Աբովյան և Սայաթ-Նովա փողոցների խաչմերուկ)"
+  location_en: "Yerevan, Kentron District (intersection of Abovyan and Sayat-Nova streets)"
+  unesco: false
+  coordinates:
+    lat: 40.1844
+    lon: 44.5191
+  image_old: "/static/img/churches/saint-anna-1.jpg"
+  image_new: "/static/img/churches/saint-anna-2.jpg"
