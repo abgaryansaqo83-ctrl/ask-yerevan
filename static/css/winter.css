@@ -12,24 +12,24 @@
   right: 0;
   top: 0;
   height: 80px; /* light1.png-ի բարձրությանը մոտ */
+
   background-image:
     url("/static/img/seasonal/light1.png"),
     url("/static/img/seasonal/light1.png"),
     url("/static/img/seasonal/light1.png");
+
   background-repeat: no-repeat, no-repeat, no-repeat;
+
+  /* Կենտրոնից դեպի ներս բերված դիրքեր */
   background-position:
-    left center,
-    center center,
-    right center;
+    20% center,   /* առաջին լույսը — ձախից λίγο ներս */
+    50% center,   /* երկրորդը — ճիշտ կենտրոնում */
+    80% center;   /* երրորդը — աջից λίγο ներս */
+
   background-size: auto 100%, auto 100%, auto 100%;
   pointer-events: none;
 }
 
-
-/* լոգոյի stack-ը պատրաստենք overlay-ների համար */
-.logo-stack {
-  position: relative;
-}
 
 /* Santa գլխարկ AskYerevan լոգոյի վրա */
 .logo-stack::after {
