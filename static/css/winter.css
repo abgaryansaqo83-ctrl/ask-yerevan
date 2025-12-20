@@ -43,7 +43,7 @@
   bottom: 8px;
   width: 70px;
   height: 90px;
-  background: url("/static/img/seasonal/tree.jpg") no-repeat center;
+  background: url("/static/img/seasonal/tree-with-snow.png") no-repeat center;
   background-size: contain;
   pointer-events: none;
 }
