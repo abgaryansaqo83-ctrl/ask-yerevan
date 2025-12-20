@@ -4,18 +4,21 @@
   z-index: 10;
 }
 
-/* Մեկ լիարժեք լույսերի շերտ, առանց repeat-x */
+/* Մեկ լիարժեք լույսերի շերտ, 3 անգամ repeat-x */
 .site-header::before {
   content: "";
   position: absolute;
   left: 0;
   right: 0;
-  top: 0px;            /* գծին մոտ, սա հետո աչքով fine-tune կանես */
-  height: 20px;         /* քո lights.webp-ի բարձրությանը մոտ */
-  background: url("/static/img/seasonal/light1.png") no-repeat center top;
-  background-size: 20% auto;   /* ամբողջ լայնությամբ ձգվի */
+  top: 0;
+  height: 20px; /* light1.png-ի բարձրությանը մոտ */
+  background-image: url("/static/img/seasonal/light1.png");
+  background-repeat: repeat-x;
+  background-position: center top;
+  background-size: 33% auto;  /* մոտավորապես 3 հատ էկրանի երկարությամբ */
   pointer-events: none;
 }
+
 
 /* լոգոյի stack-ը պատրաստենք overlay-ների համար */
 .logo-stack {
@@ -58,4 +61,7 @@
   background: url("/static/img/seasonal/santa_CL.png") no-repeat center;
   background-size: contain;
   pointer-events: none;
+}
+body {
+  background-color: #0c1521; /* կամ այն color-ը, որ դու ես ուզում, դեպի նախորդ design */
 }
