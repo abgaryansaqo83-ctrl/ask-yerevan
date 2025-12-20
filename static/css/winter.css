@@ -1,40 +1,48 @@
+/* header-ին թույլ դիրք, որ relative-ը աշխատի */
+.site-header {
+  position: relative;
+  z-index: 10;
+}
+
 /* վերևի կապույտ գծի վրա լույսեր */
 .site-header::before {
   content: "";
   position: absolute;
   left: 0;
   right: 0;
-  top: -18px; /* մի քիչ վերև կապույտ գծից */
-  height: 24px;
-  background: url("/static/img/seasonal/lights.png") repeat-x center;
+  top: -18px; /* մի քիչ վերև կապույտ գծից, կկարգավորենք */
+  height: 28px;
+  background: url("/static/img/seasonal/lights.webp") repeat-x center;
   background-size: contain;
   pointer-events: none;
 }
 
-/* լոգոյի վրա ձյուն */
+/* լոգոյի stack-ը պատրաստենք overlay-ների համար */
 .logo-stack {
   position: relative;
 }
 
+/* լոգոյի վերևի «ձյուն» */
 .logo-stack::after {
   content: "";
   position: absolute;
-  left: -5px;
-  right: -5px;
-  top: -8px;
-  height: 18px;
-  background: url("/static/img/seasonal/snow-cap.png") no-repeat center top;
+  left: -6px;
+  right: -6px;
+  top: -10px;
+  height: 26px;
+  background: url("/static/img/seasonal/snow-cap.webp") no-repeat center top;
   background-size: contain;
   pointer-events: none;
 }
 
-/* փոքր տոնածառ լոգոյի կողքին */
+/* լոգոյի կողքի փոքր տոնածառ */
 .logo-stack::before {
   content: "";
   position: absolute;
   right: -32px;
-  bottom: -2px;
-  width: 24px;
-  height: 32px;
-  background: url("/static/img/seasonal/tree.png") no-repeat center/contain;
+  bottom: -4px;
+  width: 28px;
+  height: 40px;
+  background: url("/static/img/seasonal/tree-with-snow.webp") no-repeat center;
+  background-size: contain;
 }
