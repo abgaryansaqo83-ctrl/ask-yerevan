@@ -77,7 +77,7 @@ main.container {
   z-index: 1000;
   transition: transform 0.2s ease-out;
 
-  height: 64px;               /* ֆիքս չափ, պետք լինի՝ կփոխենք */
+  height: 120px;               /* ֆիքս չափ, պետք լինի՝ կփոխենք */
   overflow: visible;          /* որ լույսերը, գլխարկը դուրս գան */
 }
 
@@ -97,7 +97,7 @@ main.container {
   padding: 0 0.25rem;
   display: flex;
   justify-content: space-between;
-  height: 64px;   /* նույնը, որ header-ը չգերազանցի */
+  height: 120px;   /* նույնը, որ header-ը չգերազանցի */
   align-items: flex-end;
 }
 
