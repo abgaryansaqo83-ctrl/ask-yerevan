@@ -17,6 +17,7 @@ body {
   margin: 1.2rem 1.2rem 1.2rem;
   color: #ffffff;
   overflow: hidden;
+  font-weight: 600;      /* կամ 500, եթե շատ հաստ լինի */
 }
 
 /* Ֆոնային նկար + թափանցիկ շերտ */
