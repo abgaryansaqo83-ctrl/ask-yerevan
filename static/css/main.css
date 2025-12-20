@@ -497,50 +497,54 @@ main.container {
 }
 
 /* ===========================
-   ժամանցի վայրեր
+   Ժամանցի վայրեր
    =========================== */
 
 .places {
-  padding: 4rem 1.5rem;
+  padding: 2rem 2rem;
 }
 
-/* երկու սյուն՝ նկար + տեքստ */
 .place-section {
-  margin-bottom: 4rem;
+  padding: 0;              /* ցանկության դեպքում կարող ես տալ 2rem 0 */
+  margin-bottom: 3rem;
 }
 
 .place-block {
   display: flex;
   flex-wrap: wrap;
-  gap: 2rem;
-  align-items: stretch;
+  gap: 1.5rem;
 }
 
-.place-image {
-  flex: 1 1 40rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.place-image img {
-  width: 100%;
-  height: auto;
-  display: block;
-  object-fit: cover;
-  border-radius: 8px;
-}
-
-.place-text {
-  flex: 1 1 40rem;
-}
-
-/* շախմատաձև – աջ/ձախ փոխելու համար */
 .place-block--reverse {
   flex-direction: row-reverse;
 }
 
-/* mobile view */
+/* Նկարների սյուն */
+.place-image {
+  flex: 1 1 260px;
+}
+
+.place-image--column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.place-image--column img {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  border-radius: 4px;
+  margin: 0 auto;
+}
+
+/* Տեքստի սյուն */
+.place-text {
+  flex: 1 1 260px;
+}
+
+/* Մոբայլ */
 @media (max-width: 768px) {
   .place-block,
   .place-block--reverse {
