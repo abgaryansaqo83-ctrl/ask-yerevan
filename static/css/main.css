@@ -553,6 +553,25 @@ main.container {
 }
 
 /* ===========================
+   About էջ
+   =========================== */
+main {
+  max-width: 900px;
+  margin: 2rem auto 3rem;
+  padding: 0 1.5rem;
+}
+
+main h2,
+main h3 {
+  margin-top: 1.5rem;
+}
+
+main p {
+  line-height: 1.6;
+  margin: 0.6rem 0;
+}
+
+/* ===========================
    8. Footer
    =========================== */
 
