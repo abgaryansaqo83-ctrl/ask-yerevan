@@ -69,7 +69,7 @@ main.container {
 .site-header {
   background: #071f33;
   color: #1a0707;
-  padding: 0;                 /* էս պահին հանի padding-ը */
+  padding: 0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 
   position: sticky;
@@ -77,8 +77,8 @@ main.container {
   z-index: 1000;
   transition: transform 0.2s ease-out;
 
-  height: 120px;               /* ֆիքս չափ, պետք լինի՝ կփոխենք */
-  overflow: visible;          /* որ լույսերը, գլխարկը դուրս գան */
+  height: 120px;
+  overflow: visible;  /* որ լույսերը/գլխարկը դուրս գան */
 }
 
 /* scroll-down → թաքցնենք header-ը վերև */
@@ -97,9 +97,12 @@ main.container {
   padding: 0 0.25rem;
   display: flex;
   justify-content: space-between;
-  height: 120px;   /* նույնը, որ header-ը չգերազանցի */
+  height: 120px;
   align-items: flex-end;
+  position: relative;  /* որ z-index աշխատի */
+  z-index: 10;         /* բովանդակությունը՝ լույսից ՎԵՐև */
 }
+
 
 .header-left {
   display: flex;
