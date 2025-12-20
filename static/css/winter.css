@@ -10,10 +10,10 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: -6px;            /* գծին մոտ, սա հետո աչքով fine-tune կանես */
-  height: 60px;         /* քո lights.webp-ի բարձրությանը մոտ */
+  top: 0px;            /* գծին մոտ, սա հետո աչքով fine-tune կանես */
+  height: 20px;         /* քո lights.webp-ի բարձրությանը մոտ */
   background: url("/static/img/seasonal/light1.png") no-repeat center top;
-  background-size: 100% auto;   /* ամբողջ լայնությամբ ձգվի */
+  background-size: 20% auto;   /* ամբողջ լայնությամբ ձգվի */
   pointer-events: none;
 }
 
