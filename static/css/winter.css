@@ -30,7 +30,7 @@
   height: 60px;
   left: 10px;                  /* լոգոյի ձախ/վերևից կկարգավորես */
   top: -30px;
-  background: url("/static/img/seasonal/snow-cap.webp") no-repeat center;
+  background: url("/static/img/seasonal/hat.jpg") no-repeat center;
   background-size: contain;
   pointer-events: none;
 }
@@ -43,7 +43,7 @@
   bottom: 8px;
   width: 70px;
   height: 90px;
-  background: url("/static/img/seasonal/tree-with-snow.webp") no-repeat center;
+  background: url("/static/img/seasonal/tree.jpg") no-repeat center;
   background-size: contain;
   pointer-events: none;
 }
@@ -55,7 +55,7 @@
   bottom: 8px;
   width: 70px;
   height: 90px;
-  background: url("/static/img/seasonal/santa.webp") no-repeat center;
+  background: url("/static/img/seasonal/santa.jpg") no-repeat center;
   background-size: contain;
   pointer-events: none;
 }
