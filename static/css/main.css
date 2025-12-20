@@ -505,7 +505,7 @@ main.container {
 }
 
 .place-section {
-  padding: 0;              /* ցանկության դեպքում կարող ես տալ 2rem 0 */
+  padding: 2rem;              /* ցանկության դեպքում կարող ես տալ 2rem 0 */
   margin-bottom: 3rem;
 }
 
