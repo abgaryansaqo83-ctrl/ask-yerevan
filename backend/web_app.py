@@ -2,8 +2,25 @@ from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from datetime import date
+
 
 app = FastAPI(title="AskYerevan Web")
+
+def is_winter_theme_enabled() -> bool:
+    today = date.today()
+    year = today.year
+
+    start = date(year, 12, 20)
+    end = date(year + 1, 1, 15)
+
+    if today >= start:
+        return today <= end
+    else:
+        prev_start = date(year - 1, 12, 20)
+        prev_end = date(year, 1, 15)
+        return prev_start <= today <= prev_end
+
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -17,14 +34,22 @@ async def root_redirect(request: Request):
 async def index_hy(request: Request):
     return templates.TemplateResponse(
         "index_hy.html",
-        {"request": request, "lang": "hy"}
+        {
+            "request": request,
+            "lang": "hy",
+            "is_winter_theme": is_winter_theme_enabled(),
+        },
     )
 
 @app.get("/en", response_class=HTMLResponse)
 async def index_en(request: Request):
     return templates.TemplateResponse(
         "index_en.html",
-        {"request": request, "lang": "en"}
+        {
+            "request": request,
+            "lang": "en",
+            "is_winter_theme": is_winter_theme_enabled(),
+        },
     )
 
 # Եկեղեցիներ
@@ -32,29 +57,45 @@ async def index_en(request: Request):
 async def churches_hy(request: Request):
     return templates.TemplateResponse(
         "churches_hy.html",
-        {"request": request, "lang": "hy"}
+        {
+            "request": request,
+            "lang": "hy",
+            "is_winter_theme": is_winter_theme_enabled(),
+        },
     )
 
 @app.get("/en/churches", response_class=HTMLResponse)
 async def churches_en(request: Request):
     return templates.TemplateResponse(
         "churches_en.html",
-        {"request": request, "lang": "en"}
+        {
+            "request": request,
+            "lang": "en",
+            "is_winter_theme": is_winter_theme_enabled(),
+        },
     )
 
 # Նորություններ
 @app.get("/hy/news", response_class=HTMLResponse)
 async def news_hy(request: Request):
     return templates.TemplateResponse(
-        "events_hy.html",          # ֆայլը՝ նորությունների template
-        {"request": request, "lang": "hy"}
+        "events_hy.html",  # ֆայլը՝ նորությունների template
+        {
+            "request": request,
+            "lang": "hy",
+            "is_winter_theme": is_winter_theme_enabled(),
+        },
     )
 
 @app.get("/en/news", response_class=HTMLResponse)
 async def news_en(request: Request):
     return templates.TemplateResponse(
         "events_en.html",
-        {"request": request, "lang": "en"}
+        {
+            "request": request,
+            "lang": "en",
+            "is_winter_theme": is_winter_theme_enabled(),
+        },
     )
 
 # Տեսարժան վայրեր
@@ -62,14 +103,22 @@ async def news_en(request: Request):
 async def sights_hy(request: Request):
     return templates.TemplateResponse(
         "sights_hy.html",
-        {"request": request, "lang": "hy"}
+        {
+            "request": request,
+            "lang": "hy",
+            "is_winter_theme": is_winter_theme_enabled(),
+        },
     )
 
 @app.get("/en/sights", response_class=HTMLResponse)
 async def sights_en(request: Request):
     return templates.TemplateResponse(
         "sights_en.html",
-        {"request": request, "lang": "en"}
+        {
+            "request": request,
+            "lang": "en",
+            "is_winter_theme": is_winter_theme_enabled(),
+        },
     )
 
 # Ժամանցի վայրեր
@@ -77,14 +126,22 @@ async def sights_en(request: Request):
 async def places_hy(request: Request):
     return templates.TemplateResponse(
         "places_hy.html",
-        {"request": request, "lang": "hy"}
+        {
+            "request": request,
+            "lang": "hy",
+            "is_winter_theme": is_winter_theme_enabled(),
+        },
     )
 
 @app.get("/en/places", response_class=HTMLResponse)
 async def places_en(request: Request):
     return templates.TemplateResponse(
         "places_en.html",
-        {"request": request, "lang": "en"}
+        {
+            "request": request,
+            "lang": "en",
+            "is_winter_theme": is_winter_theme_enabled(),
+        },
     )
 
 # Խմբի մասին
@@ -92,14 +149,22 @@ async def places_en(request: Request):
 async def about_hy(request: Request):
     return templates.TemplateResponse(
         "about_hy.html",
-        {"request": request, "lang": "hy"}
+        {
+            "request": request,
+            "lang": "hy",
+            "is_winter_theme": is_winter_theme_enabled(),
+        },
     )
 
 @app.get("/en/about", response_class=HTMLResponse)
 async def about_en(request: Request):
     return templates.TemplateResponse(
         "about_en.html",
-        {"request": request, "lang": "en"}
+        {
+            "request": request,
+            "lang": "en",
+            "is_winter_theme": is_winter_theme_enabled(),
+        },
     )
 
 # Healthcheck
