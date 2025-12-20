@@ -11,7 +11,7 @@
   left: 0;
   right: 0;
   top: 0;
-  height: 80px; /* light1.png-ի բարձրությանը մոտ */
+  height: 50px; /* light1.png-ի բարձրությանը մոտ */
 
   background-image:
     url("/static/img/seasonal/light1.png"),
@@ -23,8 +23,8 @@
   /* Կենտրոնից դեպի ներս բերված դիրքեր */
   background-position:
     20% center,   /* առաջին լույսը — ձախից λίγο ներս */
-    50% center,   /* երկրորդը — ճիշտ կենտրոնում */
-    80% center;   /* երրորդը — աջից λίγο ներս */
+    46% center,   /* երկրորդը — ճիշտ կենտրոնում */
+    71% center;   /* երրորդը — աջից λίγο ներս */
 
   background-size: auto 100%, auto 100%, auto 100%;
   pointer-events: none;
@@ -37,8 +37,8 @@
   position: absolute;
   width: 60px;                 /* կախված գլխարկի չափից */
   height: 60px;
-  left: 120px;                  /* լոգոյի ձախ/վերևից կկարգավորես */
-  top: -9.1px;
+  left: 90px;                  /* լոգոյի ձախ/վերևից կկարգավորես */
+  top: -1px;
   background: url("/static/img/seasonal/hat_santa.png") no-repeat center;
   background-size: contain;
   pointer-events: none;
