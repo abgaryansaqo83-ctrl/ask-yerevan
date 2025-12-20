@@ -4,16 +4,16 @@
   z-index: 10;
 }
 
-/* վերևի կապույտ գծի վրա լույսեր */
+/* Մեկ լիարժեք լույսերի շերտ, առանց repeat-x */
 .site-header::before {
   content: "";
   position: absolute;
   left: 0;
   right: 0;
-  top: -18px; /* մի քիչ վերև կապույտ գծից, կկարգավորենք */
-  height: 28px;
-  background: url("/static/img/seasonal/lights.webp") repeat-x center;
-  background-size: contain;
+  top: -6px;            /* գծին մոտ, սա հետո աչքով fine-tune կանես */
+  height: 60px;         /* քո lights.webp-ի բարձրությանը մոտ */
+  background: url("/static/img/seasonal/lights.webp") no-repeat center top;
+  background-size: 100% auto;   /* ամբողջ լայնությամբ ձգվի */
   pointer-events: none;
 }
 
@@ -22,27 +22,40 @@
   position: relative;
 }
 
-/* լոգոյի վերևի «ձյուն» */
+/* Santa գլխարկ AskYerevan լոգոյի վրա */
 .logo-stack::after {
   content: "";
   position: absolute;
-  left: -6px;
-  right: -6px;
-  top: -10px;
-  height: 26px;
-  background: url("/static/img/seasonal/snow-cap.webp") no-repeat center top;
+  width: 60px;                 /* կախված գլխարկի չափից */
+  height: 60px;
+  left: 10px;                  /* լոգոյի ձախ/վերևից կկարգավորես */
+  top: -30px;
+  background: url("/static/img/seasonal/snow-cap.webp") no-repeat center;
   background-size: contain;
   pointer-events: none;
 }
 
 /* լոգոյի կողքի փոքր տոնածառ */
-.logo-stack::before {
-  content: "";
+/* Ձախ կողմի տոնածառ */
+.header-christmas-left {
   position: absolute;
-  right: -32px;
-  bottom: -4px;
-  width: 28px;
-  height: 40px;
+  left: 10px;
+  bottom: 8px;
+  width: 70px;
+  height: 90px;
   background: url("/static/img/seasonal/tree-with-snow.webp") no-repeat center;
   background-size: contain;
+  pointer-events: none;
+}
+
+/* Աջ կողմի Ձմեռ պապ – երբ նկարը քաշես՝ նույն ոճով */
+.header-christmas-right {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  width: 70px;
+  height: 90px;
+  background: url("/static/img/seasonal/santa.webp") no-repeat center;
+  background-size: contain;
+  pointer-events: none;
 }
