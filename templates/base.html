@@ -6,6 +6,62 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/static/css/main.css">
 </head>
+<script>
+  (function () {
+    const images = document.querySelectorAll('.js-lightbox-image');
+    if (!images.length) return;
+
+    let overlay = null;
+
+    function closeLightbox() {
+      if (overlay) {
+        overlay.remove();
+        overlay = null;
+      }
+      document.removeEventListener('keydown', onKeyDown);
+    }
+
+    function onKeyDown(e) {
+      if (e.key === 'Escape') {
+        closeLightbox();
+      }
+    }
+
+    images.forEach(img => {
+      img.style.cursor = 'zoom-in';
+
+      img.addEventListener('click', () => {
+        // երկրորդ կլիկով փակելու համար՝ եթե արդեն բացված է
+        if (overlay) {
+          closeLightbox();
+          return;
+        }
+
+        overlay = document.createElement('div');
+        overlay.className = 'lightbox-overlay';
+
+        const bigImg = document.createElement('img');
+        bigImg.src = img.src;
+        bigImg.alt = img.alt || '';
+
+        const closeBtn = document.createElement('div');
+        closeBtn.className = 'lightbox-close';
+        closeBtn.textContent = '×';
+
+        overlay.appendChild(bigImg);
+        document.body.appendChild(overlay);
+        document.body.appendChild(closeBtn);
+
+        // Փակել ֆոնին կամ крестիկին կլիկով
+        overlay.addEventListener('click', closeLightbox);
+        closeBtn.addEventListener('click', closeLightbox);
+
+        // Escape-ով էլ փակվի
+        document.addEventListener('keydown', onKeyDown);
+      });
+    });
+  })();
+</script>
 <body>
 
 <header class="site-header header--visible">
