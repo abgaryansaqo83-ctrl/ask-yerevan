@@ -28,8 +28,8 @@
   position: absolute;
   width: 60px;                 /* կախված գլխարկի չափից */
   height: 60px;
-  left: 10px;                  /* լոգոյի ձախ/վերևից կկարգավորես */
-  top: -30px;
+  left: 120px;                  /* լոգոյի ձախ/վերևից կկարգավորես */
+  top: -9.1px;
   background: url("/static/img/seasonal/hat_santa.png") no-repeat center;
   background-size: contain;
   pointer-events: none;
@@ -39,10 +39,10 @@
 /* Ձախ կողմի տոնածառ */
 .header-christmas-left {
   position: absolute;
-  left: 10px;
-  bottom: 8px;
-  width: 70px;
-  height: 90px;
+  left: 160px;
+  bottom: -6px;
+  width: 60px;
+  height: 70px;
   background: url("/static/img/seasonal/tree-with-snow.png") no-repeat center;
   background-size: contain;
   pointer-events: none;
@@ -51,10 +51,10 @@
 /* Աջ կողմի Ձմեռ պապ – երբ նկարը քաշես՝ նույն ոճով */
 .header-christmas-right {
   position: absolute;
-  right: 10px;
-  bottom: 8px;
+  right: 210px;
+  bottom: -10px;
   width: 70px;
-  height: 90px;
+  height: 100px;
   background: url("/static/img/seasonal/santa_CL.png") no-repeat center;
   background-size: contain;
   pointer-events: none;
