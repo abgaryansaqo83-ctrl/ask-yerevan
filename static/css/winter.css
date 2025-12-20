@@ -30,7 +30,7 @@
   height: 60px;
   left: 10px;                  /* լոգոյի ձախ/վերևից կկարգավորես */
   top: -30px;
-  background: url("/static/img/seasonal/hat.jpg") no-repeat center;
+  background: url("/static/img/seasonal/hat_santa.png") no-repeat center;
   background-size: contain;
   pointer-events: none;
 }
