@@ -48,14 +48,13 @@
 @media (max-width: 768px) {
   .logo-stack::after {
     width: 48px;
-    height: 48px;
-    left: 120px;
+    height: 195px;
+    left: 125px;
     top: 2px;
   }
 }
 
-/* լոգոյի կողքի փոքր տոնածառ */
-/* Ձախ կողմի տոնածառ */
+/* Desktop — արդեն working է */
 .header-christmas-left {
   position: absolute;
   left: 160px;
@@ -67,7 +66,6 @@
   pointer-events: none;
 }
 
-/* Աջ կողմի Ձմեռ պապ – երբ նկարը քաշես՝ նույն ոճով */
 .header-christmas-right {
   position: absolute;
   right: 210px;
@@ -78,6 +76,24 @@
   background-size: contain;
   pointer-events: none;
 }
+
+/* Mobile override — միայն փոքր էկրանների համար */
+@media (max-width: 768px) {
+  .header-christmas-left {
+    left: 16px;     /* բեր logo-ի ավելի մոտ */
+    bottom: -4px;
+    width: 48px;
+    height: 58px;
+  }
+
+  .header-christmas-right {
+    right: 16px;    /* Telegram–ի կողքը, բայց ներս */
+    bottom: -4px;
+    width: 56px;
+    height: 80px;
+  }
+}
+
 body {
   background-color: #f5efe4; /* կամ այն color-ը, որ դու ես ուզում, դեպի նախորդ design */
 }
