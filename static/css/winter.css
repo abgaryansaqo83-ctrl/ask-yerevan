@@ -31,17 +31,27 @@
 }
 
 
-/* Santa գլխարկ AskYerevan լոգոյի վրա */
+/* Սովորական (desktop) գլխարկ */
 .logo-stack::after {
   content: "";
   position: absolute;
-  width: 60px;                 /* կախված գլխարկի չափից */
+  width: 60px;
   height: 60px;
-  left: 90px;                  /* լոգոյի ձախ/վերևից կկարգավորես */
+  left: 90px;   /* desktop-ի համար */
   top: -1px;
   background: url("/static/img/seasonal/hat_santa.png") no-repeat center;
   background-size: contain;
   pointer-events: none;
+}
+
+/* Մոբայլում գլխարկը բեր ավելի ձախ/վերև */
+@media (max-width: 768px) {
+  .logo-stack::after {
+    width: 48px;
+    height: 48px;
+    left: 80px;
+    top: -20px;
+  }
 }
 
 /* լոգոյի կողքի փոքր տոնածառ */
