@@ -22,6 +22,10 @@ from aiogram.types import (
 )
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
+from aiogram.types import (
+    ReplyKeyboardMarkup,
+    KeyboardButton,
+)
 
 from config.settings import settings
 from backend.utils.logger import logger
@@ -169,8 +173,8 @@ async def process_admin_message(message: Message, state: FSMContext):
 
 # ========== /news command ==========
 
-@dp.message(Command("news", ignore_mention=True))
-async def cmd_news(message: Message):
+@dp.message(Command("menu", ignore_mention=True))
+async def cmd_menu(message: Message):
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [
@@ -195,13 +199,22 @@ async def cmd_news(message: Message):
 
 # ========== /news callback handler ==========
 
-@dp.callback_query(F.data.startswith("news:"))
-async def handle_news_callback(callback: CallbackQuery):
+@dp.callback_query(F.data.startswith("menu:"))
+async def handle_menu_callback(callback: CallbackQuery):
     kind = callback.data.split(":", 1)[1]  # film / theatre / opera / party / festival
     await callback.answer()
 
     text = await get_events_by_category(kind)
     await callback.message.answer(text)
+
+
+# ========== /site command ==========
+
+@dp.message(Command("site", ignore_mention=True))
+async def cmd_site(message: Message):
+    await message.answer(
+        f"🌐 AskYerevan վեբ էջը՝ {BOT_SITE_URL}"
+    )
 
 
 # ========== CAPTCHA callback handler ==========
