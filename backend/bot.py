@@ -168,22 +168,22 @@ async def process_admin_message(message: Message, state: FSMContext):
     await state.clear()
 
 
-# ========== /news command ==========
+# ========== /menu command ==========
 
 @dp.message(Command("menu", ignore_mention=True))
 async def cmd_menu(message: Message):
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(text="🎬 Կինո", callback_data="news:film"),
-                InlineKeyboardButton(text="🎭 Թատրոն", callback_data="news:theatre"),
+                InlineKeyboardButton(text="🎬 Կինո", callback_data="menu:film"),
+                InlineKeyboardButton(text="🎭 Թատրոն", callback_data="menu:theatre"),
             ],
             [
-                InlineKeyboardButton(text="🎼 Օպերա", callback_data="news:opera"),
-                InlineKeyboardButton(text="🍻 Փաբ / Փարթի", callback_data="news:party"),
+                InlineKeyboardButton(text="🎼 Օպերա", callback_data="menu:opera"),
+                InlineKeyboardButton(text="🍻 Փաբ / Փարթի", callback_data="menu:party"),
             ],
             [
-                InlineKeyboardButton(text="🎉 Event‑ներ", callback_data="news:festival"),
+                InlineKeyboardButton(text="🎉 Event‑ներ", callback_data="menu:festival"),
             ],
         ]
     )
@@ -194,7 +194,7 @@ async def cmd_menu(message: Message):
     )
 
 
-# ========== /news callback handler ==========
+# ========== /menu callback handler ==========
 
 @dp.callback_query(F.data.startswith("menu:"))
 async def handle_menu_callback(callback: CallbackQuery):
