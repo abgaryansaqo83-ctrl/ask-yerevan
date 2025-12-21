@@ -110,7 +110,7 @@ async def handle_language_choice(message: Message, state: FSMContext):
     await state.clear()
 
 
-# ========== /start ==========
+# ========== /start (bot) ==========
 
 @dp.message(CommandStart(ignore_mention=True))
 async def cmd_start(message: Message, state: FSMContext):
