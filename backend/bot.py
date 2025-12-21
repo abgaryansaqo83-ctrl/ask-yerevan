@@ -22,10 +22,6 @@ from aiogram.types import (
 )
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import (
-    ReplyKeyboardMarkup,
-    KeyboardButton,
-)
 
 from config.settings import settings
 from backend.utils.logger import logger
