@@ -51,6 +51,7 @@ def detect_lang(message: Message) -> str:
         return "en"
     return "hy"
 
+BOT_SITE_URL = "https://ask-yerevan.onrender.com/hy"
 
 bot = Bot(
     token=settings.BOT_TOKEN,
