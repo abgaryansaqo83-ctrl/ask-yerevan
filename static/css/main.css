@@ -448,10 +448,6 @@ main.container {
    Sights page
    =========================== */
 
-.sights-hero {
-  padding: 2rem 2rem 2.5rem;
-}
-
 .sights-row {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.6fr);
@@ -460,7 +456,7 @@ main.container {
   margin-bottom: 3rem;
 }
 
-/* շախմատաձև՝ even row-ում փոխենք սյուների հերթը */
+/* reverse row -> պատկերն աջ, տեքստը ձախ */
 .sights-row.sights-row--reverse {
   grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.4fr);
 }
@@ -471,7 +467,24 @@ main.container {
   gap: 1rem;
 }
 
-/* Նկարների սյուն */
+/* default: image left, text right */
+.sights-col--image {
+  order: 1;
+}
+.sights-col--text {
+  order: 2;
+}
+
+/* reverse row: text left, image right */
+.sights-row.sights-row--reverse .sights-col--image {
+  order: 2;
+}
+.sights-row.sights-row--reverse .sights-col--text {
+  order: 1;
+}
+
+/* rest stays the same... */
+
 .sights-image--column {
   display: flex;
   flex-direction: column;
@@ -486,27 +499,21 @@ main.container {
   border-radius: 4px;
 }
 
-/* Տեքստի սյուն */
-.sights-col--text h2 {
-  margin: 0 0 0.6rem;
-  font-size: 2rem;
-}
-
-.sights-col--text h3 {
-  margin: 0 0 0.6rem;
-}
-
-.sights-col--text p {
-  margin: 0 0 0.6rem;
-  font-size: 1rem;
-  line-height: 1.6;
-}
+.sights-col--text h2 { /* ... */ }
+.sights-col--text h3 { /* ... */ }
+.sights-col--text p  { /* ... */ }
 
 /* Մոբայլ */
 @media (max-width: 768px) {
   .sights-row,
   .sights-row.sights-row--reverse {
     grid-template-columns: 1fr;
+  }
+
+  /* որ mobile‑ում էլի լինի վերևում նկար, ներքևում տեքստ */
+  .sights-col--image,
+  .sights-col--text {
+    order: initial;
   }
 }
 
