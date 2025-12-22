@@ -2,9 +2,16 @@
 {% block title %}AskYerevan · Sights{% endblock %}
 
 {% block content %}
-<h1>Sights in Armenia</h1>
 
-<section class="sights-hero">
+<nav class="subnav">
+  <a href="#sights-armenia" class="subnav-link active">Armenia</a>
+  <a href="#sights-yerevan" class="subnav-link">Yerevan</a>
+</nav>
+
+<section id="sights-armenia" class="sights-section">
+
+  <section class="sights-hero">
+    <h1>Sights in Armenia</h1>
 
   <!-- Garni · row 1 (image left, text right) -->
   <div class="sights-row">
@@ -1003,5 +1010,16 @@
     <!-- ... next sight: new images/text ... -->
   </div>
 
+  </section>
+
 </section>
+
+<section id="sights-yerevan" class="sights-section sights-section--hidden">
+  <section class="sights-hero">
+    <h1>Sights in Yerevan</h1>
+
+    <!-- later you will add the Yerevan-specific cards here -->
+  </section>
+</section>
+
 {% endblock %}
