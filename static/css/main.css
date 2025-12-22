@@ -384,6 +384,12 @@ main.container {
    Churches page
    =========================== */
 
+.section-title {
+  margin: 0 0 1.5rem;
+  font-size: 1.6rem;
+  text-align: center;
+}
+
 .church-section {
   padding: 2rem 2rem;
 }
