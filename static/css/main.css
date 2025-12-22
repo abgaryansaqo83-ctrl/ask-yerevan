@@ -452,6 +452,15 @@ main.container {
    Sights page
    =========================== */
 
+.sights-hero {
+  padding-top: 1rem;
+}
+
+.sights-hero h1 {
+  text-align: center;
+  margin: 0 0 1.5rem;
+}
+
 .sights-row {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.6fr);
