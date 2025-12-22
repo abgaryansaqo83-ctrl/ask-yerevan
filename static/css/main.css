@@ -422,6 +422,15 @@ main.container {
   margin: 0 auto;
 }
 
+/* Divider between church blocks */
+.sights-divider {
+  margin: 1.5rem 0 2.5rem;
+  text-align: center;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  color: rgba(0, 0, 0, 0.25);
+}
+
 /* Եկեղեցիների ենթամենյու */
 .subnav {
   margin: 1rem 2rem;
@@ -446,6 +455,13 @@ main.container {
 /* Church hidden */
 .church-section--hidden {
   display: none;
+}
+
+@media (max-width: 768px) {
+  .sights-divider {
+    margin: 1.25rem 0 2rem;
+    font-size: 0.75rem;
+  }
 }
 
 /* ===========================
