@@ -6,6 +6,7 @@ body {
   margin: 0;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   background: #f5efe4;
+  padding-top: 120px;
 }
 
 /* Գլխավոր hero բլոկ */
@@ -40,6 +41,7 @@ body {
 main.container {
   min-height: 70vh;
   padding-bottom: 2rem;
+  padding-top: 120px;
 }
 
 .container {
@@ -72,11 +74,13 @@ main.container {
   padding: 0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;              /* սա ավելացրու, որ full-width հաստատ լինի */
   z-index: 1000;
+   
   transition: transform 0.2s ease-out;
-
   height: 120px;
   overflow: visible;  /* որ լույսերը/գլխարկը դուրս գան */
 }
