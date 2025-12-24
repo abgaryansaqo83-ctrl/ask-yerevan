@@ -677,6 +677,10 @@ async def main():
     
     logger.info("AskYerevanBot started.")
     
+    # Delete webhook to ensure clean start
+    await bot.delete_webhook(drop_pending_updates=True)
+    logger.info("Webhook deleted for clean start")
+    
     # Start polling in background
     polling_task = asyncio.create_task(dp.start_polling(bot))
     
