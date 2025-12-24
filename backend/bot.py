@@ -3,6 +3,7 @@
 import asyncio
 import logging
 import random
+import os
 import datetime
 
 from aiogram import Bot, Dispatcher, F
@@ -52,6 +53,7 @@ def detect_lang(message: Message) -> str:
     return "hy"
 
 BOT_SITE_URL = "https://ask-yerevan.onrender.com/hy"
+OWNER_ID = int(os.getenv("OWNER_ID", "0"))
 
 bot = Bot(
     token=settings.BOT_TOKEN,
@@ -603,6 +605,59 @@ def build_language_keyboard() -> ReplyKeyboardMarkup:
         resize_keyboard=True,
         one_time_keyboard=True,
     )
+
+
+# ========== /publish (owner only) ==========
+
+@dp.message(Command("publish"))
+async def publish_to_group_command(message: Message):
+    if message.from_user.id != OWNER_ID:
+        return
+    
+    # Այս հրամանը պետք է օգտագործվի reply-ով պատասխանելու համար
+    if not message.reply_to_message:
+        await message.answer("Խնդրում եմ reply արեք այն հաղորդագրությանը, որը ուզում եք հրապարակել խմբում")
+        return
+    
+    # Խմբի ID (փոխարինել իրական ID-ով)
+    GROUP_CHAT_ID = os.getenv("GROUP_CHAT_ID", "")
+    if not GROUP_CHAT_ID:
+        await message.answer("GROUP_CHAT_ID-ն սահմանված չէ")
+        return
+    
+    try:
+        # Ուղարկել հաղորդագրությունը խմբում
+        if message.reply_to_message.text:
+            await bot.send_message(
+                chat_id=GROUP_CHAT_ID,
+                text=message.reply_to_message.text
+            )
+        elif message.reply_to_message.photo:
+            await bot.send_photo(
+                chat_id=GROUP_CHAT_ID,
+                photo=message.reply_to_message.photo[-1].file_id,
+                caption=message.reply_to_message.caption or ""
+            )
+        elif message.reply_to_message.video:
+            await bot.send_video(
+                chat_id=GROUP_CHAT_ID,
+                video=message.reply_to_message.video.file_id,
+                caption=message.reply_to_message.caption or ""
+            )
+        elif message.reply_to_message.document:
+            await bot.send_document(
+                chat_id=GROUP_CHAT_ID,
+                document=message.reply_to_message.document.file_id,
+                caption=message.reply_to_message.caption or ""
+            )
+        else:
+            await message.answer("Այս տեսակի հաղորդագրությունը չի կարող հրապարակվել")
+            return
+        
+        await message.answer("✅ Հաղորդագրությունը հրապարակվել է խմբում")
+    except Exception as e:
+        logger.error(f"Publish error: {e}")
+        await message.answer(f"❌ Սխալ հրապարակելիս: {e}")
 
 
 # ========== ENTRYPOINT ==========
