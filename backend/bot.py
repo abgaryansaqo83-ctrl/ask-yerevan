@@ -6,6 +6,7 @@ import random
 import os
 import datetime
 
+import signal
 from aiogram import Bot, Dispatcher, F
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
@@ -663,9 +664,32 @@ async def publish_to_group_command(message: Message):
 # ========== ENTRYPOINT ==========
 
 async def main():
-    logger.info("AskYerevanBot started…")
-    await dp.start_polling(bot)
-
+    # Setup graceful shutdown
+    stop_event = asyncio.Event()
+    
+    def signal_handler(signum, frame):
+        logger.info(f"Received signal {signum}, initiating graceful shutdown...")
+        stop_event.set()
+    
+    # Register signal handlers
+    signal.signal(signal.SIGTERM, signal_handler)
+    signal.signal(signal.SIGINT, signal_handler)
+    
+    logger.info("AskYerevanBot started.")
+    
+    # Start polling in background
+    polling_task = asyncio.create_task(dp.start_polling(bot))
+    
+    # Wait for stop signal
+    try:
+        await stop_event.wait()
+    except KeyboardInterrupt:
+        logger.info("Keyboard interrupt received.")
+    finally:
+        logger.info("Shutting down bot...")
+        await dp.stop_polling()
+        await bot.session.close()
+        logger.info("Bot stopped successfully.")
 
 if __name__ == "__main__":
     asyncio.run(main())
