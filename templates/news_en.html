@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}AskYerevan · News{% endblock %}
+
+{% block content %}
+<section class="news-section">
+    <h1>📰 News</h1>
+    
+    {% if news_list %}
+        <div class="news-grid">
+            {% for item in news_list %}
+            <article class="news-card">
+                {% if item.image_url %}
+                <div class="news-card__image">
+                    <img src="{{ item.image_url }}" alt="{{ item.title_en }}">
+                </div>
+                {% endif %}
+                <div class="news-card__body">
+                    <h3 class="news-card__title">{{ item.title_en }}</h3>
+                    <p class="news-card__snippet">{{ item.content_en[:150] }}...</p>
+                    <span class="news-card__date">{{ item.created_at.strftime('%d.%m.%Y') }}</span>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No news yet.</p>
+    {% endif %}
+</section>
+{% endblock %}
