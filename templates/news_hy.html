@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}AskYerevan · Նորություններ{% endblock %}
+
+{% block content %}
+<section class="news-section">
+    <h1>📰 Նորություններ</h1>
+    
+    {% if news_list %}
+        <div class="news-grid">
+            {% for item in news_list %}
+            <article class="news-card">
+                {% if item.image_url %}
+                <div class="news-card__image">
+                    <img src="{{ item.image_url }}" alt="{{ item.title_hy }}">
+                </div>
+                {% endif %}
+                <div class="news-card__body">
+                    <h3 class="news-card__title">{{ item.title_hy }}</h3>
+                    <p class="news-card__snippet">{{ item.content_hy[:150] }}...</p>
+                    <span class="news-card__date">{{ item.created_at.strftime('%d.%m.%Y') }}</span>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Նորություններ դեռ չկան։</p>
+    {% endif %}
+</section>
+{% endblock %}
