@@ -5,8 +5,8 @@ import logging
 import random
 import os
 import datetime
-
 import signal
+
 from aiogram import Bot, Dispatcher, F
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
@@ -42,7 +42,6 @@ from backend.armenia.events import get_events_by_category
 
 init_db()
 
-
 # ========== HELPERS ==========
 
 def detect_lang(message: Message) -> str:
@@ -53,6 +52,7 @@ def detect_lang(message: Message) -> str:
         return "en"
     return "hy"
 
+
 BOT_SITE_URL = "https://ask-yerevan.onrender.com/hy"
 OWNER_ID = int(os.getenv("OWNER_ID", "0"))
 
@@ -61,7 +61,6 @@ bot = Bot(
     default=DefaultBotProperties(parse_mode=ParseMode.HTML),
 )
 dp = Dispatcher()
-
 
 # ========== FSM STATES ==========
 
@@ -80,8 +79,8 @@ class UserQuestion(StatesGroup):
 class CaptchaForm(StatesGroup):
     waiting_for_answer = State()
 
-
 # ========== Լեզվի ընտրություն ==========
+
 @dp.message(LanguageForm.waiting_for_choice)
 async def handle_language_choice(message: Message, state: FSMContext):
     text = (message.text or "").strip()
@@ -93,7 +92,6 @@ async def handle_language_choice(message: Message, state: FSMContext):
     else:
         lang = "hy"
 
-    # Պահպանում ենք user-ի լեզուն DB-ում
     save_user(
         user_id=message.from_user.id,
         username=message.from_user.username or "",
@@ -101,7 +99,6 @@ async def handle_language_choice(message: Message, state: FSMContext):
         language=lang,
     )
 
-    # Հեռացնում ենք լեզվի keyboard-ը
     await message.answer(
         {
             "hy": "Լավ, քեզ հետ կխոսեմ հայերեն 😊",
@@ -111,7 +108,6 @@ async def handle_language_choice(message: Message, state: FSMContext):
         reply_markup=ReplyKeyboardRemove(),
     )
     await state.clear()
-
 
 # ========== /start (bot) ==========
 
@@ -131,7 +127,6 @@ async def cmd_start(message: Message, state: FSMContext):
     await message.answer(text)
 
     await state.set_state(UserQuestion.waiting_for_question)
-
 
 # ========== /admin ==========
 
@@ -167,9 +162,7 @@ async def process_admin_message(message: Message, state: FSMContext):
         header + (message.text or "⬜️ (առանց տեքստի)"),
     )
     await message.answer("Շնորհակալություն, ձեր հաղորդագրությունը ուղարկվեց ադմինին ✅")
-
     await state.clear()
-
 
 # ========== /menu command ==========
 
@@ -196,26 +189,21 @@ async def cmd_menu(message: Message):
         reply_markup=keyboard,
     )
 
-
 # ========== /menu callback handler ==========
 
 @dp.callback_query(F.data.startswith("menu:"))
 async def handle_menu_callback(callback: CallbackQuery):
-    kind = callback.data.split(":", 1)[1]  # film / theatre / opera / party / festival
+    kind = callback.data.split(":", 1)[1]
     await callback.answer()
 
     text = await get_events_by_category(kind)
     await callback.message.answer(text)
 
-
 # ========== /site command ==========
 
 @dp.message(Command("site", ignore_mention=True))
 async def cmd_site(message: Message):
-    await message.answer(
-        f"🌐 AskYerevan վեբ էջը՝ {BOT_SITE_URL}"
-    )
-
+    await message.answer(f"🌐 AskYerevan վեբ էջը՝ {BOT_SITE_URL}")
 
 # ========== CAPTCHA callback handler ==========
 
@@ -224,27 +212,16 @@ CAPTCHA_CORRECT = "lion"
 
 @dp.callback_query(F.data.startswith("captcha:"), CaptchaForm.waiting_for_answer)
 async def handle_captcha_answer(callback: CallbackQuery, state: FSMContext):
-    """
-    Emoji-թեստի callback.
-    Սխալ փորձերի սահմաններ.
-      - 1-ին սխալ -> անմիջապես նոր փորձ
-      - 2-րդ սխալ -> 8 ժամ սպասել
-      - 3-րդ սխալ -> 12 ժամ սպասել
-      - 4-րդ սխալ -> 24 ժամ սպասել (վերջին հնարավորություն)
-      - 5-րդ+ սխալ -> permanent restricted (մնում է mute, admin-ը պետք է բացի)
-    """
-    choice = callback.data.split(":", 1)[1]  # rabbit / pig / lamb / lion
+    choice = callback.data.split(":", 1)[1]
     user_id = callback.from_user.id
     chat_id = callback.message.chat.id
 
-    # FSM data-ից վերցնում ենք նախորդ տվյալները
     data = await state.get_data()
     attempts = int(data.get("captcha_attempts", 0))
     next_allowed_str = data.get("captcha_next_allowed")
 
     now = datetime.datetime.now(datetime.timezone.utc)
 
-    # Եթե կա next_allowed և դեռ չի անցել, թույլ չենք տալիս նոր փորձ
     if next_allowed_str:
         try:
             next_allowed = datetime.datetime.fromisoformat(next_allowed_str)
@@ -258,9 +235,7 @@ async def handle_captcha_answer(callback: CallbackQuery, state: FSMContext):
             )
             return
 
-    # --------- ՃԻՇՏ ՊԱՏԱՍԽԱՆ ---------
     if choice == CAPTCHA_CORRECT:
-        # success flag
         await state.update_data(captcha_passed=True)
 
         await bot.restrict_chat_member(
@@ -273,8 +248,7 @@ async def handle_captcha_answer(callback: CallbackQuery, state: FSMContext):
             ),
         )
 
-        # Միավորում ենք հաջողության տեքստը և welcome-ը
-        lang = "hy"  # հետո կարող ենք փոխել detect-ի վրա
+        lang = "hy"
         welcome = get_text("welcome_new_member", lang).format(
             name=callback.from_user.full_name
         )
@@ -285,7 +259,6 @@ async def handle_captcha_answer(callback: CallbackQuery, state: FSMContext):
         await callback.message.edit_text(combined)
         await callback.answer()
 
-        # Լեզվի ընտրություն՝ private chat-ում
         kb = build_language_keyboard()
         await bot.send_message(
             callback.from_user.id,
@@ -296,15 +269,11 @@ async def handle_captcha_answer(callback: CallbackQuery, state: FSMContext):
         await state.set_state(LanguageForm.waiting_for_choice)
         return
 
-    # --------- ՍԽԱԼ ՊԱՏԱՍԽԱՆ ---------
     attempts += 1
-
-    # Որոշում ենք հաջորդ թույլատրելի փորձի ժամանակը
     wait_hours = 0
     message_tail = ""
 
     if attempts == 1:
-        # Առաջին սխալը՝ առանց սպասելու
         wait_hours = 0
         message_tail = "Սա առաջին սխալ փորձն է, կարող ես նորից ընտրել։"
     elif attempts == 2:
@@ -319,7 +288,6 @@ async def handle_captcha_answer(callback: CallbackQuery, state: FSMContext):
             "Սա չորրորդ սխալ փորձն է։ Հաջորդը կլինի վերջինը և հասանելի կլինի 24 ժամից։"
         )
     else:
-        # 5-րդ և ավել սխալ փորձեր -> permanent restricted
         await state.update_data(
             captcha_attempts=attempts,
             captcha_next_allowed=None,
@@ -332,7 +300,6 @@ async def handle_captcha_answer(callback: CallbackQuery, state: FSMContext):
         )
         return
 
-    # Եթե պետք է սպասել, հաշվենք հաջորդ թույլատրելի ժամանակը
     next_allowed = None
     if wait_hours > 0:
         next_allowed = now + datetime.timedelta(hours=wait_hours)
@@ -346,7 +313,6 @@ async def handle_captcha_answer(callback: CallbackQuery, state: FSMContext):
         f"Սխալ ընտրություն է։ {message_tail}",
         show_alert=True,
     )
-
 
 # ========== Նոր անդամ / լքող անդամ ==========
 
@@ -365,7 +331,6 @@ async def on_chat_member_update(event: ChatMemberUpdated, state: FSMContext):
     user = new.user
     chat_id = event.chat.id
 
-    # Լեզվի detect (welcome / goodbye տեքստերի համար)
     lang_code = (user.language_code or "hy").lower()
     if lang_code.startswith("ru"):
         lang = "ru"
@@ -374,32 +339,25 @@ async def on_chat_member_update(event: ChatMemberUpdated, state: FSMContext):
     else:
         lang = "hy"
 
-    # Նոր անդամ եկավ
     if new.status in ("member", "administrator") and old.status not in ("member", "administrator"):
 
         data = await state.get_data()
         if data.get("captcha_passed"):
-            # արդեն անցել է captcha, այլևս չենք mute անում
             return
 
-        # 1) mute ենք անում խմբում
         await bot.restrict_chat_member(
             chat_id=chat_id,
             user_id=user.id,
             permissions=ChatPermissions(can_send_messages=False),
         )
 
-        # 2) ուղարկում ենք emoji-թեստը խմբում (mention-ով)
         await send_captcha_test(chat_id, user.id, state, lang=lang)
-
         return
 
-    # Լքող անդամ
     if old.status in ("member", "administrator") and new.status in ("left", "kicked"):
         text = get_text("goodbye_member", lang).format(name=user.full_name)
         await bot.send_message(chat_id, text)
         return
-
 
 # ========== /start-ից հետո AI հարց ==========
 
@@ -418,31 +376,103 @@ async def handle_user_question(message: Message, state: FSMContext):
     await message.answer(reply)
     await state.clear()
 
-
-# ========== Սովորական տեքստեր (fallback router) ==========
+# ========== Սովորական տեքստեր (fallback router) + /publish ==========
 
 SPAM_POLITICS_KEYWORDS = [
-    # Հայերեն
     "քաղաքական", "կուսակց", "պատգամավոր", "կառավարություն", "իշխանություն",
     "ընդդիմություն", "վարչապետ", "նախագահ", "ընտրութ", "ընտրարշավ",
     "քարոզչ", "հանրաքվե", "սահմանադր", "ազգային ժողով", "կոռուպցիա",
     "իշխանափոխություն", "հեղափոխություն", "դիվանագիտ", "դեսպան",
     "պետականություն", "քաղաքական ուժ", "քաղաքական գործընթաց",
-
-    # Русский
     "политик", "депутат", "правительств", "власть", "оппозиция",
     "партия", "выборы", "избирател", "агитац", "пропаганд",
     "референдум", "конституц", "коррупц", "смена власти",
     "революц", "дипломат", "президент", "премьер", "режим",
     "олигарх",
-
-    # English
     "politic", "government", "opposition", "parliament", "senat",
     "election", "campaign", "vote", "voting", "referendum",
     "constitution", "corruption", "regime", "authoritarian",
     "oligarch", "diplomac", "propaganda", "lobby", "policy",
 ]
 
+# ========== /publish (owner only) ==========
+
+@dp.message(Command("publish"))
+async def publish_to_group_command(message: Message):
+    logger.info(
+        f"/publish command received from user_id={message.from_user.id}, OWNER_ID={OWNER_ID}"
+    )
+
+    if message.from_user.id != OWNER_ID:
+        logger.warning(f"Unauthorized /publish attempt by {message.from_user.id}")
+        await message.answer("❌ Այս հրամանը հասանելի է միայն բոտի տիրոջը։")
+        return
+
+    logger.info("/publish: owner verified")
+
+    if not message.reply_to_message:
+        logger.info("/publish: no reply message")
+        await message.answer(
+            "Խնդրում եմ reply արա այն հաղորդագրությանը, որը ուզում ես հրապարակել խմբում, "
+            "հետո նոր գրի /publish։"
+        )
+        return
+
+    reply = message.reply_to_message
+    logger.info("/publish: reply message found")
+
+    group_chat_id = os.getenv("GROUPCHATID", "")
+    logger.info(f"/publish: GROUPCHATID={group_chat_id}")
+
+    if not group_chat_id:
+        logger.error("/publish: GROUPCHATID is empty")
+        await message.answer(
+            "❌ GROUPCHATID փոփոխականը չի գտնվել Render-ի Environment Variables-ում։\n"
+            "Մուտք գործիր Render dashboard → Environment և ավելացրու GROUPCHATID=քո խմբի ID‑ն։"
+        )
+        return
+
+    try:
+        logger.info("/publish: attempting to send message to group")
+
+        if reply.text:
+            logger.info("/publish: sending text message")
+            await bot.send_message(chat_id=group_chat_id, text=reply.text)
+        elif reply.photo:
+            logger.info("/publish: sending photo")
+            await bot.send_photo(
+                chat_id=group_chat_id,
+                photo=reply.photo[-1].file_id,
+                caption=reply.caption or "",
+            )
+        elif reply.video:
+            logger.info("/publish: sending video")
+            await bot.send_video(
+                chat_id=group_chat_id,
+                video=reply.video.file_id,
+                caption=reply.caption or "",
+            )
+        elif reply.document:
+            logger.info("/publish: sending document")
+            await bot.send_document(
+                chat_id=group_chat_id,
+                document=reply.document.file_id,
+                caption=reply.caption or "",
+            )
+        else:
+            logger.warning("/publish: unsupported message type")
+            await message.answer(
+                "Այս տեսակի հաղորդագրությունը դեռ չեմ կարող հրապարակել "
+                "(պետք է լինի text, photo, video կամ document)։"
+            )
+            return
+
+        logger.info("/publish: message published successfully")
+        await message.answer("✅ Հաղորդագրությունը հրապարակվեց AskYerevan խմբում։")
+
+    except Exception as e:
+        logger.exception(f"/publish error: {e}")
+        await message.answer(f"❌ Սխալ հրապարակելիս:\n{e}")
 
 @dp.message()
 async def main_router(message: Message):
@@ -452,9 +482,7 @@ async def main_router(message: Message):
         f"text={message.text!r}"
     )
 
-    # ⬇ ԱՅՍ Է Նոր տողը, որ պետք է ավելացնես
     if message.text and message.text.startswith("/"):
-        # թողնում ենք, որ Command(...) handler-ները աշխատեն
         return
 
     if message.from_user.id == settings.ADMIN_CHAT_ID:
@@ -463,13 +491,11 @@ async def main_router(message: Message):
     text = (message.text or "").lower()
     thread_id = getattr(message, "message_thread_id", None)
 
-    # Ազատ զրույց թեմա
     if thread_id == settings.FREE_CHAT_THREAD_ID:
         if any(word in text for word in ["բարև", "barev", "hi", "hello"]):
             await message.answer("Բարև՜, լսում եմ քեզ 🙂")
         return
 
-    # 1) Քաղաքական / սպամ filter
     if any(kw in text for kw in SPAM_POLITICS_KEYWORDS):
         user_id = message.from_user.id
         chat_id = message.chat.id
@@ -502,7 +528,6 @@ async def main_router(message: Message):
             await message.delete()
             return
 
-    # 2) Հայտարարությունների վերահսկում
     is_listing, category = detect_listing_category(text)
     if is_listing:
         if category == "sell" and thread_id != settings.SELL_THREAD_ID:
@@ -561,18 +586,15 @@ async def main_router(message: Message):
         )
         return
 
-    # 3) Պարզ բարև
     if any(word in text for word in ["բարև", "barev", "hi", "hello"]):
         await message.answer("Բարև՜, լսում եմ քեզ 🙂")
         return
 
     return
 
-
 # ========== CAPTCHA helpers (keyboard + sender) ==========
 
 def build_captcha_keyboard() -> InlineKeyboardMarkup:
-    # երեք «ուտվող» + մեկ «չուտվող» կենդանի
     buttons = [
         InlineKeyboardButton(text="🐰", callback_data="captcha:rabbit"),
         InlineKeyboardButton(text="🐷", callback_data="captcha:pig"),
@@ -590,7 +612,6 @@ async def send_captcha_test(chat_id: int, user_id: int, state: FSMContext, lang:
         "en": "Choose the animal people usually do NOT eat 🧐",
     }.get(lang, "Ընտրիր այն կենդանուն, որին սովորաբար չեն ուտում 🧐")
 
-    # mention-ով, որ հասկանալի լինի ում մասին է խոսքը
     mention = f"<a href=\"tg://user?id={user_id}\">օգտվող</a>"
     text = f"{mention}, {text_base}"
 
@@ -612,115 +633,25 @@ def build_language_keyboard() -> ReplyKeyboardMarkup:
         one_time_keyboard=True,
     )
 
-# ========== /publish (owner only) ==========
-
-@dp.message(Command("publish"))
-async def publish_to_group_command(message: Message):
-    logger.info(
-        f"/publish command received from user_id={message.from_user.id}, OWNER_ID={OWNER_ID}"
-    )
-
-    # 1) Միայն owner
-    if message.from_user.id != OWNER_ID:
-        logger.warning(f"Unauthorized /publish attempt by {message.from_user.id}")
-        await message.answer("❌ Այս հրամանը հասանելի է միայն բոտի տիրոջը։")
-        return
-
-    logger.info("/publish: owner verified")
-
-    # 2) Պետք է reply լինի
-    if not message.reply_to_message:
-        logger.info("/publish: no reply message")
-        await message.answer(
-            "Խնդրում եմ reply արա այն հաղորդագրությանը, որը ուզում ես հրապարակել խմբում, "
-            "հետո նոր գրի /publish։"
-        )
-        return
-
-    reply = message.reply_to_message
-    logger.info("/publish: reply message found")
-
-    # 3) Խմբի ID՝ env-ից
-    group_chat_id = os.getenv("GROUPCHATID", "")  # Render-ում key-ը հենց այսպես թող
-    logger.info(f"/publish: GROUPCHATID={group_chat_id}")
-
-    if not group_chat_id:
-        logger.error("/publish: GROUPCHATID is empty")
-        await message.answer(
-            "❌ GROUPCHATID փոփոխականը չի գտնվել Render-ի Environment Variables-ում։\n"
-            "Մուտք գործիր Render dashboard → Environment և ավելացրու GROUPCHATID=քո խմբի ID‑ն։"
-        )
-        return
-
-    try:
-        logger.info("/publish: attempting to send message to group")
-
-        if reply.text:
-            logger.info("/publish: sending text message")
-            await bot.send_message(
-                chat_id=group_chat_id,
-                text=reply.text,
-            )
-        elif reply.photo:
-            logger.info("/publish: sending photo")
-            await bot.send_photo(
-                chat_id=group_chat_id,
-                photo=reply.photo[-1].file_id,
-                caption=reply.caption or "",
-            )
-        elif reply.video:
-            logger.info("/publish: sending video")
-            await bot.send_video(
-                chat_id=group_chat_id,
-                video=reply.video.file_id,
-                caption=reply.caption or "",
-            )
-        elif reply.document:
-            logger.info("/publish: sending document")
-            await bot.send_document(
-                chat_id=group_chat_id,
-                document=reply.document.file_id,
-                caption=reply.caption or "",
-            )
-        else:
-            logger.warning("/publish: unsupported message type")
-            await message.answer(
-                "Այս տեսակի հաղորդագրությունը դեռ չեմ կարող հրապարակել "
-                "(պետք է լինի text, photo, video կամ document)։"
-            )
-            return
-
-        logger.info("/publish: message published successfully")
-        await message.answer("✅ Հաղորդագրությունը հրապարակվեց AskYerevan խմբում։")
-
-    except Exception as e:
-        logger.exception(f"/publish error: {e}")
-        await message.answer(f"❌ Սխալ հրապարակելիս:\n{e}")
-
 # ========== ENTRYPOINT ==========
 
 async def main():
-    # Setup graceful shutdown
     stop_event = asyncio.Event()
-    
+
     def signal_handler(signum, frame):
         logger.info(f"Received signal {signum}, initiating graceful shutdown...")
         stop_event.set()
-    
-    # Register signal handlers
+
     signal.signal(signal.SIGTERM, signal_handler)
     signal.signal(signal.SIGINT, signal_handler)
-    
+
     logger.info("AskYerevanBot started.")
-    
-    # Delete webhook to ensure clean start
+
     await bot.delete_webhook(drop_pending_updates=True)
     logger.info("Webhook deleted for clean start")
-    
-    # Start polling in background
+
     polling_task = asyncio.create_task(dp.start_polling(bot))
-    
-    # Wait for stop signal
+
     try:
         await stop_event.wait()
     except KeyboardInterrupt:
