@@ -3,10 +3,10 @@
 import sqlite3
 from pathlib import Path
 from datetime import date
-
+from datetime import datetime
+from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean
 
 DB_PATH = Path("data/bot.db")
-
 
 def get_connection():
     """Return a SQLite connection, auto-creates DB if missing."""
@@ -15,8 +15,9 @@ def get_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
-
 def init_db():
+    Base.metadata.create_all(bind=engine)
+    logger.info("Database tables created (if not exist)")
     """Initialize database tables if they don't exist."""
     conn = get_connection()
     cur = conn.cursor()
@@ -66,6 +67,21 @@ def init_db():
         )
         """
     )
+
+    class News(Base):
+    __tablename__ = "news"
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    title_hy = Column(String(500), nullable=False)
+    title_en = Column(String(500), nullable=False)
+    content_hy = Column(Text, nullable=False)
+    content_en = Column(Text, nullable=False)
+    image_url = Column(String(500), nullable=True)  # optional image
+    published = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f"<News(id={self.id}, title_hy={self.title_hy[:30]})>"
 
     # Memory table (optional future use)
     cur.execute(
