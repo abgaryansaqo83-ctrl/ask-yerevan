@@ -609,75 +609,95 @@ def build_language_keyboard() -> ReplyKeyboardMarkup:
 
 # ========== /publish (owner only) ==========
 
+# ========== /publish (owner only) ==========
+
 @dp.message(Command("publish"))
 async def publish_to_group_command(message: Message):
-    logger.info(f"/publish command received from user_id={message.from_user.id}, OWNER_ID={OWNER_ID}")
-    
+    logger.info(
+        f"/publish command received from user_id={message.from_user.id}, OWNER_ID={OWNER_ID}"
+    )
+
+    # 1) Միայն owner
     if message.from_user.id != OWNER_ID:
         logger.warning(f"Unauthorized /publish attempt by {message.from_user.id}")
-        await message.answer("❌ Դուք չունեք հրապարակելու թույլտվություն")
+        await message.answer("❌ Այս հրամանը հասանելի է միայն բոտի տիրոջը։")
         return
-    
+
     logger.info("/publish: owner verified")
-    
-    # Այս հրամանը պետք է օգտագործվի reply-ով պատասխանելու համար
+
+    # 2) Պետք է reply լինի
     if not message.reply_to_message:
         logger.info("/publish: no reply message")
-        await message.answer("Խնդրում եմ reply արեք այն հաղորդագրությանը, որը ուզում եք հրապարակել խմբում")
+        await message.answer(
+            "Խնդրում եմ reply արա այն հաղորդագրությանը, որը ուզում ես հրապարակել խմբում, "
+            "հետո նոր գրի /publish։"
+        )
         return
-    
+
+    reply = message.reply_to_message
     logger.info("/publish: reply message found")
-    
-    # Խմբի ID
-    GROUP_CHAT_ID = os.getenv("GROUP_CHAT_ID", "")
-    logger.info(f"/publish: GROUP_CHAT_ID={GROUP_CHAT_ID}")
-    
-    if not GROUP_CHAT_ID:
-        logger.error("/publish: GROUP_CHAT_ID is empty")
-        await message.answer("❌ GROUP_CHAT_ID-ն սահմանված չէ environment variables-ում")
+
+    # 3) Խմբի ID՝ env-ից
+    group_chat_id = os.getenv("GROUPCHATID", "")  # ⚠️ անվանումը՝ GROUPCHATID
+    logger.info(f"/publish: GROUPCHATID={group_chat_id}")
+
+    if not group_chat_id:
+        logger.error("/publish: GROUPCHATID is empty")
+        await message.answer(
+            "❌ GROUPCHATID փոփոխականը չի գտնվել Render-ի Environment Variables-ում։\n"
+            "Մուտք գործիր Render dashboard → Environment և ավելացրու GROUPCHATID=քո խմբի ID‑ն։"
+        )
         return
-    
+
     try:
         logger.info("/publish: attempting to send message to group")
-        
-        # Ուղարկել հաղորդագրությունը խմբում
-        if message.reply_to_message.text:
+
+        # 4) Ուղարկում ենք ըստ տիպի
+        if reply.text:
             logger.info("/publish: sending text message")
             await bot.send_message(
-                chat_id=GROUP_CHAT_ID,
-                text=message.reply_to_message.text
+                chat_id=group_chat_id,
+                text=reply.text,
             )
-        elif message.reply_to_message.photo:
+
+        elif reply.photo:
             logger.info("/publish: sending photo")
             await bot.send_photo(
-                chat_id=GROUP_CHAT_ID,
-                photo=message.reply_to_message.photo[-1].file_id,
-                caption=message.reply_to_message.caption or ""
+                chat_id=group_chat_id,
+                photo=reply.photo[-1].file_id,
+                caption=reply.caption or "",
             )
-        elif message.reply_to_message.video:
+
+        elif reply.video:
             logger.info("/publish: sending video")
             await bot.send_video(
-                chat_id=GROUP_CHAT_ID,
-                video=message.reply_to_message.video.file_id,
-                caption=message.reply_to_message.caption or ""
+                chat_id=group_chat_id,
+                video=reply.video.file_id,
+                caption=reply.caption or "",
             )
-        elif message.reply_to_message.document:
+
+        elif reply.document:
             logger.info("/publish: sending document")
             await bot.send_document(
-                chat_id=GROUP_CHAT_ID,
-                document=message.reply_to_message.document.file_id,
-                caption=message.reply_to_message.caption or ""
+                chat_id=group_chat_id,
+                document=reply.document.file_id,
+                caption=reply.caption or "",
             )
+
         else:
             logger.warning("/publish: unsupported message type")
-            await message.answer("Այս տեսակի հաղորդագրությունը չի կարող հրապարակվել")
+            await message.answer(
+                "Այս տեսակի հաղորդագրությունը դեռ չեմ կարող հրապարակել "
+                "(պետք է լինի text, photo, video կամ document)։"
+            )
             return
-        
+
         logger.info("/publish: message published successfully")
-        await message.answer("✅ Հաղորդագրությունը հրապարակվել է խմբում")
+        await message.answer("✅ Հաղորդագրությունը հրապարակվեց AskYerevan խմբում։")
+
     except Exception as e:
         logger.exception(f"/publish error: {e}")
-        await message.answer(f"❌ Սխալ հրապարակելիս: {e}")
+        await message.answer(f"❌ Սխալ հրապարակելիս:\n{e}")
 
 
 # ========== ENTRYPOINT ==========
