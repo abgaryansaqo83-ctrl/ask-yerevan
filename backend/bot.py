@@ -452,6 +452,11 @@ async def main_router(message: Message):
         f"text={message.text!r}"
     )
 
+    # ⬇ ԱՅՍ Է Նոր տողը, որ պետք է ավելացնես
+    if message.text and message.text.startswith("/"):
+        # թողնում ենք, որ Command(...) handler-ները աշխատեն
+        return
+
     if message.from_user.id == settings.ADMIN_CHAT_ID:
         return
 
