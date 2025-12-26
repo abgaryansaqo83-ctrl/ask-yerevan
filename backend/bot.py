@@ -614,8 +614,6 @@ def build_language_keyboard() -> ReplyKeyboardMarkup:
 
 # ========== /publish (owner only) ==========
 
-# ========== /publish (owner only) ==========
-
 @dp.message(Command("publish"))
 async def publish_to_group_command(message: Message):
     logger.info(
@@ -643,7 +641,7 @@ async def publish_to_group_command(message: Message):
     logger.info("/publish: reply message found")
 
     # 3) Խմբի ID՝ env-ից
-    group_chat_id = os.getenv("GROUPCHATID", "")  # ⚠️ անվանումը՝ GROUPCHATID
+    group_chat_id = os.getenv("GROUPCHATID", "")  # Render-ում key-ը հենց այսպես թող
     logger.info(f"/publish: GROUPCHATID={group_chat_id}")
 
     if not group_chat_id:
@@ -657,14 +655,12 @@ async def publish_to_group_command(message: Message):
     try:
         logger.info("/publish: attempting to send message to group")
 
-        # 4) Ուղարկում ենք ըստ տիպի
         if reply.text:
             logger.info("/publish: sending text message")
             await bot.send_message(
                 chat_id=group_chat_id,
                 text=reply.text,
             )
-
         elif reply.photo:
             logger.info("/publish: sending photo")
             await bot.send_photo(
@@ -672,7 +668,6 @@ async def publish_to_group_command(message: Message):
                 photo=reply.photo[-1].file_id,
                 caption=reply.caption or "",
             )
-
         elif reply.video:
             logger.info("/publish: sending video")
             await bot.send_video(
@@ -680,7 +675,6 @@ async def publish_to_group_command(message: Message):
                 video=reply.video.file_id,
                 caption=reply.caption or "",
             )
-
         elif reply.document:
             logger.info("/publish: sending document")
             await bot.send_document(
@@ -688,7 +682,6 @@ async def publish_to_group_command(message: Message):
                 document=reply.document.file_id,
                 caption=reply.caption or "",
             )
-
         else:
             logger.warning("/publish: unsupported message type")
             await message.answer(
@@ -703,7 +696,6 @@ async def publish_to_group_command(message: Message):
     except Exception as e:
         logger.exception(f"/publish error: {e}")
         await message.answer(f"❌ Սխալ հրապարակելիս:\n{e}")
-
 
 # ========== ENTRYPOINT ==========
 
