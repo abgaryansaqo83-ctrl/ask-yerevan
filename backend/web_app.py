@@ -78,23 +78,33 @@ async def churches_en(request: Request):
 # Նորություններ
 @app.get("/hy/news", response_class=HTMLResponse)
 async def news_hy(request: Request):
+    session = Session()
+    news_list = session.query(News).filter(News.published == True).order_by(News.created_at.desc()).limit(10).all()
+    session.close()
+    
     return templates.TemplateResponse(
-        "events_hy.html",  # ֆայլը՝ նորությունների template
+        "events_hy.html",  # կամ news_hy.html, եթե rename արել ես
         {
             "request": request,
             "lang": "hy",
             "is_winter_theme": is_winter_theme_enabled(),
+            "news_list": news_list  # ← Ավելացնում ենք news_list
         },
     )
 
 @app.get("/en/news", response_class=HTMLResponse)
 async def news_en(request: Request):
+    session = Session()
+    news_list = session.query(News).filter(News.published == True).order_by(News.created_at.desc()).limit(10).all()
+    session.close()
+    
     return templates.TemplateResponse(
-        "events_en.html",
+        "events_en.html",  # կամ news_en.html
         {
             "request": request,
             "lang": "en",
             "is_winter_theme": is_winter_theme_enabled(),
+            "news_list": news_list  # ← Ավելացնում ենք news_list
         },
     )
 
