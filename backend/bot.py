@@ -607,57 +607,76 @@ def build_language_keyboard() -> ReplyKeyboardMarkup:
         one_time_keyboard=True,
     )
 
-
 # ========== /publish (owner only) ==========
 
 @dp.message(Command("publish"))
 async def publish_to_group_command(message: Message):
+    logger.info(f"/publish command received from user_id={message.from_user.id}, OWNER_ID={OWNER_ID}")
+    
     if message.from_user.id != OWNER_ID:
+        logger.warning(f"Unauthorized /publish attempt by {message.from_user.id}")
+        await message.answer("❌ Դուք չունեք հրապարակելու թույլտվություն")
         return
+    
+    logger.info("/publish: owner verified")
     
     # Այս հրամանը պետք է օգտագործվի reply-ով պատասխանելու համար
     if not message.reply_to_message:
+        logger.info("/publish: no reply message")
         await message.answer("Խնդրում եմ reply արեք այն հաղորդագրությանը, որը ուզում եք հրապարակել խմբում")
         return
     
-    # Խմբի ID (փոխարինել իրական ID-ով)
+    logger.info("/publish: reply message found")
+    
+    # Խմբի ID
     GROUP_CHAT_ID = os.getenv("GROUP_CHAT_ID", "")
+    logger.info(f"/publish: GROUP_CHAT_ID={GROUP_CHAT_ID}")
+    
     if not GROUP_CHAT_ID:
-        await message.answer("GROUP_CHAT_ID-ն սահմանված չէ")
+        logger.error("/publish: GROUP_CHAT_ID is empty")
+        await message.answer("❌ GROUP_CHAT_ID-ն սահմանված չէ environment variables-ում")
         return
     
     try:
+        logger.info("/publish: attempting to send message to group")
+        
         # Ուղարկել հաղորդագրությունը խմբում
         if message.reply_to_message.text:
+            logger.info("/publish: sending text message")
             await bot.send_message(
                 chat_id=GROUP_CHAT_ID,
                 text=message.reply_to_message.text
             )
         elif message.reply_to_message.photo:
+            logger.info("/publish: sending photo")
             await bot.send_photo(
                 chat_id=GROUP_CHAT_ID,
                 photo=message.reply_to_message.photo[-1].file_id,
                 caption=message.reply_to_message.caption or ""
             )
         elif message.reply_to_message.video:
+            logger.info("/publish: sending video")
             await bot.send_video(
                 chat_id=GROUP_CHAT_ID,
                 video=message.reply_to_message.video.file_id,
                 caption=message.reply_to_message.caption or ""
             )
         elif message.reply_to_message.document:
+            logger.info("/publish: sending document")
             await bot.send_document(
                 chat_id=GROUP_CHAT_ID,
                 document=message.reply_to_message.document.file_id,
                 caption=message.reply_to_message.caption or ""
             )
         else:
+            logger.warning("/publish: unsupported message type")
             await message.answer("Այս տեսակի հաղորդագրությունը չի կարող հրապարակվել")
             return
         
+        logger.info("/publish: message published successfully")
         await message.answer("✅ Հաղորդագրությունը հրապարակվել է խմբում")
     except Exception as e:
-        logger.error(f"Publish error: {e}")
+        logger.exception(f"/publish error: {e}")
         await message.answer(f"❌ Սխալ հրապարակելիս: {e}")
 
 
