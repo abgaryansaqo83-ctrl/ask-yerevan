@@ -4,7 +4,6 @@ import sqlite3
 from pathlib import Path
 from datetime import date
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean
 
 DB_PATH = Path("data/bot.db")
 
@@ -16,8 +15,6 @@ def get_connection():
     return conn
 
 def init_db():
-    Base.metadata.create_all(bind=engine)
-    logger.info("Database tables created (if not exist)")
     """Initialize database tables if they don't exist."""
     conn = get_connection()
     cur = conn.cursor()
@@ -28,13 +25,13 @@ def init_db():
         CREATE TABLE IF NOT EXISTS events (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
-            date TEXT,              -- ISO date, օրինակ 2025-12-31
-            time TEXT,              -- օրինակ 19:00
+            date TEXT,
+            time TEXT,
             place TEXT,
             city TEXT,
-            category TEXT,          -- concert / theatre / festival / cinema / party / other
+            category TEXT,
             url TEXT,
-            source TEXT,            -- tomsarkgh / ticket_am / armenia_travel / visit_yerevan ...
+            source TEXT,
             created_at TEXT DEFAULT (datetime('now'))
         )
         """
@@ -62,26 +59,27 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id TEXT NOT NULL,
             chat_id TEXT NOT NULL,
-            vtype TEXT NOT NULL,          -- spam_politics / aggressive_chat / repeat_listing
+            vtype TEXT NOT NULL,
             created_at TEXT DEFAULT (datetime('now'))
         )
         """
     )
 
-    class News(Base):
-    __tablename__ = "news"
-    
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    title_hy = Column(String(500), nullable=False)
-    title_en = Column(String(500), nullable=False)
-    content_hy = Column(Text, nullable=False)
-    content_en = Column(Text, nullable=False)
-    image_url = Column(String(500), nullable=True)  # optional image
-    published = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    
-    def __repr__(self):
-        return f"<News(id={self.id}, title_hy={self.title_hy[:30]})>"
+    # ✅ News table (նորություններ)
+    cur.execute(
+        """
+        CREATE TABLE IF NOT EXISTS news (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title_hy TEXT NOT NULL,
+            title_en TEXT NOT NULL,
+            content_hy TEXT NOT NULL,
+            content_en TEXT NOT NULL,
+            image_url TEXT,
+            published INTEGER DEFAULT 1,
+            created_at TEXT DEFAULT (datetime('now'))
+        )
+        """
+    )
 
     # Memory table (optional future use)
     cur.execute(
@@ -101,9 +99,9 @@ def init_db():
         """
         CREATE TABLE IF NOT EXISTS listings (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            category TEXT NOT NULL,           -- sell / rent / job_offer / service_offer / search
+            category TEXT NOT NULL,
             chat_id TEXT NOT NULL,
-            thread_id TEXT,                   -- optional, if using topics
+            thread_id TEXT,
             user_id TEXT NOT NULL,
             message_id TEXT NOT NULL,
             text TEXT NOT NULL,
@@ -242,7 +240,48 @@ def get_today_events(city: str | None = None, category: str | None = None):
     rows = cur.fetchall()
     conn.close()
     return rows
-    
+
+
+# ------------ News helpers ------------
+
+def save_news(title_hy: str, title_en: str, content_hy: str, content_en: str, image_url: str | None = None) -> int:
+    """
+    Ավելացնում է նոր նորություն news table‑ում։
+    """
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute(
+        """
+        INSERT INTO news (title_hy, title_en, content_hy, content_en, image_url, published)
+        VALUES (?, ?, ?, ?, ?, 1)
+        """,
+        (title_hy, title_en, content_hy, content_en, image_url),
+    )
+    news_id = cur.lastrowid
+    conn.commit()
+    conn.close()
+    return news_id
+
+
+def get_all_news(limit: int = 10):
+    """
+    Վերադարձնում է վերջին հրապարակված նորությունները։
+    """
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute(
+        """
+        SELECT * FROM news
+        WHERE published = 1
+        ORDER BY created_at DESC
+        LIMIT ?
+        """,
+        (limit,),
+    )
+    rows = cur.fetchall()
+    conn.close()
+    return rows
+
 
 # ------------ Listings helpers ------------
 
@@ -346,4 +385,3 @@ def count_violations(user_id: int, chat_id: int, vtype: str, within_hours: int) 
     row = cur.fetchone()
     conn.close()
     return int(row["cnt"] if row else 0)
-
