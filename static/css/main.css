@@ -674,6 +674,39 @@ main.container {
   font-weight: 600;
 }
 
+/* Category filters */
+.news-filters {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.8rem;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 24px;
+  background: #fff;
+  color: #555;
+  text-decoration: none;
+  font-size: 0.9rem;
+  border: 1px solid #ddd;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.filter-btn:hover {
+  background: #f5f5f5;
+  border-color: #3f5fae;
+  color: #3f5fae;
+}
+
+.filter-btn.active {
+  background: #3f5fae;
+  color: #fff;
+  border-color: #3f5fae;
+  box-shadow: 0 2px 8px rgba(63, 95, 174, 0.25);
+}
+
 /* Grid layout */
 .news-grid {
   display: grid;
