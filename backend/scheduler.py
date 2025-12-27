@@ -9,6 +9,9 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.events import EVENT_JOB_EXECUTED, EVENT_JOB_ERROR
 
+from backend.news_scraper import run_all_scrapers
+from backend.database import delete_old_news
+
 from .jobs import (
     send_morning_broadcast,
     send_week_premiere,
@@ -29,7 +32,7 @@ def create_scheduler() -> AsyncIOScheduler:
 
     # ================ ԱՄԵՆ ՕՐ ===================
 
-    # 08:00 — Առավոտյան եղանակ
+    # 08:00 — Առավոտյան եղանակ/բրոդքաստ
     scheduler.add_job(
         send_morning_broadcast,
         CronTrigger(hour=8, minute=0, timezone=TIMEZONE),
@@ -70,6 +73,24 @@ def create_scheduler() -> AsyncIOScheduler:
         send_festival_events,
         CronTrigger(day_of_week="wed", hour=9, minute=30, timezone=TIMEZONE),
         id="festival_events",
+        replace_existing=True,
+    )
+
+    # ================ ՆՈՐՈՒԹՅՈՒՆՆԵՐԻ ԱՎՏՈՄԱՏ ՔԱՇՈՒՄ ===================
+
+    # Ամեն 6 ժամը մեկ — քաշում ենք նոր լուրեր բոլոր աղբյուրներից
+    scheduler.add_job(
+        run_all_scrapers,
+        CronTrigger(minute=0, hour="*/6", timezone=TIMEZONE),
+        id="news_scrapers",
+        replace_existing=True,
+    )
+
+    # Ամեն գիշեր 03:30 — մաքրում ենք 1 տարուց հին լուրերը
+    scheduler.add_job(
+        delete_old_news,
+        CronTrigger(hour=3, minute=30, timezone=TIMEZONE),
+        id="cleanup_old_news",
         replace_existing=True,
     )
 
