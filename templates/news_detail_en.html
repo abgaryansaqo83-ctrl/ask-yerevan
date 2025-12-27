@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}{{ news['title_en'] }} · AskYerevan{% endblock %}
+
+{% block content %}
+<section class="news-detail">
+    <a href="/en/news" class="back-btn">← Back to news</a>
+    
+    {% if news['image_url'] %}
+    <div class="news-detail__image">
+        <img src="{{ news['image_url'] }}" alt="{{ news['title_en'] }}">
+    </div>
+    {% endif %}
+    
+    <header class="news-detail__header">
+        <h1>{{ news['title_en'] }}</h1>
+        <div class="news-detail__meta">
+            <span class="meta-date">📅 {{ news['created_at'].strftime('%d.%m.%Y') }}</span>
+            {% if news.get('category') and news['category'] != 'general' %}
+            <span class="meta-category">
+                {% if news['category'] == 'important' %}⚠️ Important
+                {% elif news['category'] == 'culture' %}🏛️ Culture
+                {% elif news['category'] == 'events' %}🎉 Events
+                {% elif news['category'] == 'city' %}🏙️ City
+                {% endif %}
+            </span>
+            {% endif %}
+        </div>
+    </header>
+    
+    <div class="news-detail__content">
+        {{ news['content_en'] }}
+    </div>
+    
+    <a href="/en/news" class="back-btn back-btn--bottom">← Back to news</a>
+</section>
+{% endblock %}
