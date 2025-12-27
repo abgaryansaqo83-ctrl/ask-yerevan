@@ -3,10 +3,20 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from datetime import date
-from backend.database import get_all_news, init_db  # ← Ավելացրու init_db
+from backend.database import get_all_news, init_db
+
+# ✅ Add logger
+import logging
+logger = logging.getLogger(__name__)
 
 # ✅ Initialize database
-init_db()
+try:
+    init_db()
+    logger.info("✅ Database initialized successfully")
+    print("✅ Database initialized successfully")  # Console output
+except Exception as e:
+    logger.error(f"❌ Database initialization failed: {e}")
+    print(f"❌ Database initialization failed: {e}")
 
 app = FastAPI(title="AskYerevan Web")
 
