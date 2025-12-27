@@ -75,15 +75,11 @@ def scrape_panarmenian_culture():
                     title_en=title_en,
                     content_hy=content_hy,
                     content_en=content_en,
-                    image_url=None,            # RSS-ում սովորաբար direct նկար չկա
-                    source_url=link if "source_url" in save_news.__code__.co_varnames else None,
-                    category_slug=category_slug
-                    if "category_slug" in save_news.__code__.co_varnames
-                    else None,
-                    published_at=published_at
-                    if "published_at" in save_news.__code__.co_varnames
-                    else None,
+                    image_url=None,
+                    category="culture",
+                    source_url=link,
                 )
+
 
                 logger.info(f"PanARMENIAN [{lang}] added: {title[:80]}")
 
@@ -106,13 +102,16 @@ def scrape_tomsarkgh():
             content_hy = item.select_one('.excerpt').text.strip()
             image_url = item.select_one('img')['src'] if item.select_one('img') else None
             
-            # Save to database (English version can be placeholder or auto-translated)
+            event_url = full_url  # կոնկրետ միջոցառման URL
+
             save_news(
                 title_hy=title_hy,
-                title_en=title_hy,  # Placeholder
+                title_en=title_hy,
                 content_hy=content_hy,
-                content_en=content_hy,  # Placeholder
-                image_url=image_url
+                content_en=content_hy,
+                image_url=image_url,
+                category="events",
+                source_url=event_url,
             )
             logger.info(f"Auto-added news: {title_hy[:50]}")
     
