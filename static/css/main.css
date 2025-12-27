@@ -661,6 +661,103 @@ main.container {
     color: #999;
 }
 
+/* ==================== NEWS PAGE ==================== */
+
+.news-section {
+    padding: 2rem 0 3rem;
+}
+
+.news-section h1 {
+    font-size: 2rem;
+    margin: 0 0 1.5rem;
+    color: #333;
+}
+
+.news-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.news-card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+}
+
+.news-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.news-card__image {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    background: #f0f0f0;
+}
+
+.news-card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.news-card__body {
+    padding: 1.2rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.news-card__title {
+    font-size: 1.15rem;
+    margin: 0 0 0.6rem;
+    color: #222;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.news-card__snippet {
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.5;
+    margin: 0 0 auto;
+    flex: 1;
+}
+
+.news-card__date {
+    font-size: 0.85rem;
+    color: #999;
+    margin-top: 0.8rem;
+    display: block;
+}
+
+/* Empty state */
+.news-section p {
+    font-size: 1rem;
+    color: #666;
+    text-align: center;
+    margin: 2rem 0;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .news-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .news-card__image {
+        height: 180px;
+    }
+}
+
 /* ===========================
    About էջ
    =========================== */
