@@ -403,6 +403,28 @@ def get_all_news(limit: int = 10, category: str | None = None):
     conn.close()
     return rows
 
+def get_news_by_id(news_id: int):
+    """
+    Վերադարձնում է մեկ նորություն ըստ ID‑ի։
+    """
+    conn = get_connection()
+    cur = get_cursor(conn)
+    
+    if DATABASE_URL:
+        cur.execute(
+            "SELECT * FROM news WHERE id = %s AND published = TRUE",
+            (news_id,),
+        )
+    else:
+        cur.execute(
+            "SELECT * FROM news WHERE id = ? AND published = 1",
+            (news_id,),
+        )
+    
+    row = cur.fetchone()
+    conn.close()
+    return row
+
 # ------------ Listings helpers ------------
 
 def save_listing(category: str, chat_id: int, thread_id: int | None,
