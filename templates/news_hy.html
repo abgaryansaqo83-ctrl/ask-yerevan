@@ -5,7 +5,7 @@
 <section class="news-section">
     <h1>📰 Նորություններ</h1>
     
-    {% if news_list %}
+    {% if news_list and news_list|length > 0 %}
         <div class="news-grid">
             {% for item in news_list %}
             <article class="news-card">
@@ -16,14 +16,14 @@
                 {% endif %}
                 <div class="news-card__body">
                     <h3 class="news-card__title">{{ item['title_hy'] }}</h3>
-                    <p class="news-card__snippet">{{ item['content_hy'][:150] }}...</p>
+                    <p class="news-card__snippet">{{ item['content_hy'][:200] }}{% if item['content_hy']|length > 200 %}...{% endif %}</p>
                     <span class="news-card__date">{{ item['created_at'].strftime('%d.%m.%Y') if item['created_at'] else '' }}</span>
                 </div>
             </article>
             {% endfor %}
         </div>
     {% else %}
-        <p>Նորություններ դեռ չկան։</p>
+        <p>Նորություններ դեռ չկան։ Շուտով կհայտնվեն։</p>
     {% endif %}
 </section>
 {% endblock %}
