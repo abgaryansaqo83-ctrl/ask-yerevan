@@ -32,6 +32,11 @@ def parse_rss_datetime(dt_str: str) -> datetime | None:
         return None
 
 
+HEADERS = {
+    "User-Agent": "AskYerevanBot/1.0 (+https://askyerevan.am)",
+    "Accept": "application/rss+xml, application/xml;q=0.9, */*;q=0.8",
+}
+
 def scrape_panarmenian_culture():
     """Fetch culture news from PanARMENIAN RSS feeds."""
     for src in PANARMENIAN_RSS_SOURCES:
@@ -41,7 +46,7 @@ def scrape_panarmenian_culture():
 
         try:
             logger.info(f"Fetching PanARMENIAN culture RSS: {url}")
-            resp = requests.get(url, timeout=10)
+            resp = requests.get(url, headers=HEADERS, timeout=15)
             resp.raise_for_status()
 
             root = ET.fromstring(resp.content)
