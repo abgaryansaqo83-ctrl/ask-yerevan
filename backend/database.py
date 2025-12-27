@@ -323,81 +323,78 @@ def get_today_events(city: str | None = None, category: str | None = None):
 
 # ------------ News helpers ------------
 
-def save_news(title_hy: str, title_en: str, content_hy: str, content_en: str, 
-              image_url: str | None = None, category: str = 'general') -> int:
-    conn = get_connection()
-    cur = get_cursor(conn)
-    
-    if DATABASE_URL:
-        cur.execute(
-            """
-            INSERT INTO news (title_hy, title_en, content_hy, content_en, image_url, category, published)
-            VALUES (%s, %s, %s, %s, %s, %s, TRUE)
-            RETURNING id
-            """,
-            (title_hy, title_en, content_hy, content_en, image_url, category),
-        )
-        news_id = cur.fetchone()['id']
-    else:
-        cur.execute(
-            """
-            INSERT INTO news (title_hy, title_en, content_hy, content_en, image_url, category, published)
-            VALUES (?, ?, ?, ?, ?, ?, 1)
-            """,
-            (title_hy, title_en, content_hy, content_en, image_url, category),
-        )
-        news_id = cur.lastrowid
-    
-    conn.commit()
-    conn.close()
-    return news_id
+def save_news(
+    title_hy,
+    title_en,
+    content_hy,
+    content_en,
+    image_url=None,
+    category="general",
+    source_url=None,
+):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO news (
+                    title_hy,
+                    title_en,
+                    content_hy,
+                    content_en,
+                    image_url,
+                    category,
+                    source_url
+                )
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                ON CONFLICT (source_url) DO NOTHING;
+                """,
+                (
+                    title_hy,
+                    title_en,
+                    content_hy,
+                    content_en,
+                    image_url,
+                    category,
+                    source_url,
+                ),
+            )
 
 def get_all_news(limit: int = 10, category: str | None = None):
     conn = get_connection()
     cur = get_cursor(conn)
     
     if DATABASE_URL:
+        base_query = """
+            SELECT * FROM news
+            WHERE published = TRUE
+              AND created_at >= NOW() - INTERVAL '6 months'
+        """
+        params = []
+
         if category:
-            cur.execute(
-                """
-                SELECT * FROM news
-                WHERE published = TRUE AND category = %s
-                ORDER BY created_at DESC
-                LIMIT %s
-                """,
-                (category, limit),
-            )
-        else:
-            cur.execute(
-                """
-                SELECT * FROM news
-                WHERE published = TRUE
-                ORDER BY created_at DESC
-                LIMIT %s
-                """,
-                (limit,),
-            )
+            base_query += " AND category = %s"
+            params.append(category)
+
+        base_query += " ORDER BY created_at DESC LIMIT %s"
+        params.append(limit)
+
+        cur.execute(base_query, tuple(params))
     else:
+        base_query = """
+            SELECT * FROM news
+            WHERE published = 1
+              AND created_at >= datetime('now', '-6 months')
+        """
+        params = []
+
         if category:
-            cur.execute(
-                """
-                SELECT * FROM news
-                WHERE published = 1 AND category = ?
-                ORDER BY created_at DESC
-                LIMIT ?
-                """,
-                (category, limit),
-            )
-        else:
-            cur.execute(
-                """
-                SELECT * FROM news
-                WHERE published = 1
-                ORDER BY created_at DESC
-                LIMIT ?
-                """,
-                (limit,),
-            )
+            base_query += " AND category = ?"
+            params.append(category)
+
+        base_query += " ORDER BY created_at DESC LIMIT ?"
+        params.append(limit)
+
+        cur.execute(base_query, tuple(params))
     
     rows = cur.fetchall()
     conn.close()
@@ -578,3 +575,29 @@ def count_violations(user_id: int, chat_id: int, vtype: str, within_hours: int) 
     row = cur.fetchone()
     conn.close()
     return int(row["cnt"] if row else 0)
+
+def delete_old_news():
+    """
+    Ջնջում է created_at-ով 1 տարուց հին լուրերը։
+    """
+    conn = get_connection()
+    cur = get_cursor(conn)
+
+    if DATABASE_URL:
+        cur.execute(
+            """
+            DELETE FROM news
+            WHERE created_at < NOW() - INTERVAL '1 year'
+            """
+        )
+    else:
+        cur.execute(
+            """
+            DELETE FROM news
+            WHERE created_at < datetime('now', '-1 year')
+            """
+        )
+
+    conn.commit()
+    conn.close()
+
