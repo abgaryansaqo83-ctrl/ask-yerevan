@@ -7,11 +7,11 @@
     
     <!-- Category Filter -->
     <div class="news-filters">
-        <a href="/en/news" class="filter-btn active">All</a>
-        <a href="/en/news?category=important" class="filter-btn">⚠️ Important</a>
-        <a href="/en/news?category=culture" class="filter-btn">🏛️ Culture</a>
-        <a href="/en/news?category=events" class="filter-btn">🎉 Events</a>
-        <a href="/en/news?category=city" class="filter-btn">🏙️ City</a>
+        <a href="/en/news" class="filter-btn {% if not category %}active{% endif %}">All</a>
+        <a href="/en/news?category=important" class="filter-btn {% if category == 'important' %}active{% endif %}">⚠️ Important</a>
+        <a href="/en/news?category=culture" class="filter-btn {% if category == 'culture' %}active{% endif %}">🏛️ Culture</a>
+        <a href="/en/news?category=events" class="filter-btn {% if category == 'events' %}active{% endif %}">🎉 Events</a>
+        <a href="/en/news?category=city" class="filter-btn {% if category == 'city' %}active{% endif %}">🏙️ City</a>
     </div>
     
     {% if news_list and news_list|length > 0 %}
