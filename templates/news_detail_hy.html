@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ news['title_hy'] }} · AskYerevan{% endblock %}
+
+{% block content %}
+<section class="news-detail">
+    <!-- Back button -->
+    <a href="/hy/news" class="back-btn">← Վերադառնալ նորություններ</a>
+    
+    <!-- Image -->
+    {% if news['image_url'] %}
+    <div class="news-detail__image">
+        <img src="{{ news['image_url'] }}" alt="{{ news['title_hy'] }}">
+    </div>
+    {% endif %}
+    
+    <!-- Header -->
+    <header class="news-detail__header">
+        <h1>{{ news['title_hy'] }}</h1>
+        <div class="news-detail__meta">
+            <span class="meta-date">📅 {{ news['created_at'].strftime('%d.%m.%Y') }}</span>
+            {% if news.get('category') and news['category'] != 'general' %}
+            <span class="meta-category">
+                {% if news['category'] == 'important' %}⚠️ Կարևոր
+                {% elif news['category'] == 'culture' %}🏛️ Մշակույթ
+                {% elif news['category'] == 'events' %}🎉 Միջոցառումներ
+                {% elif news['category'] == 'city' %}🏙️ Քաղաքային
+                {% endif %}
+            </span>
+            {% endif %}
+        </div>
+    </header>
+    
+    <!-- Full content -->
+    <div class="news-detail__content">
+        {{ news['content_hy'] }}
+    </div>
+    
+    <!-- Back button bottom -->
+    <a href="/hy/news" class="back-btn back-btn--bottom">← Վերադառնալ նորություններ</a>
+</section>
+{% endblock %}
