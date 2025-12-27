@@ -8,10 +8,10 @@
     <!-- Category Filter -->
     <div class="news-filters">
         <a href="/hy/news" class="filter-btn {% if not category %}active{% endif %}">Բոլորը</a>
-        <a href="/hy/news?category=important" class="filter-btn {% if category == 'important' %}active{% endif %}">⚠️ Կարևոր</a>
         <a href="/hy/news?category=culture" class="filter-btn {% if category == 'culture' %}active{% endif %}">🏛️ Մշակույթ</a>
         <a href="/hy/news?category=events" class="filter-btn {% if category == 'events' %}active{% endif %}">🎉 Միջոցառումներ</a>
         <a href="/hy/news?category=city" class="filter-btn {% if category == 'city' %}active{% endif %}">🏙️ Քաղաքային</a>
+        <a href="/hy/news?category=important" class="filter-btn {% if category == 'important' %}active{% endif %}">⚠️ Կարևոր</a>
     </div>
     
     {% if news_list and news_list|length > 0 %}
@@ -26,7 +26,7 @@
                 {% endif %}
                 <div class="news-card__body">
                     <h3 class="news-card__title">{{ item['title_hy'] }}</h3>
-                    <p class="news-card__snippet">{{ item['content_hy'][:200] }}{% if item['content_hy']|length > 200 %}...{% endif %}</p>
+                    <p class="news-card__snippet">{{ item['content_hy'][:150] }}{% if item['content_hy']|length > 150 %}...{% endif %}</p>
                     <div class="news-card__footer">
                         <span class="news-card__date">{{ item['created_at'].strftime('%d.%m.%Y') if item['created_at'] else '' }}</span>
                     </div>
