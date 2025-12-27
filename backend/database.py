@@ -323,27 +323,28 @@ def get_today_events(city: str | None = None, category: str | None = None):
 
 # ------------ News helpers ------------
 
-def save_news(title_hy: str, title_en: str, content_hy: str, content_en: str, image_url: str | None = None) -> int:
+def save_news(title_hy: str, title_en: str, content_hy: str, content_en: str, 
+              image_url: str | None = None, category: str = 'general') -> int:
     conn = get_connection()
     cur = get_cursor(conn)
     
     if DATABASE_URL:
         cur.execute(
             """
-            INSERT INTO news (title_hy, title_en, content_hy, content_en, image_url, published)
-            VALUES (%s, %s, %s, %s, %s, TRUE)
+            INSERT INTO news (title_hy, title_en, content_hy, content_en, image_url, category, published)
+            VALUES (%s, %s, %s, %s, %s, %s, TRUE)
             RETURNING id
             """,
-            (title_hy, title_en, content_hy, content_en, image_url),
+            (title_hy, title_en, content_hy, content_en, image_url, category),
         )
         news_id = cur.fetchone()['id']
     else:
         cur.execute(
             """
-            INSERT INTO news (title_hy, title_en, content_hy, content_en, image_url, published)
-            VALUES (?, ?, ?, ?, ?, 1)
+            INSERT INTO news (title_hy, title_en, content_hy, content_en, image_url, category, published)
+            VALUES (?, ?, ?, ?, ?, ?, 1)
             """,
-            (title_hy, title_en, content_hy, content_en, image_url),
+            (title_hy, title_en, content_hy, content_en, image_url, category),
         )
         news_id = cur.lastrowid
     
@@ -351,37 +352,56 @@ def save_news(title_hy: str, title_en: str, content_hy: str, content_en: str, im
     conn.close()
     return news_id
 
-
-def get_all_news(limit: int = 10):
+def get_all_news(limit: int = 10, category: str | None = None):
     conn = get_connection()
     cur = get_cursor(conn)
     
     if DATABASE_URL:
-        cur.execute(
-            """
-            SELECT * FROM news
-            WHERE published = TRUE
-            ORDER BY created_at DESC
-            LIMIT %s
-            """,
-            (limit,),
-        )
+        if category:
+            cur.execute(
+                """
+                SELECT * FROM news
+                WHERE published = TRUE AND category = %s
+                ORDER BY created_at DESC
+                LIMIT %s
+                """,
+                (category, limit),
+            )
+        else:
+            cur.execute(
+                """
+                SELECT * FROM news
+                WHERE published = TRUE
+                ORDER BY created_at DESC
+                LIMIT %s
+                """,
+                (limit,),
+            )
     else:
-        cur.execute(
-            """
-            SELECT * FROM news
-            WHERE published = 1
-            ORDER BY created_at DESC
-            LIMIT ?
-            """,
-            (limit,),
-        )
+        if category:
+            cur.execute(
+                """
+                SELECT * FROM news
+                WHERE published = 1 AND category = ?
+                ORDER BY created_at DESC
+                LIMIT ?
+                """,
+                (category, limit),
+            )
+        else:
+            cur.execute(
+                """
+                SELECT * FROM news
+                WHERE published = 1
+                ORDER BY created_at DESC
+                LIMIT ?
+                """,
+                (limit,),
+            )
     
     rows = cur.fetchall()
-    print(f"📰 Found {len(rows)} news items")  # ← Debug log
     conn.close()
     return rows
-
 
 # ------------ Listings helpers ------------
 
