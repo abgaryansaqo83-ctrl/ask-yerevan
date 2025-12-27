@@ -109,6 +109,7 @@ def init_db():
             content_hy TEXT NOT NULL,
             content_en TEXT NOT NULL,
             image_url TEXT,
+            category TEXT DEFAULT 'general',  -- ← Նոր column
             published {bool_type} DEFAULT {'TRUE' if DATABASE_URL else '1'},
             created_at TIMESTAMP DEFAULT {datetime_now}
         )
