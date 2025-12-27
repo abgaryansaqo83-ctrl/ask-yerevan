@@ -5,6 +5,15 @@
 <section class="news-section">
     <h1>📰 News</h1>
     
+    <!-- Category Filter -->
+    <div class="news-filters">
+        <a href="/en/news" class="filter-btn active">All</a>
+        <a href="/en/news?category=important" class="filter-btn">⚠️ Important</a>
+        <a href="/en/news?category=culture" class="filter-btn">🏛️ Culture</a>
+        <a href="/en/news?category=events" class="filter-btn">🎉 Events</a>
+        <a href="/en/news?category=city" class="filter-btn">🏙️ City</a>
+    </div>
+    
     {% if news_list and news_list|length > 0 %}
         <div class="news-grid">
             {% for item in news_list %}
@@ -17,7 +26,9 @@
                 <div class="news-card__body">
                     <h3 class="news-card__title">{{ item['title_en'] }}</h3>
                     <p class="news-card__snippet">{{ item['content_en'][:200] }}{% if item['content_en']|length > 200 %}...{% endif %}</p>
-                    <span class="news-card__date">{{ item['created_at'].strftime('%d.%m.%Y') if item['created_at'] else '' }}</span>
+                    <div class="news-card__footer">
+                        <span class="news-card__date">{{ item['created_at'].strftime('%d.%m.%Y') if item['created_at'] else '' }}</span>
+                    </div>
                 </div>
             </article>
             {% endfor %}
