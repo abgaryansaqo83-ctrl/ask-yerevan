@@ -17,6 +17,7 @@
     {% if news_list and news_list|length > 0 %}
         <div class="news-grid">
             {% for item in news_list %}
+            <a href="/en/news/{{ item['id'] }}" class="news-card-link">
             <article class="news-card">
                 {% if item['image_url'] %}
                 <div class="news-card__image">
@@ -25,12 +26,13 @@
                 {% endif %}
                 <div class="news-card__body">
                     <h3 class="news-card__title">{{ item['title_en'] }}</h3>
-                    <p class="news-card__snippet">{{ item['content_en'][:400] }}{% if item['content_en']|length > 400 %}...{% endif %}</p>
+                    <p class="news-card__snippet">{{ item['content_en'][:200] }}{% if item['content_en']|length > 200 %}...{% endif %}</p>
                     <div class="news-card__footer">
                         <span class="news-card__date">{{ item['created_at'].strftime('%d.%m.%Y') if item['created_at'] else '' }}</span>
                     </div>
                 </div>
             </article>
+            </a>
             {% endfor %}
         </div>
     {% else %}
