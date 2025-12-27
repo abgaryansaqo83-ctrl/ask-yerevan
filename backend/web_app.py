@@ -3,8 +3,10 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from datetime import date
-from backend.database import get_all_news
+from backend.database import get_all_news, init_db  # ← Ավելացրու init_db
 
+# ✅ Initialize database
+init_db()
 
 app = FastAPI(title="AskYerevan Web")
 
