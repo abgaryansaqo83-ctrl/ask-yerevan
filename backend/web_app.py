@@ -5,6 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi import Query
 from datetime import date
 from backend.database import get_all_news, init_db
+from backend.database import get_all_news, get_news_by_id
 
 # ✅ Add logger
 import logging
@@ -117,6 +118,42 @@ async def news_en(request: Request, category: str = Query(None)):
             "is_winter_theme": is_winter_theme_enabled(),
             "news_list": news_list,
             "category": category
+        },
+    )
+
+# Single news page — HY
+@app.get("/hy/news/{news_id}", response_class=HTMLResponse)
+async def news_detail_hy(request: Request, news_id: int):
+    news_item = get_news_by_id(news_id)
+    
+    if not news_item:
+        return RedirectResponse(url="/hy/news")
+    
+    return templates.TemplateResponse(
+        "news_detail_hy.html",
+        {
+            "request": request,
+            "lang": "hy",
+            "is_winter_theme": is_winter_theme_enabled(),
+            "news": news_item
+        },
+    )
+
+# Single news page — EN
+@app.get("/en/news/{news_id}", response_class=HTMLResponse)
+async def news_detail_en(request: Request, news_id: int):
+    news_item = get_news_by_id(news_id)
+    
+    if not news_item:
+        return RedirectResponse(url="/en/news")
+    
+    return templates.TemplateResponse(
+        "news_detail_en.html",
+        {
+            "request": request,
+            "lang": "en",
+            "is_winter_theme": is_winter_theme_enabled(),
+            "news": news_item
         },
     )
     
