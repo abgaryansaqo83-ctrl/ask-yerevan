@@ -377,6 +377,7 @@ def get_all_news(limit: int = 10):
         )
     
     rows = cur.fetchall()
+    print(f"📰 Found {len(rows)} news items")  # ← Debug log
     conn.close()
     return rows
 
