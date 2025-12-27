@@ -552,6 +552,58 @@ async def process_image(message: Message, state: FSMContext):
     )
     await state.clear()
 
+
+@dp.message(Command("sqlquery"))
+async def cmd_sqlquery(message: Message):
+    """Owner only — Run SQL query on database"""
+    if message.from_user.id != OWNER_ID:
+        await message.answer("❌ Այս հրամանը հասանելի է միայն բոտի տիրոջը։")
+        return
+    
+    from backend.database import get_connection, get_cursor
+    
+    query = message.text.replace("/sqlquery", "").strip()
+    
+    if not query:
+        await message.answer(
+            "📊 SQL Query\n\n"
+            "Օրինակ՝\n"
+            "`/sqlquery SELECT COUNT(*) FROM news;`\n"
+            "`/sqlquery SELECT id, title_hy FROM news LIMIT 5;`",
+            parse_mode="Markdown"
+        )
+        return
+    
+    try:
+        conn = get_connection()
+        cur = get_cursor(conn)
+        cur.execute(query)
+        
+        # If SELECT query
+        if query.strip().upper().startswith("SELECT"):
+            rows = cur.fetchall()
+            
+            if not rows:
+                await message.answer("📊 Արդյունք՝ դատարկ")
+                return
+            
+            # Format results
+            result_text = f"📊 Գտնվեց {len(rows)} տող\n\n"
+            for row in rows[:10]:  # Max 10 rows
+                result_text += f"{dict(row)}\n\n"
+            
+            await message.answer(result_text[:4000])  # Telegram message limit
+        else:
+            # INSERT/UPDATE/DELETE
+            conn.commit()
+            await message.answer(f"✅ Query‑ը կատարվեց")
+        
+        conn.close()
+    
+    except Exception as e:
+        await message.answer(f"❌ SQL Error:\n{e}")
+
+
 # ========== FALLBACK MESSAGE HANDLER ==========
 
 @dp.message()
