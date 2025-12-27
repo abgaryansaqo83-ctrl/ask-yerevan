@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from fastapi import Query
 from datetime import date
 from backend.database import get_all_news, init_db
 
@@ -90,8 +91,8 @@ async def churches_en(request: Request):
 
 # Նորություններ
 @app.get("/hy/news", response_class=HTMLResponse)
-async def news_hy(request: Request):
-    news_list = get_all_news(limit=10)
+async def news_hy(request: Request, category: str = Query(None)):
+    news_list = get_all_news(limit=50, category=category)
     
     return templates.TemplateResponse(
         "news_hy.html",
@@ -99,13 +100,14 @@ async def news_hy(request: Request):
             "request": request,
             "lang": "hy",
             "is_winter_theme": is_winter_theme_enabled(),
-            "news_list": news_list
+            "news_list": news_list,
+            "category": category  # ← Pass to template for active state
         },
     )
 
 @app.get("/en/news", response_class=HTMLResponse)
-async def news_en(request: Request):
-    news_list = get_all_news(limit=10)
+async def news_en(request: Request, category: str = Query(None)):
+    news_list = get_all_news(limit=50, category=category)
     
     return templates.TemplateResponse(
         "news_en.html",
@@ -113,7 +115,8 @@ async def news_en(request: Request):
             "request": request,
             "lang": "en",
             "is_winter_theme": is_winter_theme_enabled(),
-            "news_list": news_list
+            "news_list": news_list,
+            "category": category
         },
     )
     
