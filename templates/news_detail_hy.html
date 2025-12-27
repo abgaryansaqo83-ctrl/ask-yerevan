@@ -20,10 +20,10 @@
             <span class="meta-date">📅 {{ news['created_at'].strftime('%d.%m.%Y') }}</span>
             {% if news.get('category') and news['category'] != 'general' %}
             <span class="meta-category">
-                {% if news['category'] == 'important' %}⚠️ Կարևոր
                 {% elif news['category'] == 'culture' %}🏛️ Մշակույթ
                 {% elif news['category'] == 'events' %}🎉 Միջոցառումներ
                 {% elif news['category'] == 'city' %}🏙️ Քաղաքային
+                {% if news['category'] == 'important' %}⚠️ Կարևոր
                 {% endif %}
             </span>
             {% endif %}
