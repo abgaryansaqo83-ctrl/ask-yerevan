@@ -7,11 +7,11 @@
     
     <!-- Category Filter -->
     <div class="news-filters">
-        <a href="/hy/news" class="filter-btn active">Բոլորը</a>
-        <a href="/hy/news?category=important" class="filter-btn">⚠️ Կարևոր</a>
-        <a href="/hy/news?category=culture" class="filter-btn">🏛️ Մշակույթ</a>
-        <a href="/hy/news?category=events" class="filter-btn">🎉 Միջոցառումներ</a>
-        <a href="/hy/news?category=city" class="filter-btn">🏙️ Քաղաքային</a>
+        <a href="/hy/news" class="filter-btn {% if not category %}active{% endif %}">Բոլորը</a>
+        <a href="/hy/news?category=important" class="filter-btn {% if category == 'important' %}active{% endif %}">⚠️ Կարևոր</a>
+        <a href="/hy/news?category=culture" class="filter-btn {% if category == 'culture' %}active{% endif %}">🏛️ Մշակույթ</a>
+        <a href="/hy/news?category=events" class="filter-btn {% if category == 'events' %}active{% endif %}">🎉 Միջոցառումներ</a>
+        <a href="/hy/news?category=city" class="filter-btn {% if category == 'city' %}active{% endif %}">🏙️ Քաղաքային</a>
     </div>
     
     {% if news_list and news_list|length > 0 %}
