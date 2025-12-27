@@ -553,6 +553,8 @@ async def process_image(message: Message, state: FSMContext):
     await state.clear()
 
 
+# ========== /sqlquery (owner only — database debug) ==========
+
 @dp.message(Command("sqlquery"))
 async def cmd_sqlquery(message: Message):
     """Owner only — Run SQL query on database"""
@@ -584,25 +586,28 @@ async def cmd_sqlquery(message: Message):
             rows = cur.fetchall()
             
             if not rows:
-                await message.answer("📊 Արդյունք՝ դատարկ")
+                await message.answer("📊 Արդյունք՝ դատարկ (0 տող)")
+                conn.close()
                 return
             
             # Format results
             result_text = f"📊 Գտնվեց {len(rows)} տող\n\n"
-            for row in rows[:10]:  # Max 10 rows
-                result_text += f"{dict(row)}\n\n"
+            for i, row in enumerate(rows[:10], 1):  # Max 10 rows
+                result_text += f"{i}. {dict(row)}\n\n"
             
-            await message.answer(result_text[:4000])  # Telegram message limit
+            if len(rows) > 10:
+                result_text += f"... և ևս {len(rows) - 10} տող"
+            
+            await message.answer(result_text[:4000])  # Telegram limit
         else:
             # INSERT/UPDATE/DELETE
             conn.commit()
-            await message.answer(f"✅ Query‑ը կատարվեց")
+            await message.answer(f"✅ Query‑ը կատարվեց հաջողությամբ")
         
         conn.close()
     
     except Exception as e:
-        await message.answer(f"❌ SQL Error:\n{e}")
-
+        await message.answer(f"❌ SQL Error:\n{str(e)[:500]}")
 
 # ========== FALLBACK MESSAGE HANDLER ==========
 
