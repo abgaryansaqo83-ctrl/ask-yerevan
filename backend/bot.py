@@ -24,6 +24,7 @@ from aiogram.types import (
 )
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
+from aiogram.fsm.state import State, StatesGroup
 
 from config.settings import settings
 from backend.utils.logger import logger
@@ -78,6 +79,13 @@ class UserQuestion(StatesGroup):
 
 class CaptchaForm(StatesGroup):
     waiting_for_answer = State()
+
+class AddNewsForm(StatesGroup):
+    waiting_for_title_hy = State()
+    waiting_for_title_en = State()
+    waiting_for_content_hy = State()
+    waiting_for_content_en = State()
+    waiting_for_image = State()
 
 # ========== Լեզվի ընտրություն ==========
 
