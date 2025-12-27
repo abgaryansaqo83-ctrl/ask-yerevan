@@ -482,6 +482,78 @@ async def publish_to_group_command(message: Message):
         logger.exception(f"/publish error: {e}")
         await message.answer(f"❌ Սխալ հրապարակելիս:\n{e}")
 
+# ========== /addnews (owner only) — ԱՅՍՏԵՂ ==========
+@dp.message(Command("addnews"))
+async def cmd_addnews(message: Message, state: FSMContext):
+    if message.from_user.id != OWNER_ID:
+        await message.answer("❌ Այս հրամանը հասանելի է միայն բոտի տիրոջը։")
+        return
+    
+    await message.answer(
+        "📰 Նոր նորություն ավելացնել\n\n"
+        "1️⃣ Ուղարկիր վերնագիրը *հայերեն*",
+        parse_mode="Markdown"
+    )
+    await state.set_state(AddNewsForm.waiting_for_title_hy)
+
+
+@dp.message(AddNewsForm.waiting_for_title_hy)
+async def process_title_hy(message: Message, state: FSMContext):
+    await state.update_data(title_hy=message.text)
+    await message.answer("2️⃣ Հիմա ուղարկիր վերնագիրը *անգլերեն*", parse_mode="Markdown")
+    await state.set_state(AddNewsForm.waiting_for_title_en)
+
+
+@dp.message(AddNewsForm.waiting_for_title_en)
+async def process_title_en(message: Message, state: FSMContext):
+    await state.update_data(title_en=message.text)
+    await message.answer("3️⃣ Ուղարկիր տեքստը *հայերեն*", parse_mode="Markdown")
+    await state.set_state(AddNewsForm.waiting_for_content_hy)
+
+
+@dp.message(AddNewsForm.waiting_for_content_hy)
+async def process_content_hy(message: Message, state: FSMContext):
+    await state.update_data(content_hy=message.text)
+    await message.answer("4️⃣ Ուղարկիր տեքստը *անգլերեն*", parse_mode="Markdown")
+    await state.set_state(AddNewsForm.waiting_for_content_en)
+
+
+@dp.message(AddNewsForm.waiting_for_content_en)
+async def process_content_en(message: Message, state: FSMContext):
+    await state.update_data(content_en=message.text)
+    await message.answer(
+        "5️⃣ Ուղարկիր նկարի URL (կամ գրիր /skip, եթե չկա)",
+        parse_mode="Markdown"
+    )
+    await state.set_state(AddNewsForm.waiting_for_image)
+
+
+@dp.message(AddNewsForm.waiting_for_image)
+async def process_image(message: Message, state: FSMContext):
+    from backend.database import save_news
+    
+    data = await state.get_data()
+    
+    image_url = None if message.text == "/skip" else message.text
+    
+    # Save to database
+    news_id = save_news(
+        title_hy=data['title_hy'],
+        title_en=data['title_en'],
+        content_hy=data['content_hy'],
+        content_en=data['content_en'],
+        image_url=image_url
+    )
+    
+    await message.answer(
+        f"✅ Նորությունը հրապարակվեց!\n"
+        f"ID: {news_id}\n\n"
+        f"Տես վեբ կայքում՝ https://ask-yerevan.onrender.com/hy/news"
+    )
+    await state.clear()
+
+# ========== FALLBACK MESSAGE HANDLER ==========
+
 @dp.message()
 async def main_router(message: Message):
     logger.info(
