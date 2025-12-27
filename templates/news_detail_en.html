@@ -17,10 +17,10 @@
             <span class="meta-date">📅 {{ news['created_at'].strftime('%d.%m.%Y') }}</span>
             {% if news.get('category') and news['category'] != 'general' %}
             <span class="meta-category">
-                {% if news['category'] == 'important' %}⚠️ Important
                 {% elif news['category'] == 'culture' %}🏛️ Culture
                 {% elif news['category'] == 'events' %}🎉 Events
                 {% elif news['category'] == 'city' %}🏙️ City
+                {% if news['category'] == 'important' %}⚠️ Important
                 {% endif %}
             </span>
             {% endif %}
