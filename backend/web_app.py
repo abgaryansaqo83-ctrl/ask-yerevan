@@ -3,6 +3,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from datetime import date
+from backend.database import get_all_news
 
 
 app = FastAPI(title="AskYerevan Web")
@@ -78,36 +79,32 @@ async def churches_en(request: Request):
 # Նորություններ
 @app.get("/hy/news", response_class=HTMLResponse)
 async def news_hy(request: Request):
-    session = Session()
-    news_list = session.query(News).filter(News.published == True).order_by(News.created_at.desc()).limit(10).all()
-    session.close()
+    news_list = get_all_news(limit=10)
     
     return templates.TemplateResponse(
-        "events_hy.html",  # կամ news_hy.html, եթե rename արել ես
+        "news_hy.html",
         {
             "request": request,
             "lang": "hy",
             "is_winter_theme": is_winter_theme_enabled(),
-            "news_list": news_list  # ← Ավելացնում ենք news_list
+            "news_list": news_list
         },
     )
 
 @app.get("/en/news", response_class=HTMLResponse)
 async def news_en(request: Request):
-    session = Session()
-    news_list = session.query(News).filter(News.published == True).order_by(News.created_at.desc()).limit(10).all()
-    session.close()
+    news_list = get_all_news(limit=10)
     
     return templates.TemplateResponse(
-        "events_en.html",  # կամ news_en.html
+        "news_en.html",
         {
             "request": request,
             "lang": "en",
             "is_winter_theme": is_winter_theme_enabled(),
-            "news_list": news_list  # ← Ավելացնում ենք news_list
+            "news_list": news_list
         },
     )
-
+    
 # Տեսարժան վայրեր
 @app.get("/hy/sights", response_class=HTMLResponse)
 async def sights_hy(request: Request):
