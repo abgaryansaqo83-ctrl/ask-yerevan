@@ -4,8 +4,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi import Query
 from datetime import date
-from backend.database import get_all_news, init_db
-from backend.database import get_all_news, get_news_by_id
+from backend.database import get_all_news, init_db, get_news_by_id
 
 # ✅ Add logger
 import logging
@@ -121,7 +120,7 @@ async def news_en(request: Request, category: str = Query(None)):
         },
     )
 
-# Single news page — HY
+# Single news page — HY ✅ FIXED
 @app.get("/hy/news/{news_id}", response_class=HTMLResponse)
 async def news_detail_hy(request: Request, news_id: int):
     news_item = get_news_by_id(news_id)
@@ -135,11 +134,11 @@ async def news_detail_hy(request: Request, news_id: int):
             "request": request,
             "lang": "hy",
             "is_winter_theme": is_winter_theme_enabled(),
-            "news": news_item
+            "news": news_item  # ✅ FIXED: "news" variable
         },
     )
 
-# Single news page — EN
+# Single news page — EN ✅ FIXED
 @app.get("/en/news/{news_id}", response_class=HTMLResponse)
 async def news_detail_en(request: Request, news_id: int):
     news_item = get_news_by_id(news_id)
@@ -153,24 +152,10 @@ async def news_detail_en(request: Request, news_id: int):
             "request": request,
             "lang": "en",
             "is_winter_theme": is_winter_theme_enabled(),
-            "news": news_item
+            "news": news_item  # ✅ FIXED: "news" variable
         },
     )
 
-# ՀԵՏՈՒ ԱՎԵԼԱՑՆԵԼՈՒ ՆՈՐ ROUTES-Ը:
-@app.route('/hy/news/<int:news_id>')
-def news_detail_hy(news_id):
-    article = get_news_by_id(news_id)
-    if not article:
-        return redirect('/hy/news')
-    return render_template('news_detail_hy.html', article=article)
-
-@app.route('/en/news/<int:news_id>')
-def news_detail_en(news_id):
-    article = get_news_by_id(news_id)
-    if not article:
-        return redirect('/en/news')
-    return render_template('news_detail_en.html', article=article)
 # Տեսարժան վայրեր
 @app.get("/hy/sights", response_class=HTMLResponse)
 async def sights_hy(request: Request):
