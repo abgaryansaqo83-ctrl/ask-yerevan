@@ -112,108 +112,73 @@ def scrape_panarmenian_culture():
 
 
 def scrape_tomsarkgh_event_page(url: str, category: str):
-    """
-    Մեկ կոնկրետ event-ի էջից քաշում է վերնագիր, նկար, տեքստ
-    և պահում news table-ում որպես միջոցառում:
-    """
     try:
         logger.info(f"Tomsarkgh event page: {url}")
         resp = requests.get(url, timeout=15)
         resp.raise_for_status()
+        soup = BeautifulSoup(resp.text, "html.parser")
+
+        # Վերնագիր
+        title_el = soup.select_one("h1") or soup.select_one(".event-title")
+        title_hy = _safe_text(title_el) or "Միջոցառում"
+
+        # Content parsing (ՆՈՐ)
+        desc_el = soup.select_one(".event-description") or soup.select_one("article") or soup.select_one(".content")
+        content_raw = _safe_text(desc_el)
+        snippet_hy = content_raw[:120].rsplit(' ', 1)[0] + "..." if content_raw else ""
+        
+        venue_match = re.search(r'Հասցե[։\:](.*?)(?:\n|$)', content_raw, re.IGNORECASE | re.DOTALL)
+        venue_hy = venue_match.group(1).strip()[:80] if venue_match else ""
+        price_match = re.search(r'(\d{3,4}[-\d]*)\s*դրամ', content_raw)
+        price_hy = price_match.group(1) if price_match else ""
+        
+        content_hy = snippet_hy
+
+        # Նկար (նույնը մնում ա)
+        img_el = None
+        img_selectors = ["img[src*='/uploads/']", ".hero img", ".poster img"]
+        for selector in img_selectors:
+            candidates = soup.select(selector)
+            for candidate in candidates:
+                src = candidate.get("src", "").lower()
+                if src and len(src) > 30:
+                    img_el = candidate
+                    break
+            if img_el:
+                break
+        image_url = img_el.get("src") if img_el else None
+        if image_url and image_url.startswith("/"):
+            image_url = "https://www.tomsarkgh.am" + image_url
+
+        # SQLITE SAVE (ՆՈՐ)
+        from backend.database import get_connection
+        conn = get_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            INSERT INTO news (title_hy, content_hy, snippet_hy, venue_hy, price_hy, 
+                            image_url, url, source, category, pub_date_hy, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+            ON CONFLICT (url) DO NOTHING
+        """, (
+            title_hy[:200],
+            content_hy[:500],
+            snippet_hy[:150],
+            venue_hy[:100],
+            price_hy[:20],
+            image_url,
+            url,
+            "tomsarkgh",
+            category,
+            "Այսօր"
+        ))
+        
+        conn.commit()
+        conn.close()
+        logger.info(f"✅ Saved: {title_hy[:50]} | 📍{venue_hy} | 💰{price_hy}")
+        
     except Exception as e:
         logger.error(f"Tomsarkgh event page error ({url}): {e}")
-        return
-
-    soup = BeautifulSoup(resp.text, "html.parser")
-
-    # Վերնագիր — փորձում ենք h1 → page title
-    title_el = soup.select_one("h1") or soup.select_one(".event-title")
-    title_hy = _safe_text(title_el) or "Միջոցառում"
-
-    # =====================================================
-    # ՆՆԴՈՒՆԸ content parsing-ի համար
-    # =====================================================
-    desc_el = soup.select_one(".event-description") or soup.select_one("article") or soup.select_one(".content")
-
-    # 1. MAIN CONTENT — FIRST 120 chars ONLY (clean snippet)
-    content_raw = _safe_text(desc_el)
-    snippet_hy = content_raw[:120].rsplit(' ', 1)[0] + "..." if content_raw else ""
-
-    # 2. EXTRACT STRUCTURED INFO
-    venue_match = re.search(r'Հասցե[։\:](.*?)(?:\n|$)', content_raw, re.IGNORECASE | re.DOTALL)
-    venue_hy = venue_match.group(1).strip()[:80] if venue_match else ""
-
-    price_match = re.search(r'(\d{3,4}[-\d]*)\s*դրամ', content_raw)
-    price_hy = price_match.group(1) if price_match else ""
-
-    time_match = re.search(r'(\d{1,2}:\d{2})', content_raw)
-    time_hy = time_match.group(1) if time_match else ""
-
-    # 3. FALLBACK content (if no description)
-    if not snippet_hy:
-        paragraphs = soup.select("p")
-        if paragraphs:
-            snippet_hy = "\n".join(_safe_text(p) for p in paragraphs[:2])[:120] + "..."
-
-    content_hy = snippet_hy  # short version for cards
-
-    # Նկար — Tomsarkgh event cover (valid CSS selectors)
-    img_selectors = [
-        "img[src*='/uploads/']",                    # uploads folder
-        ".event-image img", ".event-cover img",     # event image classes
-        ".event-poster img", ".poster img",         # poster images
-        ".main-image img", ".hero-image img",       # hero/main images
-        "img[alt*='event']", "img[alt*='poster']",  # event-related alt
-        ".content img", "article img"               # content images
-    ]
-
-    # Tracking pixel exclude keywords
-    exclude_keywords = ["facebook", "google", "pixel", "analytics", "track"]
-
-    img_el = None
-    for selector in img_selectors:
-        candidates = soup.select(selector)
-        for candidate in candidates:
-            src = candidate.get("src", "").lower()
-            # Tracking pixel չէ
-            if any(keyword in src for keyword in exclude_keywords):
-                continue
-            if src and len(src) > 50:  # reasonable image URL length
-                img_el = candidate
-                break
-        if img_el:
-            break
-
-    image_url = img_el.get("src") if img_el else None
-    if image_url:
-        if image_url.startswith("/"):
-            image_url = BASE_TOMSARKGH_URL + image_url
-        # Remove tracking parameters if any
-        if any(keyword in image_url.lower() for keyword in exclude_keywords):
-            image_url = None
-
-    # Պարզ տարբերակ՝ հայերենն ենք լրացնում, անգլերենը նույն տեքստով/կամ placeholder
-    title_en = title_hy
-    content_en = content_hy
-
-    # Structured data save
-    news_data = {
-        "title_hy": title_hy[:200],
-        "content_hy": content_hy[:500],
-        "snippet_hy": snippet_hy[:150],  # NEW
-        "venue_hy": venue_hy[:100],      # NEW  
-        "price_hy": price_hy[:20],       # NEW
-        "image_url": image_url,
-        "url": url,
-        "source": "tomsarkgh",
-        "category": category,
-        "pub_date": datetime.now(),
-        "pub_date_hy": f"Այսօր"  # կամ date parsing
-    }
-
-    news.insert_one(news_data)
-
-    logger.info(f"Tomsarkgh event saved: [{category}] {title_hy[:80]}")
 
 
 def fetch_tomsarkgh_list(event_type: int, days_ahead: int = 2) -> list[str]:
