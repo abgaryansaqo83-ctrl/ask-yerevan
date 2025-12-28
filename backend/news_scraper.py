@@ -140,17 +140,24 @@ def scrape_tomsarkgh_event_page(url: str, category: str):
         if paragraphs:
             content_hy = "\n".join(_safe_text(p) for p in paragraphs[:3])
 
-    # Նկար — ավելի specific selectors Tomsarkgh-ի համար
-    img_el = (
-        soup.select_one(".event-image img") or
-        soup.select_one(".event-cover img") or
-        soup.select_one("img[src*='/uploads/']") or  # uploads folder-ից
-        soup.select_one("img")  # fallback
-    )
+    # Նկար — Tomsarkgh specific selectors
+    img_selectors = [
+        ".event-image img",
+        ".event-cover img", 
+        "img[src*='/uploads/']",
+        ".event-main img",
+        "img[alt*='event']",
+        "img"
+    ]
+    img_el = None
+    for selector in img_selectors:
+        img_el = soup.select_one(selector)
+        if img_el:
+            break
+
     image_url = img_el.get("src") if img_el and img_el.get("src") else None
     if image_url and image_url.startswith("/"):
         image_url = BASE_TOMSARKGH_URL + image_url
-
 
     # Պարզ տարբերակ՝ հայերենն ենք լրացնում, անգլերենը նույն տեքստով/կամ placeholder
     title_en = title_hy
