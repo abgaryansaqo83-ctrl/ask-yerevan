@@ -900,6 +900,32 @@ main.container {
     font-size: 1.05rem;
 }
 
+/* PRIORITY INFO */
+.detail-priority {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 1rem;
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    border: 1px solid #e2e8f0;
+}
+
+.priority-venue {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1e293b;
+    grid-row: 1 / 3;
+    align-self: center;
+}
+
+.priority-date, .priority-price {
+    font-size: 1rem;
+    color: #475569;
+    font-weight: 600;
+    text-align: right;
+}
 
 /* ===========================
    About էջ
