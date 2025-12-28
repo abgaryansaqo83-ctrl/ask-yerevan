@@ -2,9 +2,7 @@
 {% block title %}AskYerevan · Նորություններ{% endblock %}
 
 {% block content %}
-<!-- ════════════════════════════════════════════════════════════════ -->
 <!-- NEWS HEADER -->
-<!-- ════════════════════════════════════════════════════════════════ -->
 <section class="news-hero">
     <div class="container">
         <h1>📰 Նորություններ & Միջոցառումներ</h1>
@@ -12,9 +10,7 @@
     </div>
 </section>
 
-<!-- ════════════════════════════════════════════════════════════════ -->
 <!-- STICKY SUBMENU -->
-<!-- ════════════════════════════════════════════════════════════════ -->
 <nav class="news-submenu">
     <div class="submenu-wrapper">
         <a href="/hy/news" class="submenu-item {{ 'active' if not category else '' }}">🔹 Բոլորը</a>
@@ -26,9 +22,7 @@
     </div>
 </nav>
 
-<!-- ════════════════════════════════════════════════════════════════ -->
-<!-- COMPACT NEWS GRID -->
-<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- COMPACT EVENT GRID -->
 <section class="news-container">
     {% if news_list and news_list|length > 0 %}
     <div class="news-grid">
@@ -48,34 +42,26 @@
                     {% else %}📰{% endif %}
                 </div>
                 {% endif %}
-                <!-- CATEGORY BADGE -->
                 {% if item['category'] %}
-                <span class="category-badge">
-                    {% if item['category'] == 'culture' %}Մշակույթ
-                    {% elif item['category'] == 'events' %}Միջոցառումներ
-                    {% elif item['category'] == 'city' %}Քաղաքային
-                    {% elif item['category'] == 'important' %}Կարևոր
-                    {% elif item['category'] == 'holiday_events' %}Տարվա տոներ
-                    {% else %}{{ item['category']|title }}{% endif %}
-                </span>
+                <span class="category-badge">{{ item['category']|title }}</span>
                 {% endif %}
             </div>
             
-            <!-- COMPACT CONTENT (ՄԵԿԱԿԱՆ ԻՆՖՈ) -->
+            <!-- EVENT INFO (ՊԱՌՏԱԴԻՌ ՉԷ) -->
             <div class="news-card-content">
                 <!-- 1. ՎԵՌՆԱԳԻՌ -->
-                <h3 class="news-card-title">{{ item['title_hy'][:60] }}{% if item['title_hy']|length > 60 %}...{% endif %}</h3>
+                <h3 class="event-title">{{ item['title_hy'][:55] }}{% if item['title_hy']|length > 55 %}...{% endif %}</h3>
                 
-                <!-- 2. ԱՄՍԱԹԻՎ + ՎԱՅՌ / ԳԻՆ -->
-                <div class="news-card-events">
-                    {% if item['created_at'] %}
-                    <span class="event-date">📅 {{ item['created_at'].strftime('%d.%m.%Y') }}</span>
+                <!-- 2. ԵՎԵՆՏ ԻՆՖՈ (ՄԵԿԱԿԱՆ ՏՈՂ) -->
+                <div class="event-info">
+                    {% if item['event_date'] %}
+                    <span class="event-item">📅 {{ item['event_date'] }}</span>
                     {% endif %}
                     {% if item['venue_hy'] %}
-                    <span class="event-venue">📍 {{ item['venue_hy'][:25] }}{% if item['venue_hy']|length > 25 %}...{% endif %}</span>
+                    <span class="event-item">📍 {{ item['venue_hy'][:20] }}{% if item['venue_hy']|length > 20 %}...{% endif %}</span>
                     {% endif %}
                     {% if item['price_hy'] %}
-                    <span class="event-price">💰 {{ item['price_hy'] }}</span>
+                    <span class="event-item">💰 {{ item['price_hy'] }}</span>
                     {% endif %}
                 </div>
             </div>
