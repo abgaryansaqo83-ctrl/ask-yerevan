@@ -156,7 +156,21 @@ async def news_detail_en(request: Request, news_id: int):
             "news": news_item
         },
     )
-    
+
+# ՀԵՏՈՒ ԱՎԵԼԱՑՆԵԼՈՒ ՆՈՐ ROUTES-Ը:
+@app.route('/hy/news/<int:news_id>')
+def news_detail_hy(news_id):
+    article = get_news_by_id(news_id)
+    if not article:
+        return redirect('/hy/news')
+    return render_template('news_detail_hy.html', article=article)
+
+@app.route('/en/news/<int:news_id>')
+def news_detail_en(news_id):
+    article = get_news_by_id(news_id)
+    if not article:
+        return redirect('/en/news')
+    return render_template('news_detail_en.html', article=article)
 # Տեսարժան վայրեր
 @app.get("/hy/sights", response_class=HTMLResponse)
 async def sights_hy(request: Request):
