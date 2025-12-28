@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ news['title_hy'] }} · AskYerevan{% endblock %}
+{% block title %}{{ news['title_hy'] or "Նորություն" }} · AskYerevan{% endblock %}
 
 {% block content %}
 <section class="news-detail">
@@ -9,22 +9,24 @@
     <!-- Image -->
     {% if news['image_url'] %}
     <div class="news-detail__image">
-        <img src="{{ news['image_url'] }}" alt="{{ news['title_hy'] }}">
+        <img src="{{ news['image_url'] }}" alt="{{ news['title_hy'] or 'Նորություն' }}" class="js-lightbox-image">
     </div>
     {% endif %}
     
     <!-- Header -->
     <header class="news-detail__header">
-        <h1>{{ news['title_hy'] }}</h1>
+        <h1>{{ news['title_hy'] or "Նորություն" }}</h1>
         <div class="news-detail__meta">
-            <span class="meta-date">📅 {{ news['created_at'].strftime('%d.%m.%Y') }}</span>
+            <span class="meta-date">
+                📅 {{ news['created_at'].strftime('%d.%m.%Y') if news['created_at'] else 'Անհայտ ամսաթիվ' }}
+            </span>
             {% if news.get('category') and news['category'] != 'general' %}
             <span class="meta-category">
-                {% elif news['category'] == 'culture' %}🏛️ Մշակույթ
+                {% if news['category'] == 'culture' %}🏛️ Մշակույթ
                 {% elif news['category'] == 'events' %}🎉 Միջոցառումներ
                 {% elif news['category'] == 'city' %}🏙️ Քաղաքային
-                {% if news['category'] == 'important' %}⚠️ Կարևոր
-                {% if news.category'] == 'holiday_events' %} · ⛄ Տարվա տոներ
+                {% elif news['category'] == 'important' %}⚠️ Կարևոր
+                {% elif news['category'] == 'holiday_events' %}⛄ Տարվա տոներ
                 {% endif %}
             </span>
             {% endif %}
@@ -33,8 +35,17 @@
     
     <!-- Full content -->
     <div class="news-detail__content">
-        {{ news['content_hy'] }}
+        {{ news['content_hy'] or "Տեքստ չկա" | safe }}
     </div>
+    
+    <!-- Source link (եթե կա) -->
+    {% if news['source_url'] %}
+    <p class="news-source">
+        <a href="{{ news['source_url'] }}" target="_blank" rel="noopener">
+            Գրա&#1365;ն՝ {{ news['source_url'] | urlsplit.netloc or 'Արտաքին աղբյուր' }}
+        </a>
+    </p>
+    {% endif %}
     
     <!-- Back button bottom -->
     <a href="/hy/news" class="back-btn back-btn--bottom">← Վերադառնալ նորություններ</a>
