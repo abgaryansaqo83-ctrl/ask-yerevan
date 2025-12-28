@@ -324,13 +324,14 @@ def get_today_events(city: str | None = None, category: str | None = None):
 # ------------ News helpers ------------
 
 def save_news(
-    title_hy,
-    title_en,
-    content_hy,
-    content_en,
-    image_url=None,
-    category="general",
-    source_url=None,
+    title_hy, title_en, content_hy, content_en,
+    image_url=None, category="general", source_url=None,
+    event_date=None,      # ✅ ՆՈՌ
+    event_time=None,      # ✅ ՆՈՌ
+    venue_hy=None,        # ✅ ՆՈՌ
+    venue_en=None,        # ✅ ՆՈՌ
+    price_hy=None,        # ✅ ՆՈՌ
+    price_en=None,        # ✅ ՆՈՌ
 ):
     with get_connection() as conn:
         with conn.cursor() as cur:
