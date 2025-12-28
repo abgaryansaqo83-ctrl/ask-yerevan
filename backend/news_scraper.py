@@ -107,45 +107,79 @@ def fetch_tomsarkgh_events(event_type: int, days_ahead: int = 7) -> List[str]:
     return links[:10]  # Limit per category
 
 # =============================================================================
-# SINGLE EVENT SCRAPER
+# SINGLE EVENT SCRAPER — BETTER STRUCTURED DATA
 # =============================================================================
 def scrape_tomsarkgh_event(url: str, category: str) -> bool:
-    """Scrape single event page with bilingual support."""
+    """Scrape single event with PRIORITY: date/time/venue/price."""
     try:
         logger.info(f"🔗 Scraping: {url}")
         
-        # Armenian version (main)
         resp_hy = requests.get(url, timeout=15, headers=HEADERS)
         resp_hy.raise_for_status()
         soup_hy = BeautifulSoup(resp_hy.text, "html.parser")
         
-        # Extract Armenian content
+        # 1️⃣ TITLE (ՎԵՌՆԱԳԻՌ)
         title_hy = _safe_text(soup_hy.select_one("h1")) or "Միջոցառում"
+        
+        # 2️⃣ STRUCTURED DATA (ՊԱՌՏԱԴԻՌ)
+        event_date = ""
+        event_time = ""
+        venue_hy = ""
+        price_hy = ""
+        
+        # DATE parsing (ամսաթիվ)
+        date_patterns = [
+            r'(\d{1,2}\.?\s*(?:հունվար|փետրվար|մարտ|ապրիլ|մայիս|հունիս|հուլիս|օգոստոս|սեպտեմբեր|հոկտեմբեր|նոյեմբեր|դեկտեմբեր)\s*\d{4})',
+            r'(\d{1,2}[./-]\d{1,2}[./-]?\d{2,4})',
+            r'(today|tomorrow|\d{1,2}\s*(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec))',
+        ]
+        full_text = soup_hy.get_text()
+        for pattern in date_patterns:
+            match = re.search(pattern, full_text, re.IGNORECASE)
+            if match:
+                event_date = match.group(1).strip()
+                break
+        
+        # TIME parsing (ժամ)
+        time_match = re.search(r'(\d{1,2}:\d{2})\s*(?:-|по|-|մինչև|\d{1,2}:\d{2})?', full_text)
+        if time_match:
+            event_time = time_match.group(1)
+        
+        # VENUE parsing (վայր/հասցե)
+        venue_patterns = [
+            r'(?:Հասցե|Վայր|Թատրոն|Կինո|Venue|Place|Локация)[:։]\s*([^\n\r]{5,100})',
+            r'([A-ZԱ-Ֆ][a-zա-ֆ\s]+(?:թատրոն|կինո|սրահ|hall|cinema|Venue))',
+        ]
+        for pattern in venue_patterns:
+            match = re.search(pattern, full_text, re.IGNORECASE | re.DOTALL)
+            if match:
+                venue_hy = match.group(1).strip()[:80]
+                break
+        
+        # PRICE parsing (գին)
+        price_patterns = [
+            r'(\d{3,})[.,]?\d*\s*(?:դր\.?|AMD|դրամ)',
+            r'\$(\d{1,3}(?:,\d{3})*)',
+        ]
+        for pattern in price_patterns:
+            match = re.search(pattern, full_text)
+            if match:
+                price_hy = match.group(1).replace(',', '')
+                break
+        
+        # 3️⃣ CONTENT (մնացածը → content)
         desc_hy = soup_hy.select_one(".description, .event_resume, .content, article p")
-        content_hy = _safe_text(desc_hy)[:800] or "Մանրամասները կայքում:"
+        content_hy = _safe_text(desc_hy)[:600]
         
-        # Extract structured data
-        venue_hy = parse_venue(content_hy)
-        price_hy = parse_price(content_hy)
-        
-        # Try English version (optional)
-        title_en = title_hy  # fallback
+        # English (fallback)
+        title_en = title_hy
         content_en = content_hy
-        try:
-            url_en = url.replace("/hy/event/", "/en/event/")
-            resp_en = requests.get(url_en, timeout=10, headers=HEADERS)
-            soup_en = BeautifulSoup(resp_en.text, "html.parser")
-            title_en = _safe_text(soup_en.select_one("h1")) or title_hy
-            content_en = _safe_text(soup_en.select_one(".description, .content"))[:800]
-        except:
-            logger.debug(f"EN version unavailable: {url_en}")
         
-        # Extract image
+        # 4️⃣ IMAGE (ՉԴԻՊՉԵՆՔ)
         img_selectors = [
             "meta[property='og:image']",
             "img[src*='thumbnails']", 
             ".event-image img",
-            ".main-image img"
         ]
         image_url = None
         for selector in img_selectors:
@@ -156,7 +190,7 @@ def scrape_tomsarkgh_event(url: str, category: str) -> bool:
                     image_url = BASE_TOMSARKGH_URL + image_url
                 break
         
-        # Save to database (upsert)
+        # 5️⃣ SAVE with PRIORITY fields
         save_news(
             title_hy=title_hy.strip()[:200],
             title_en=title_en.strip()[:200],
@@ -165,9 +199,13 @@ def scrape_tomsarkgh_event(url: str, category: str) -> bool:
             image_url=image_url,
             category=category,
             source_url=url,
+            event_date=event_date,      # ✅ ՆՈՌ
+            event_time=event_time,      # ✅ ՆՈՌ  
+            venue_hy=venue_hy,          # ✅ ՆՈՌ
+            price_hy=price_hy,          # ✅ ՆՈՌ
         )
         
-        logger.info(f"✅ SAVED [{category}] {title_hy[:50]}... | 📍{venue_hy[:20]}")
+        logger.info(f"✅ [{category}] {title_hy[:40]} | 📅{event_date} | 📍{venue_hy[:20]} | 💰{price_hy}")
         return True
         
     except Exception as e:
