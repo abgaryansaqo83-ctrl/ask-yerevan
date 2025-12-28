@@ -2,41 +2,354 @@
 {% block title %}AskYerevan · Նորություններ{% endblock %}
 
 {% block content %}
-<section class="news-section">
-    <h1>📰 Նորություններ</h1>
-    
-    <!-- Category Filter -->
-    <div class="news-filters">
-        <a href="/hy/news" class="filter-btn {{ 'active' if not current_category }}">Բոլորը</a>
-        <a href="/hy/news?category=culture" class="filter-btn {{ 'active' if current_category == 'culture' }}">🏛️ Մշակույթ</a>
-        <a href="/hy/news?category=events" class="filter-btn {{ 'active' if current_category == 'events' }}">🎉 Միջոցառումներ</a>
-        <a href="/hy/news?category=city" class="filter-btn {{ 'active' if current_category == 'city' }}">🏙️ Քաղաքային</a>
-        <a href="/hy/news?category=important" class="filter-btn {{ 'active' if current_category == 'important' }}">⚠️ Կարևոր</a>
-        <a href="/hy/news?category=holiday_events" class="filter-btn {{ 'active' if current_category == 'holiday_events' }}">⛄ Տարվա տոներ</a>
-    </div>    
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- NEWS HEADER -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<section class="news-hero">
+    <div class="container">
+        <h1>📰 Նորություններ & Միջոցառումներ</h1>
+        <p>Վերջին տեղեկություններ Երևանից</p>
+    </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- STICKY SUBMENU / CATEGORY FILTERS -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<nav class="news-submenu">
+    <div class="submenu-wrapper">
+        <a href="/hy/news" class="submenu-item {{ 'active' if not category else '' }}">
+            🔹 Բոլորը
+        </a>
+        <a href="/hy/news?category=culture" class="submenu-item culture {{ 'active' if category == 'culture' }}">
+            🏛️ Մշակույթ
+        </a>
+        <a href="/hy/news?category=events" class="submenu-item events {{ 'active' if category == 'events' }}">
+            🎉 Միջոցառումներ
+        </a>
+        <a href="/hy/news?category=city" class="submenu-item city {{ 'active' if category == 'city' }}">
+            🏙️ Քաղաքային
+        </a>
+        <a href="/hy/news?category=important" class="submenu-item important {{ 'active' if category == 'important' }}">
+            ⚠️ Կարևոր
+        </a>
+        <a href="/hy/news?category=holiday_events" class="submenu-item holiday {{ 'active' if category == 'holiday_events' }}">
+            ⛄ Տարվա տոներ
+        </a>
+    </div>
+</nav>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- NEWS GRID -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<section class="news-container">
     {% if news_list and news_list|length > 0 %}
-        <div class="news-grid">
-            {% for item in news_list %}
-            <a href="/hy/news/{{ item['id'] }}" class="news-card-link">
-            <article class="news-card">
+    <div class="news-grid">
+        {% for item in news_list %}
+        <a href="/hy/news/{{ item['id'] }}" class="news-card {{ item['category'] or 'general' }}">
+            
+            <!-- IMAGE + CATEGORY BADGE -->
+            <div class="news-card-image">
                 {% if item['image_url'] %}
-                <div class="news-card__image">
-                    <img src="{{ item['image_url'] }}" alt="{{ item['title_hy'] }}">
+                <img src="{{ item['image_url'] }}" alt="{{ item['title_hy'] }}" loading="lazy">
+                {% else %}
+                <div class="image-placeholder">
+                    {% if item['category'] == 'culture' %}🎨
+                    {% elif item['category'] == 'events' %}🎉
+                    {% elif item['category'] == 'city' %}🏙️
+                    {% elif item['category'] == 'important' %}⚠️
+                    {% elif item['category'] == 'holiday_events' %}⛄
+                    {% else %}📰{% endif %}
                 </div>
                 {% endif %}
-                <div class="news-card__body">
-                    <h3 class="news-card__title">{{ item['title_hy'] }}</h3>
-                    <p class="news-card__snippet">{{ item['content_hy'][:150] }}{% if item['content_hy']|length > 150 %}...{% endif %}</p>
-                    <div class="news-card__footer">
-                        <span class="news-card__date">{{ item['created_at'].strftime('%d.%m.%Y') if item['created_at'] else '' }}</span>
+                
+                <!-- CATEGORY BADGE -->
+                {% if item['category'] %}
+                <span class="category-badge">
+                    {% if item['category'] == 'culture' %}Մշակույթ
+                    {% elif item['category'] == 'events' %}Միջոցառումներ
+                    {% elif item['category'] == 'city' %}Քաղաքային
+                    {% elif item['category'] == 'important' %}Կարևոր
+                    {% elif item['category'] == 'holiday_events' %}Տարվա տոներ
+                    {% else %}{{ item['category']|replace('_', ' ')|title }}{% endif %}
+                </span>
+                {% endif %}
+            </div>
+
+            <!-- CONTENT -->
+            <div class="news-card-content">
+                <h3 class="news-card-title">{{ item['title_hy'] }}</h3>
+                
+                <!-- SNIPPET (short preview) -->
+                <p class="news-card-snippet">
+                    {{ item['content_hy'][:120] }}{% if item['content_hy']|length > 120 %}...{% endif %}
+                </p>
+
+                <!-- META INFO -->
+                <div class="news-card-meta">
+                    <div class="meta-date">
+                        📅 {{ item['created_at'].strftime('%d.%m.%Y') if item['created_at'] else 'Անհայտ' }}
                     </div>
                 </div>
-            </article>
-            </a>
-            {% endfor %}
-        </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
     {% else %}
-        <p>Նորություններ դեռ չկան։ Շուտով կհայտնվեն։</p>
+    <!-- EMPTY STATE -->
+    <div class="news-empty">
+        <div class="empty-icon">📭</div>
+        <h2>Նորություններ դեռ չկան</h2>
+        <p>Այս կատեգորիայում միայն այժմ նորություն չկա։ Շուտով կհայտնվեն։</p>
+    </div>
     {% endif %}
 </section>
+
+<style>
+/* ════════════════════════════════════════════════════════════════ */
+/* NEWS HERO HEADER */
+.news-hero {
+    background: linear-gradient(135deg, #2B7A8D 0%, #1f5a6b 100%);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.news-hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.news-hero p {
+    font-size: 1.1rem;
+    opacity: 0.95;
+}
+
+/* ════════════════════════════════════════════════════════════════ */
+/* STICKY SUBMENU */
+.news-submenu {
+    background: white;
+    border-bottom: 2px solid #e1e8ed;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.submenu-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 1rem;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+}
+
+.submenu-item {
+    padding: 0.75rem 1.5rem;
+    border: 1px solid #d4e8ed;
+    background: white;
+    color: #1a1a1a;
+    text-decoration: none;
+    border-radius: 25px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.submenu-item:hover {
+    border-color: #2B7A8D;
+    color: #2B7A8D;
+    background: #E8F4F8;
+}
+
+.submenu-item.active {
+    background: #2B7A8D;
+    color: white;
+    border-color: #2B7A8D;
+}
+
+/* ════════════════════════════════════════════════════════════════ */
+/* NEWS GRID */
+.news-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.news-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.news-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: #1a1a1a;
+    display: block;
+    height: 100%;
+}
+
+.news-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+}
+
+/* IMAGE */
+.news-card-image {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    background: linear-gradient(135deg, #2B7A8D, #1f5a6b);
+    overflow: hidden;
+}
+
+.news-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.news-card:hover .news-card-image img {
+    transform: scale(1.05);
+}
+
+.image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-size: 3rem;
+    background: linear-gradient(135deg, #E8F4F8, #D4E8ED);
+    color: #2B7A8D;
+}
+
+/* CATEGORY BADGE */
+.category-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.5rem 1rem;
+    background: rgba(43,122,141,0.95);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+}
+
+/* CONTENT */
+.news-card-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.news-card-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 0.75rem;
+    color: #1a1a1a;
+}
+
+.news-card-snippet {
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    flex-grow: 1;
+}
+
+.news-card-meta {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid #e1e8ed;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.meta-date {
+    font-weight: 500;
+}
+
+/* EMPTY STATE */
+.news-empty {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #666;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.news-empty h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #1a1a1a;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .news-hero {
+        padding: 2.5rem 1rem;
+    }
+    
+    .news-hero h1 {
+        font-size: 2rem;
+    }
+    
+    .news-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .submenu-wrapper {
+        padding: 0.75rem;
+        gap: 0.25rem;
+    }
+    
+    .submenu-item {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .news-card-image {
+        height: 180px;
+    }
+}
+
+@media (max-width: 480px) {
+    .news-hero h1 {
+        font-size: 1.6rem;
+    }
+    
+    .submenu-item {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.85rem;
+    }
+    
+    .news-card-image {
+        height: 160px;
+    }
+}
+</style>
 {% endblock %}
