@@ -32,27 +32,16 @@
             {% endif %}
         </div>
 
-        <!-- STRUCTURED INFO -->
-        <div class="detail-meta">
-            {% if news.snippet_hy %}
-            <p class="detail-snippet">{{ news.snippet_hy }}</p>
+        <!-- PRIORITY INFO (գլխավոր) -->
+        <div class="detail-priority">
+            <div class="priority-venue">📍 {{ news.venue_hy or 'Վայր' }}</div>
+            <div class="priority-date">📅 {{ news.created_at.strftime('%d %b, %a %H:%M') if news.created_at else 'Անհայտ' }}</div>
+            {% if news.price_hy %}
+            <div class="priority-price">💰 {{ news.price_hy }} AMD</div>
             {% endif %}
-            
-            <div class="detail-schedule">
-                {% if news.venue_hy %}
-                <div class="schedule-item">
-                    📍 <strong>{{ news.venue_hy }}</strong>
-                </div>
-                {% endif %}
-                {% if news.price_hy %}
-                <div class="schedule-item">
-                    💰 <strong>{{ news.price_hy }} AMD</strong>
-                </div>
-                {% endif %}
-            </div>
         </div>
 
-        <!-- FULL CONTENT -->
+        <!-- DESCRIPTION (optional) -->
         {% if news.content_hy %}
         <div class="detail-content">
             {{ news.content_hy }}
