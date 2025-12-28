@@ -3,7 +3,7 @@
 
 {% block content %}
 <!-- ════════════════════════════════════════════════════════════════ -->
-<!-- NEWS HEADER (ՀԱՍՏ ԳԻԾ → ԲԱՌԱԿ) -->
+<!-- NEWS HEADER -->
 <!-- ════════════════════════════════════════════════════════════════ -->
 <section class="news-hero">
     <div class="container">
@@ -13,7 +13,7 @@
 </section>
 
 <!-- ════════════════════════════════════════════════════════════════ -->
-<!-- STICKY SUBMENU (ՎԵՌԱԴԱՌՆԱԼ ԿՈՉԱԿ ՕԴՈՒՄ) -->
+<!-- STICKY SUBMENU -->
 <!-- ════════════════════════════════════════════════════════════════ -->
 <nav class="news-submenu">
     <div class="submenu-wrapper">
@@ -27,14 +27,14 @@
 </nav>
 
 <!-- ════════════════════════════════════════════════════════════════ -->
-<!-- NEWS GRID (ՆԿԱՐԻ ՄԵՉ ՓՈՔՐԱՑՆԵԼ) -->
+<!-- COMPACT NEWS GRID -->
 <!-- ════════════════════════════════════════════════════════════════ -->
 <section class="news-container">
     {% if news_list and news_list|length > 0 %}
     <div class="news-grid">
         {% for item in news_list %}
         <a href="/hy/news/{{ item['id'] }}" class="news-card {{ item['category'] or 'general' }}">
-            <!-- IMAGE + CATEGORY BADGE (ՓՈՔՐԱՑՆԵԼ) -->
+            <!-- COMPACT IMAGE -->
             <div class="news-card-image">
                 {% if item['image_url'] %}
                 <img src="{{ item['image_url'] }}" alt="{{ item['title_hy'] }}" loading="lazy">
@@ -56,16 +56,27 @@
                     {% elif item['category'] == 'city' %}Քաղաքային
                     {% elif item['category'] == 'important' %}Կարևոր
                     {% elif item['category'] == 'holiday_events' %}Տարվա տոներ
-                    {% else %}{{ item['category']|replace('_', ' ')|title }}{% endif %}
+                    {% else %}{{ item['category']|title }}{% endif %}
                 </span>
                 {% endif %}
             </div>
-            <!-- CONTENT -->
+            
+            <!-- COMPACT CONTENT (ՄԵԿԱԿԱՆ ԻՆՖՈ) -->
             <div class="news-card-content">
-                <h3 class="news-card-title">{{ item['title_hy'] }}</h3>
-                <p class="news-card-snippet">{{ item['content_hy'][:100] }}{% if item['content_hy']|length > 100 %}...{% endif %}</p>
-                <div class="news-card-meta">
-                    <span class="meta-date">📅 {{ item['created_at'].strftime('%d.%m.%Y') if item['created_at'] else 'Անհայտ' }}</span>
+                <!-- 1. ՎԵՌՆԱԳԻՌ -->
+                <h3 class="news-card-title">{{ item['title_hy'][:60] }}{% if item['title_hy']|length > 60 %}...{% endif %}</h3>
+                
+                <!-- 2. ԱՄՍԱԹԻՎ + ՎԱՅՌ / ԳԻՆ -->
+                <div class="news-card-events">
+                    {% if item['created_at'] %}
+                    <span class="event-date">📅 {{ item['created_at'].strftime('%d.%m.%Y') }}</span>
+                    {% endif %}
+                    {% if item['venue_hy'] %}
+                    <span class="event-venue">📍 {{ item['venue_hy'][:25] }}{% if item['venue_hy']|length > 25 %}...{% endif %}</span>
+                    {% endif %}
+                    {% if item['price_hy'] %}
+                    <span class="event-price">💰 {{ item['price_hy'] }}</span>
+                    {% endif %}
                 </div>
             </div>
         </a>
@@ -82,14 +93,9 @@
 
 <style>
 /* ════════════════════════════════════════════════════════════════ */
-/* NEWS HERO (ԲԱՌԱԿԱՑՆԵԼ) */
-.news-hero { 
-    background: linear-gradient(135deg, #2B7A8D 0%, #1f5a6b 100%); 
-    color: white; 
-    padding: 2rem 2rem; /* 4rem → 2rem */
-    text-align: center; 
-}
-.news-hero h1 { font-size: 2.2rem; margin-bottom: 0.25rem; font-weight: 700; } /* 2.5 → 2.2 */
+/* NEWS HERO */
+.news-hero { background: linear-gradient(135deg, #2B7A8D 0%, #1f5a6b 100%); color: white; padding: 2rem 2rem; text-align: center; }
+.news-hero h1 { font-size: 2.2rem; margin-bottom: 0.25rem; font-weight: 700; }
 .news-hero p { font-size: 1rem; opacity: 0.95; }
 
 /* ════════════════════════════════════════════════════════════════ */
