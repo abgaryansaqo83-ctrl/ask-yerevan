@@ -140,28 +140,40 @@ def scrape_tomsarkgh_event_page(url: str, category: str):
         if paragraphs:
             content_hy = "\n".join(_safe_text(p) for p in paragraphs[:3])
 
-    # Նկար — Tomsarkgh event cover photo selectors (Facebook pixel-ը բացառելով)
+    # Նկար — Tomsarkgh event cover (Facebook pixel բացառելով)
     img_selectors = [
-        "img[src*='/uploads/']",           # uploads folder
-        ".event-image img, .cover-image img",  # event image classes
-        "img[width='300'], img[height='200']", # size-ով
-        "img:not([src*='facebook']):not([src*='google']):not([src*='pixel'])", # tracking exclude
-        ".event-main img, article img",    # content area
-        "img[alt]:not([alt=''])"          # meaningful alt text
+        "img[src*='/uploads/']",                    # uploads folder (main images)
+        ".event-poster img, .poster img",           # poster images
+        "img[width>=200], img[height>=200]",        # large images
+        ".main-image img, .hero-image img",         # hero/main images
+        "img[alt*='event'], img[alt*='poster']",    # event-related alt
+    ]
+
+    # Facebook/Google tracking pixel-ները բացառել
+    exclude_selectors = [
+        "img[src*='facebook.com/tr?id']",
+        "img[src*='google-analytics.com']",
+        "img[src*='pixel']",
+        "img[width='1'], img[height='1']",          # 1x1 tracking pixels
     ]
 
     img_el = None
     for selector in img_selectors:
-        img_el = soup.select_one(selector)
-        if img_el and img_el.get("src"):
+        candidates = soup.select(selector)
+        for candidate in candidates:
+            src = candidate.get("src", "")
+            # Tracking pixel չէ, valid URL
+            if any(exclude in src.lower() for exclude in ["facebook", "google", "pixel"]):
+                continue
+            if src and (src.startswith("http") or src.startswith("/uploads/")):
+                img_el = candidate
+                break
+        if img_el:
             break
 
     image_url = img_el.get("src") if img_el else None
-    if image_url:
-        if image_url.startswith("/"):
-            image_url = BASE_TOMSARKGH_URL + image_url
-        elif "facebook.com/tr?id=" in image_url or "google-analytics.com" in image_url:
-            image_url = None  # tracking pixel-ը skip անենք
+    if image_url and image_url.startswith("/"):
+        image_url = BASE_TOMSARKGH_URL + image_url
 
     # Պարզ տարբերակ՝ հայերենն ենք լրացնում, անգլերենը նույն տեքստով/կամ placeholder
     title_en = title_hy
