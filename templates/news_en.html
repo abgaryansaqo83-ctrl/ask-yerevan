@@ -7,13 +7,13 @@
     
     <!-- Category Filter -->
     <div class="news-filters">
-        <a href="/en/news" class="filter-btn {% if not category %}active{% endif %}">All</a>
-        <a href="/en/news?category=culture" class="filter-btn {% if category == 'culture' %}active{% endif %}">🏛️ Culture</a>
-        <a href="/en/news?category=events" class="filter-btn {% if category == 'events' %}active{% endif %}">🎉 Events</a>
-        <a href="/en/news?category=city" class="filter-btn {% if category == 'city' %}active{% endif %}">🏙️ City</a>
-        <a href="/en/news?category=important" class="filter-btn {% if category == 'important' %}active{% endif %}">⚠️ Important</a>
+        <a href="/en/news" class="filter-btn {{ 'active' if not current_category }}"> All </a>
+        <a href="/en/news?category=culture" class="filter-btn {{ 'active' if current_category == 'culture' }}"> 🏛️ Culture </a>
+        <a href="/en/news?category=events" class="filter-btn {{ 'active' if current_category == 'events' }}"> 🎉 Events </a>
+        <a href="/en/news?category=city" class="filter-btn {{ 'active' if current_category == 'city' }}"> 🏙️ City </a>
+        <a href="/en/news?category=important" class="filter-btn {{ 'active' if current_category == 'important' }}"> ⚠️ Important </a>
+        <a href="/en/news?category=holiday_events" class="filter-btn {{ 'active' if current_category == 'holiday_events' }}"> ⛄ Holiday specials </a>
     </div>
-    
     {% if news_list and news_list|length > 0 %}
         <div class="news-grid">
             {% for item in news_list %}
