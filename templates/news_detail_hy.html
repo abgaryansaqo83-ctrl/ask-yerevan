@@ -41,11 +41,12 @@
     <!-- Source link (եթե կա) -->
     {% if news['source_url'] %}
     <p class="news-source">
-        <a href="{{ news['source_url'] }}" target="_blank" rel="noopener">
-            Գրա&#1365;ն՝ {{ news['source_url'] | urlsplit.netloc or 'Արտաքին աղբյուր' }}
+       <a href="{{ news['source_url'] }}" target="_blank" rel="noopener">
+            Գրա&#1365;ն՝ {{ news['source_url'][:50] }}...
         </a>
     </p>
     {% endif %}
+
     
     <!-- Back button bottom -->
     <a href="/hy/news" class="back-btn back-btn--bottom">← Վերադառնալ նորություններ</a>
