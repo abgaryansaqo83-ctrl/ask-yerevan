@@ -7,13 +7,13 @@
     
     <!-- Category Filter -->
     <div class="news-filters">
-        <a href="/hy/news" class="filter-btn {% if not category %}active{% endif %}">Բոլորը</a>
-        <a href="/hy/news?category=culture" class="filter-btn {% if category == 'culture' %}active{% endif %}">🏛️ Մշակույթ</a>
-        <a href="/hy/news?category=events" class="filter-btn {% if category == 'events' %}active{% endif %}">🎉 Միջոցառումներ</a>
-        <a href="/hy/news?category=city" class="filter-btn {% if category == 'city' %}active{% endif %}">🏙️ Քաղաքային</a>
-        <a href="/hy/news?category=important" class="filter-btn {% if category == 'important' %}active{% endif %}">⚠️ Կարևոր</a>
-    </div>
-    
+        <a href="/hy/news" class="filter-btn {{ 'active' if not current_category }}">Բոլորը</a>
+        <a href="/hy/news?category=culture" class="filter-btn {{ 'active' if current_category == 'culture' }}">🏛️ Մշակույթ</a>
+        <a href="/hy/news?category=events" class="filter-btn {{ 'active' if current_category == 'events' }}">🎉 Միջոցառումներ</a>
+        <a href="/hy/news?category=city" class="filter-btn {{ 'active' if current_category == 'city' }}">🏙️ Քաղաքային</a>
+        <a href="/hy/news?category=important" class="filter-btn {{ 'active' if current_category == 'important' }}">⚠️ Կարևոր</a>
+        <a href="/hy/news?category=holiday_events" class="filter-btn {{ 'active' if current_category == 'holiday_events' }}">⛄ Տարվա տոներ</a>
+    </div>    
     {% if news_list and news_list|length > 0 %}
         <div class="news-grid">
             {% for item in news_list %}
