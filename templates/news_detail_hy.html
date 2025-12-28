@@ -3,22 +3,19 @@
 
 {% block content %}
 <section class="news-detail">
-    <!-- Back button -->
     <a href="/hy/news" class="back-btn">← Վերադառնալ նորություններ</a>
     
-    <!-- Image -->
     {% if news['image_url'] %}
     <div class="news-detail__image">
         <img src="{{ news['image_url'] }}" alt="{{ news['title_hy'] or 'Նորություն' }}" class="js-lightbox-image">
     </div>
     {% endif %}
     
-    <!-- Header -->
     <header class="news-detail__header">
         <h1>{{ news['title_hy'] or "Նորություն" }}</h1>
         <div class="news-detail__meta">
             <span class="meta-date">
-                📅 {{ news['created_at'].strftime('%d.%m.%Y') if news['created_at'] else 'Անհայտ ամսաթիվ' }}
+                📅 {{ news['created_at'].strftime('%d.%m.%Y') if news['created_at'] else 'Անհայտ' }}
             </span>
             {% if news.get('category') and news['category'] != 'general' %}
             <span class="meta-category">
@@ -33,22 +30,18 @@
         </div>
     </header>
     
-    <!-- Full content -->
     <div class="news-detail__content">
         {{ news['content_hy'] or "Տեքստ չկա" | safe }}
     </div>
     
-    <!-- Source link (եթե կա) -->
     {% if news['source_url'] %}
     <p class="news-source">
-       <a href="{{ news['source_url'] }}" target="_blank" rel="noopener">
+        <a href="{{ news['source_url'] }}" target="_blank" rel="noopener">
             Գրա&#1365;ն՝ {{ news['source_url'][:50] }}...
         </a>
     </p>
     {% endif %}
-
     
-    <!-- Back button bottom -->
     <a href="/hy/news" class="back-btn back-btn--bottom">← Վերադառնալ նորություններ</a>
 </section>
 {% endblock %}
