@@ -1,30 +1,32 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{ article.title_en }} - AskYerevan</title>
+    <title>{{ news.title_en or news.title_hy }} - AskYerevan</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/static/css/main.css">
 </head>
 <body>
     <div class="detail-container">
         <!-- HERO IMAGE -->
-        {% if article.image_url %}
+        {% if news.image_url %}
         <div class="detail-hero">
-            <img src="{{ article.image_url | safe }}" alt="{{ article.title_en }}" class="detail-hero-img">
+            <img src="{{ news.image_url | safe }}" alt="{{ news.title_en or news.title_hy }}" class="detail-hero-img">
         </div>
         {% endif %}
 
         <!-- TITLE + CATEGORY -->
         <div class="detail-header">
             <a href="/en/news" class="back-btn">← Back</a>
-            <h1 class="detail-title">{{ article.title_en or article.title_hy }}</h1>
+            <h1 class="detail-title">{{ news.title_en or news.title_hy }}</h1>
             
-            {% if article.category %}
+            {% if news.category %}
             <span class="detail-category">
-                {% if article.category == 'events' %}🎉 Events
-                {% elif article.category == 'holiday_events' %}⛄ Holiday Events
-                {% elif article.category == 'culture' %}🏛️ Culture
-                {% else %}{{ article.category|replace('_', ' ')|title }}
+                {% if news.category == 'events' %}🎉 Events
+                {% elif news.category == 'holiday_events' %}⛄ Holiday Events
+                {% elif news.category == 'culture' %}🏛️ Culture
+                {% elif news.category == 'city' %}🏙️ City
+                {% elif news.category == 'important' %}⚠️ Important
+                {% else %}{{ news.category|replace('_', ' ')|title }}
                 {% endif %}
             </span>
             {% endif %}
@@ -32,28 +34,28 @@
 
         <!-- STRUCTURED INFO -->
         <div class="detail-meta">
-            {% if article.snippet_hy %}
-            <p class="detail-snippet">{{ article.snippet_hy }}</p>
+            {% if news.snippet_hy %}
+            <p class="detail-snippet">{{ news.snippet_hy }}</p>
             {% endif %}
             
             <div class="detail-schedule">
-                {% if article.venue_hy %}
+                {% if news.venue_hy %}
                 <div class="schedule-item">
-                    📍 <strong>{{ article.venue_hy }}</strong>
+                    📍 <strong>{{ news.venue_hy }}</strong>
                 </div>
                 {% endif %}
-                {% if article.price_hy %}
+                {% if news.price_hy %}
                 <div class="schedule-item">
-                    💰 <strong>{{ article.price_hy }} AMD</strong>
+                    💰 <strong>{{ news.price_hy }} AMD</strong>
                 </div>
                 {% endif %}
             </div>
         </div>
 
         <!-- FULL CONTENT -->
-        {% if article.content_hy %}
+        {% if news.content_hy %}
         <div class="detail-content">
-            {{ article.content_hy }}
+            {{ news.content_hy }}
         </div>
         {% endif %}
     </div>
