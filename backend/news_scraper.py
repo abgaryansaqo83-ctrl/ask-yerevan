@@ -155,11 +155,16 @@ def scrape_tomsarkgh_event_page(url: str, category: str):
         conn = get_connection()
         cursor = conn.cursor()
         
+        # POSTGRESQL SAVE (SQLite-ի փոխարեն)
         cursor.execute("""
             INSERT INTO news (title_hy, content_hy, snippet_hy, venue_hy, price_hy, 
-                            image_url, url, source, category, pub_date_hy, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
-            ON CONFLICT (url) DO NOTHING
+                              image_url, url, source, category, pub_date_hy, created_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())
+            ON CONFLICT (url) DO UPDATE SET 
+                updated_at = NOW(),
+                snippet_hy = EXCLUDED.snippet_hy,
+                venue_hy = EXCLUDED.venue_hy,
+                price_hy = EXCLUDED.price_hy
         """, (
             title_hy[:200],
             content_hy[:500],
@@ -172,7 +177,7 @@ def scrape_tomsarkgh_event_page(url: str, category: str):
             category,
             "Այսօր"
         ))
-        
+
         conn.commit()
         conn.close()
         logger.info(f"✅ Saved: {title_hy[:50]} | 📍{venue_hy} | 💰{price_hy}")
