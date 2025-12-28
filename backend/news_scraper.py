@@ -140,24 +140,28 @@ def scrape_tomsarkgh_event_page(url: str, category: str):
         if paragraphs:
             content_hy = "\n".join(_safe_text(p) for p in paragraphs[:3])
 
-    # Նկար — Tomsarkgh specific selectors
+    # Նկար — Tomsarkgh event cover photo selectors (Facebook pixel-ը բացառելով)
     img_selectors = [
-        ".event-image img",
-        ".event-cover img", 
-        "img[src*='/uploads/']",
-        ".event-main img",
-        "img[alt*='event']",
-        "img"
+        "img[src*='/uploads/']",           # uploads folder
+        ".event-image img, .cover-image img",  # event image classes
+        "img[width='300'], img[height='200']", # size-ով
+        "img:not([src*='facebook']):not([src*='google']):not([src*='pixel'])", # tracking exclude
+        ".event-main img, article img",    # content area
+        "img[alt]:not([alt=''])"          # meaningful alt text
     ]
+
     img_el = None
     for selector in img_selectors:
         img_el = soup.select_one(selector)
-        if img_el:
+        if img_el and img_el.get("src"):
             break
 
-    image_url = img_el.get("src") if img_el and img_el.get("src") else None
-    if image_url and image_url.startswith("/"):
-        image_url = BASE_TOMSARKGH_URL + image_url
+    image_url = img_el.get("src") if img_el else None
+    if image_url:
+        if image_url.startswith("/"):
+            image_url = BASE_TOMSARKGH_URL + image_url
+        elif "facebook.com/tr?id=" in image_url or "google-analytics.com" in image_url:
+            image_url = None  # tracking pixel-ը skip անենք
 
     # Պարզ տարբերակ՝ հայերենն ենք լրացնում, անգլերենը նույն տեքստով/կամ placeholder
     title_en = title_hy
