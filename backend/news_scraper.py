@@ -110,58 +110,6 @@ def scrape_panarmenian_culture():
             logger.error(f"PanARMENIAN culture scraper error ({url}): {e}")
 
 
-def scrape_tomsarkgh():
-    """Scrape latest events from Tomsarkgh.am"""
-    try:
-        base_url = "https://www.tomsarkgh.am"
-        url = f"{base_url}/hy/news"
-        response = requests.get(url, timeout=10)
-        response.raise_for_status()
-        soup = BeautifulSoup(response.text, "html.parser")
-        
-        # Find news cards (adjust selectors based on site structure)
-        news_items = soup.select(".news-item")[:5]  # Top 5
-        
-        for item in news_items:
-            title_el = item.select_one(".title")
-            excerpt_el = item.select_one(".excerpt")
-            link_el = item.select_one("a")
-
-            if not title_el or not excerpt_el or not link_el:
-                continue
-
-            title_hy = title_el.get_text(strip=True)
-            content_hy = excerpt_el.get_text(strip=True)
-
-            href = link_el.get("href", "").strip()
-            if not href:
-                continue
-
-            # կազմենք լրիվ URL
-            if href.startswith("http"):
-                event_url = href
-            else:
-                event_url = base_url + href
-
-            img_el = item.select_one("img")
-            image_url = img_el["src"].strip() if img_el and img_el.get("src") else None
-            if image_url and image_url.startswith("/"):
-                image_url = base_url + image_url
-
-            save_news(
-                title_hy=title_hy,
-                title_en=title_hy,
-                content_hy=content_hy,
-                content_en=content_hy,
-                image_url=image_url,
-                category="events",
-                source_url=event_url,
-            )
-            logger.info(f"Tomsarkgh auto-added news: {title_hy[:80]}")
-    
-    except Exception as e:
-        logger.error(f"Tomsarkgh scraper error: {e}")
-
 def scrape_tomsarkgh_event_page(url: str, category: str):
     """
     Մեկ կոնկրետ event-ի էջից քաշում է վերնագիր, նկար, տեքստ
