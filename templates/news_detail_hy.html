@@ -3,9 +3,9 @@
 
 {% block content %}
 <!-- ════════════════════════════════════════════════════════════════ -->
-<!-- STICKY HEADER NAV -->
+<!-- FLOATING HEADER (ՕԴՈՒՄ, ՉԿՊՉՈՒՄ) -->
 <!-- ════════════════════════════════════════════════════════════════ -->
-<div class="detail-header-nav">
+<div class="detail-floating-header">
     <div class="container">
         <a href="/hy/news" class="back-btn">← Վերադառնալ</a>
         {% if news.category %}
@@ -39,7 +39,7 @@
     <div class="detail-title-section">
         <h1 class="detail-title">{{ news.title_hy }}</h1>
         
-        <!-- META INFO (Date + Updated) -->
+        <!-- META INFO -->
         <div class="detail-meta-row">
             <div class="detail-meta-item">
                 <span class="detail-meta-label">📅 Հրապարակվել</span>
@@ -47,23 +47,16 @@
                     {{ news.created_at.strftime('%d.%m.%Y, %H:%M') if news.created_at else 'Անհայտ' }}
                 </span>
             </div>
-            {% if news.updated_at %}
-            <div class="detail-meta-item">
-                <span class="detail-meta-label">🔄 Թարմացվել</span>
-                <span class="detail-meta-value">{{ news.updated_at.strftime('%d.%m.%Y, %H:%M') }}</span>
-            </div>
-            {% endif %}
         </div>
     </div>
 
-    <!-- PRIORITY INFO BOX (Venue, Event Date, Price) -->
+    <!-- INFO BOX (THINNER) -->
     {% if news.venue_hy or news.price_hy %}
     <div class="detail-info-box">
         {% if news.venue_hy %}
         <div class="info-box-item">
             <div class="info-box-icon">📍</div>
             <div class="info-box-content">
-                <div class="info-box-label">Վայր</div>
                 <div class="info-box-value">{{ news.venue_hy }}</div>
             </div>
         </div>
@@ -73,7 +66,6 @@
         <div class="info-box-item">
             <div class="info-box-icon">💰</div>
             <div class="info-box-content">
-                <div class="info-box-label">Գինը</div>
                 <div class="info-box-value">{{ news.price_hy }} AMD</div>
             </div>
         </div>
@@ -88,11 +80,8 @@
     </div>
     {% endif %}
 
-    <!-- FOOTER WITH SOURCE & ACTIONS -->
+    <!-- FOOTER -->
     <div class="detail-footer">
-        <div class="detail-source">
-            📌 <strong>Աղբյուր:</strong> AskYerevan
-        </div>
         <div class="detail-action-buttons">
             <a href="/hy/news" class="action-btn">← Բոլոր նորությունները</a>
         </div>
@@ -101,21 +90,25 @@
 
 <style>
 /* ════════════════════════════════════════════════════════════════ */
-/* STICKY HEADER */
-.detail-header-nav {
-    background: white;
-    border-bottom: 1px solid #e1e8ed;
-    position: sticky;
-    top: 0;
-    z-index: 200;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+/* FLOATING HEADER (ՕԴՈՒՄ) */
+.detail-floating-header {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 0.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
 }
 
-.detail-header-nav .container {
+.detail-floating-header .container {
     display: flex;
     align-items: center;
     gap: 1rem;
-    padding: 1rem 2rem;
+    padding: 0;
 }
 
 .back-btn {
@@ -123,19 +116,19 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
-    background: #E8F4F8;
-    color: #2B7A8D;
-    border: 1px solid #d4e8ed;
+    background: #2B7A8D;
+    color: white;
     border-radius: 8px;
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
+    font-size: 0.9rem;
     transition: all 0.2s;
+    white-space: nowrap;
 }
 
 .back-btn:hover {
-    background: #2B7A8D;
-    color: white;
-    border-color: #2B7A8D;
+    background: #1f5a6b;
+    transform: scale(1.05);
 }
 
 .detail-category-badge {
@@ -144,7 +137,7 @@
     color: white;
     border-radius: 20px;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
 }
 
 /* ════════════════════════════════════════════════════════════════ */
@@ -153,16 +146,18 @@
     max-width: 900px;
     margin: 0 auto 2rem;
     background: white;
-    border-radius: 0 0 16px 16px;
+    border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    position: relative;
+    padding-top: 80px; /* Space for floating header */
 }
 
 /* HERO IMAGE */
 .detail-hero {
     position: relative;
     width: 100%;
-    height: 400px;
+    height: 320px;
     background: linear-gradient(135deg, #2B7A8D, #1f5a6b);
     overflow: hidden;
 }
@@ -178,27 +173,27 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 40%;
-    background: linear-gradient(transparent, rgba(0,0,0,0.4));
+    height: 50%;
+    background: linear-gradient(transparent, rgba(0,0,0,0.3));
 }
 
-/* TITLE SECTION */
+/* TITLE */
 .detail-title-section {
-    padding: 2.5rem 2rem;
+    padding: 2rem;
 }
 
 .detail-title {
-    font-size: 2.2rem;
+    font-size: 2rem;
     font-weight: 700;
     line-height: 1.3;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     color: #1a1a1a;
 }
 
 .detail-meta-row {
     display: flex;
-    gap: 2rem;
-    padding-top: 1.5rem;
+    gap: 1.5rem;
+    padding-top: 1rem;
     border-top: 1px solid #e1e8ed;
 }
 
@@ -209,7 +204,7 @@
 }
 
 .detail-meta-label {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 600;
     color: #666;
     text-transform: uppercase;
@@ -217,18 +212,17 @@
 }
 
 .detail-meta-value {
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 500;
     color: #1a1a1a;
 }
 
-/* INFO BOX */
+/* INFO BOX (THINNER) */
 .detail-info-box {
-    margin: 0 2rem 2rem;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    margin: 0 2rem 1.5rem;
+    display: flex;
     gap: 1.5rem;
-    padding: 1.5rem;
+    padding: 1rem 1.5rem;
     background: #F8FBFC;
     border-radius: 12px;
     border: 1px solid #d4e8ed;
@@ -237,34 +231,23 @@
 .info-box-item {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.75rem;
+    flex: 1;
 }
 
 .info-box-icon {
-    font-size: 1.8rem;
-    width: 3rem;
-    height: 3rem;
+    font-size: 1.4rem;
+    width: 2.5rem;
+    height: 2.5rem;
     background: white;
-    border-radius: 8px;
+    border-radius: 6px;
     border: 1px solid #d4e8ed;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.info-box-content {
-    flex: 1;
-}
-
-.info-box-label {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    color: #666;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-}
-
-.info-box-value {
+.info-box-content .info-box-value {
     font-size: 1rem;
     font-weight: 600;
     color: #1a1a1a;
@@ -274,41 +257,30 @@
 .detail-content {
     padding: 0 2rem 2rem;
     font-size: 1.05rem;
-    line-height: 1.8;
+    line-height: 1.7;
     color: #1a1a1a;
 }
 
 .detail-content p {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
 }
 
 /* FOOTER */
 .detail-footer {
-    padding: 2rem;
+    padding: 1.5rem 2rem;
     background: #F8FBFC;
     border-top: 1px solid #d4e8ed;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.detail-source {
-    font-size: 0.9rem;
-    color: #666;
+    text-align: center;
 }
 
 .detail-action-buttons {
-    display: flex;
-    gap: 1rem;
+    display: inline-flex;
 }
 
 .action-btn {
-    padding: 0.75rem 1.5rem;
-    border: 1px solid #d4e8ed;
-    background: white;
-    color: #2B7A8D;
+    padding: 0.75rem 2rem;
+    background: #2B7A8D;
+    color: white;
     border-radius: 8px;
     text-decoration: none;
     font-weight: 600;
@@ -316,27 +288,26 @@
 }
 
 .action-btn:hover {
-    background: #2B7A8D;
-    color: white;
-    border-color: #2B7A8D;
+    background: #1f5a6b;
+    transform: translateY(-1px);
 }
 
 /* RESPONSIVE */
 @media (max-width: 768px) {
-    .detail-header-nav .container { padding: 1rem; gap: 0.75rem; }
-    .detail-hero { height: 280px; }
-    .detail-title { font-size: 1.8rem; }
-    .detail-title-section { padding: 2rem 1.5rem; }
-    .detail-info-box { grid-template-columns: 1fr; margin: 0 1rem 1.5rem; padding: 1.25rem; }
-    .detail-content { padding: 1.5rem; }
-    .detail-footer { flex-direction: column; text-align: center; }
-    .detail-meta-row { flex-direction: column; gap: 1rem; }
+    .detail-floating-header { top: 15px; }
+    .detail-floating-header .container { gap: 0.75rem; padding: 0.25rem; }
+    .detail-hero { height: 260px; }
+    .detail-title { font-size: 1.6rem; }
+    .detail-container { margin: 0 1rem 1rem; border-radius: 16px; padding-top: 70px; }
+    .detail-info-box { flex-direction: column; gap: 1rem; margin: 0 1rem 1rem; padding: 1rem; }
+    .detail-content { padding: 1.25rem; }
 }
 
 @media (max-width: 480px) {
-    .detail-hero { height: 240px; }
-    .detail-title { font-size: 1.5rem; }
-    .back-btn { padding: 0.6rem 1rem; font-size: 0.9rem; }
+    .detail-hero { height: 220px; }
+    .detail-title { font-size: 1.4rem; }
+    .back-btn { padding: 0.6rem 1rem; font-size: 0.85rem; }
+    .detail-category-badge { padding: 0.5rem 1rem; font-size: 0.85rem; }
 }
 </style>
 {% endblock %}
