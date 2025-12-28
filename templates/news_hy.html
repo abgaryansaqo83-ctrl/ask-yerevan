@@ -14,7 +14,7 @@
 <nav class="news-submenu">
     <div class="submenu-wrapper">
         <a href="/hy/news" class="submenu-item {{ 'active' if not category else '' }}">🔹 Բոլորը</a>
-        <a href="/hy/news?category=culture" class="submenu-item culture {{ 'active' if category == 'culture' }}">🏛️ Մշակույթ</a>
+        <a href="/hy/news?category=culture" class="submenu-item culture {{ 'active' if category == 'culture' }}">🎨 Մշակույթ</a>
         <a href="/hy/news?category=events" class="submenu-item events {{ 'active' if category == 'events' }}">🎉 Միջոցառումներ</a>
         <a href="/hy/news?category=city" class="submenu-item city {{ 'active' if category == 'city' }}">🏙️ Քաղաքային</a>
         <a href="/hy/news?category=important" class="submenu-item important {{ 'active' if category == 'important' }}">⚠️ Կարևոր</a>
@@ -34,11 +34,11 @@
                 <img src="{{ item['image_url'] }}" alt="{{ item['title_hy'] }}" loading="lazy">
                 {% else %}
                 <div class="image-placeholder">
-                    {% if item['category'] == 'culture' %}🎨
-                    {% elif item['category'] == 'events' %}🎉
-                    {% elif item['category'] == 'city' %}🏙️
-                    {% elif item['category'] == 'important' %}⚠️
-                    {% elif item['category'] == 'holiday_events' %}⛄
+                    {% if item['category'] == 'Մշակույթ' %}🎨
+                    {% elif item['category'] == 'Միջոցառումներ' %}🎉
+                    {% elif item['category'] == 'Քաղաքային' %}🏙️
+                    {% elif item['category'] == 'Կարևոր' %}⚠️
+                    {% elif item['category'] == 'Տարվա տոներ' %}⛄
                     {% else %}📰{% endif %}
                 </div>
                 {% endif %}
