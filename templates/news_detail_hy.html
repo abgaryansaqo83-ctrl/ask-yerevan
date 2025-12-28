@@ -1,52 +1,342 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ news.title_hy }} - AskYerevan</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/static/css/main.css">
-</head>
-<body>
-    <div class="detail-container">
-        <!-- HERO IMAGE -->
-        {% if news.image_url %}
-        <div class="detail-hero">
-            <img src="{{ news.image_url | safe }}" alt="{{ news.title_hy }}" class="detail-hero-img">
+{% extends "base.html" %}
+{% block title %}{{ news.title_hy }} - AskYerevan{% endblock %}
+
+{% block content %}
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- STICKY HEADER NAV -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div class="detail-header-nav">
+    <div class="container">
+        <a href="/hy/news" class="back-btn">← Վերադառնալ</a>
+        {% if news.category %}
+        <span class="detail-category-badge">
+            {% if news.category == 'events' %}🎉 Միջոցառումներ
+            {% elif news.category == 'holiday_events' %}⛄ Տարվա տոներ
+            {% elif news.category == 'culture' %}🏛️ Մշակույթ
+            {% elif news.category == 'city' %}🏙️ Քաղաքային
+            {% elif news.category == 'important' %}⚠️ Կարևոր
+            {% else %}{{ news.category|replace('_', ' ')|title }}
+            {% endif %}
+        </span>
+        {% endif %}
+    </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- MAIN DETAIL CONTAINER -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div class="detail-container">
+    
+    <!-- HERO IMAGE -->
+    {% if news.image_url %}
+    <div class="detail-hero">
+        <img src="{{ news.image_url | safe }}" alt="{{ news.title_hy }}" class="detail-hero-img" loading="lazy">
+        <div class="detail-hero-overlay"></div>
+    </div>
+    {% endif %}
+
+    <!-- TITLE SECTION -->
+    <div class="detail-title-section">
+        <h1 class="detail-title">{{ news.title_hy }}</h1>
+        
+        <!-- META INFO (Date + Updated) -->
+        <div class="detail-meta-row">
+            <div class="detail-meta-item">
+                <span class="detail-meta-label">📅 Հրապարակվել</span>
+                <span class="detail-meta-value">
+                    {{ news.created_at.strftime('%d.%m.%Y, %H:%M') if news.created_at else 'Անհայտ' }}
+                </span>
+            </div>
+            {% if news.updated_at %}
+            <div class="detail-meta-item">
+                <span class="detail-meta-label">🔄 Թարմացվել</span>
+                <span class="detail-meta-value">{{ news.updated_at.strftime('%d.%m.%Y, %H:%M') }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- PRIORITY INFO BOX (Venue, Event Date, Price) -->
+    {% if news.venue_hy or news.price_hy %}
+    <div class="detail-info-box">
+        {% if news.venue_hy %}
+        <div class="info-box-item">
+            <div class="info-box-icon">📍</div>
+            <div class="info-box-content">
+                <div class="info-box-label">Վայր</div>
+                <div class="info-box-value">{{ news.venue_hy }}</div>
+            </div>
         </div>
         {% endif %}
-
-        <!-- TITLE + CATEGORY -->
-        <div class="detail-header">
-            <a href="/hy/news" class="back-btn">← Վերադառնալ</a>
-            <h1 class="detail-title">{{ news.title_hy }}</h1>
-            
-            {% if news.category %}
-            <span class="detail-category">
-                {% if news.category == 'events' %}🎉 Միջոցառումներ
-                {% elif news.category == 'holiday_events' %}⛄ Տարվա տոներ
-                {% elif news.category == 'culture' %}🏛️ Մշակույթ
-                {% elif news.category == 'city' %}🏙️ Քաղաքային
-                {% elif news.category == 'important' %}⚠️ Կարևոր
-                {% else %}{{ news.category|replace('_', ' ')|title }}
-                {% endif %}
-            </span>
-            {% endif %}
-        </div>
-
-        <!-- PRIORITY INFO (գլխավոր) -->
-        <div class="detail-priority">
-            <div class="priority-venue">📍 {{ news.venue_hy or 'Վայր' }}</div>
-            <div class="priority-date">📅 {{ news.created_at.strftime('%d %b, %a %H:%M') if news.created_at else 'Անհայտ' }}</div>
-            {% if news.price_hy %}
-            <div class="priority-price">💰 {{ news.price_hy }} AMD</div>
-            {% endif %}
-        </div>
-
-        <!-- DESCRIPTION (optional) -->
-        {% if news.content_hy %}
-        <div class="detail-content">
-            {{ news.content_hy }}
+        
+        {% if news.price_hy %}
+        <div class="info-box-item">
+            <div class="info-box-icon">💰</div>
+            <div class="info-box-content">
+                <div class="info-box-label">Գինը</div>
+                <div class="info-box-value">{{ news.price_hy }} AMD</div>
+            </div>
         </div>
         {% endif %}
     </div>
-</body>
-</html>
+    {% endif %}
+
+    <!-- MAIN CONTENT -->
+    {% if news.content_hy %}
+    <div class="detail-content">
+        {{ news.content_hy | safe }}
+    </div>
+    {% endif %}
+
+    <!-- FOOTER WITH SOURCE & ACTIONS -->
+    <div class="detail-footer">
+        <div class="detail-source">
+            📌 <strong>Աղբյուր:</strong> AskYerevan
+        </div>
+        <div class="detail-action-buttons">
+            <a href="/hy/news" class="action-btn">← Բոլոր նորությունները</a>
+        </div>
+    </div>
+</div>
+
+<style>
+/* ════════════════════════════════════════════════════════════════ */
+/* STICKY HEADER */
+.detail-header-nav {
+    background: white;
+    border-bottom: 1px solid #e1e8ed;
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.detail-header-nav .container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 2rem;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: #E8F4F8;
+    color: #2B7A8D;
+    border: 1px solid #d4e8ed;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.back-btn:hover {
+    background: #2B7A8D;
+    color: white;
+    border-color: #2B7A8D;
+}
+
+.detail-category-badge {
+    padding: 0.6rem 1.2rem;
+    background: linear-gradient(135deg, #2B7A8D, #1f5a6b);
+    color: white;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+/* ════════════════════════════════════════════════════════════════ */
+/* MAIN CONTAINER */
+.detail-container {
+    max-width: 900px;
+    margin: 0 auto 2rem;
+    background: white;
+    border-radius: 0 0 16px 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+/* HERO IMAGE */
+.detail-hero {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    background: linear-gradient(135deg, #2B7A8D, #1f5a6b);
+    overflow: hidden;
+}
+
+.detail-hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.detail-hero-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40%;
+    background: linear-gradient(transparent, rgba(0,0,0,0.4));
+}
+
+/* TITLE SECTION */
+.detail-title-section {
+    padding: 2.5rem 2rem;
+}
+
+.detail-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 1.5rem;
+    color: #1a1a1a;
+}
+
+.detail-meta-row {
+    display: flex;
+    gap: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e1e8ed;
+}
+
+.detail-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.detail-meta-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detail-meta-value {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1a1a1a;
+}
+
+/* INFO BOX */
+.detail-info-box {
+    margin: 0 2rem 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: #F8FBFC;
+    border-radius: 12px;
+    border: 1px solid #d4e8ed;
+}
+
+.info-box-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.info-box-icon {
+    font-size: 1.8rem;
+    width: 3rem;
+    height: 3rem;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #d4e8ed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.info-box-content {
+    flex: 1;
+}
+
+.info-box-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #666;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.info-box-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+/* CONTENT */
+.detail-content {
+    padding: 0 2rem 2rem;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #1a1a1a;
+}
+
+.detail-content p {
+    margin-bottom: 1.5rem;
+}
+
+/* FOOTER */
+.detail-footer {
+    padding: 2rem;
+    background: #F8FBFC;
+    border-top: 1px solid #d4e8ed;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.detail-source {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.detail-action-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.action-btn {
+    padding: 0.75rem 1.5rem;
+    border: 1px solid #d4e8ed;
+    background: white;
+    color: #2B7A8D;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.action-btn:hover {
+    background: #2B7A8D;
+    color: white;
+    border-color: #2B7A8D;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .detail-header-nav .container { padding: 1rem; gap: 0.75rem; }
+    .detail-hero { height: 280px; }
+    .detail-title { font-size: 1.8rem; }
+    .detail-title-section { padding: 2rem 1.5rem; }
+    .detail-info-box { grid-template-columns: 1fr; margin: 0 1rem 1.5rem; padding: 1.25rem; }
+    .detail-content { padding: 1.5rem; }
+    .detail-footer { flex-direction: column; text-align: center; }
+    .detail-meta-row { flex-direction: column; gap: 1rem; }
+}
+
+@media (max-width: 480px) {
+    .detail-hero { height: 240px; }
+    .detail-title { font-size: 1.5rem; }
+    .back-btn { padding: 0.6rem 1rem; font-size: 0.9rem; }
+}
+</style>
+{% endblock %}
