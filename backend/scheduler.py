@@ -78,19 +78,19 @@ def create_scheduler() -> AsyncIOScheduler:
 
     # ================ ՆՈՐՈՒԹՅՈՒՆՆԵՐԻ ԱՎՏՈՄԱՏ ՔԱՇՈՒՄ ===================
 
-    # Ամեն 6 ժամը մեկ — քաշում ենք նոր լուրեր բոլոր աղբյուրներից
+    # ԱՄԵՆ ԳԻՇԵՌ 03:00 AM — ՆՈՌ ԵՎԵՆՏՆԵՌ ՔԱՇՈՒՄ + 30 ՕՌ ՄԱՔՌՈՒՄ
     scheduler.add_job(
-        run_all_scrapers,
-        CronTrigger(minute=0, hour="*/6", timezone=TIMEZONE),
-        id="news_scrapers",
+        run_all_scrapers,  # Նոր events քաշել
+        CronTrigger(hour=3, minute=0, timezone=TIMEZONE),
+        id="daily_fresh_events",
         replace_existing=True,
     )
 
-    # Ամեն գիշեր 03:30 — մաքրում ենք 1 տարուց հին լուրերը
+    # 03:30 — 30 օրից հինը ջնջել (արդեն կա, փոխել days=30)
     scheduler.add_job(
-        delete_old_news,
+        lambda: delete_old_news(days=30),  # 1 տարի → 30 օր
         CronTrigger(hour=3, minute=30, timezone=TIMEZONE),
-        id="cleanup_old_news",
+        id="cleanup_old_news_30days",
         replace_existing=True,
     )
 
