@@ -42,7 +42,7 @@
     {% if news['source_url'] %}
     <p class="news-source">
         <a href="{{ news['source_url'] }}" target="_blank" rel="noopener">
-            Source: {{ news['source_url'] | urlsplit.netloc or 'External source' }}
+            Source: {{ news['source_url'][:50] }}...
         </a>
     </p>
     {% endif %}
