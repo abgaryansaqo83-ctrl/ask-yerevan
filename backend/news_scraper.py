@@ -1,5 +1,6 @@
 # backend/news_scraper.py
 
+import re
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime, date, timedelta
@@ -129,16 +130,32 @@ def scrape_tomsarkgh_event_page(url: str, category: str):
     title_el = soup.select_one("h1") or soup.select_one(".event-title")
     title_hy = _safe_text(title_el) or "Միջոցառում"
 
-    # Տեքստ — վերցնենք հիմնական event description block-ը
-    # փորձնական՝ առաջին <div class="event-description"> կամ article
+    # =====================================================
+    # ՆՆԴՈՒՆԸ content parsing-ի համար
+    # =====================================================
     desc_el = soup.select_one(".event-description") or soup.select_one("article") or soup.select_one(".content")
-    content_hy = _safe_text(desc_el)
 
-    if not content_hy:
-        # fallback՝ քիչ թե շատ արժեքավոր բան
+    # 1. MAIN CONTENT — FIRST 120 chars ONLY (clean snippet)
+    content_raw = _safe_text(desc_el)
+    snippet_hy = content_raw[:120].rsplit(' ', 1)[0] + "..." if content_raw else ""
+
+    # 2. EXTRACT STRUCTURED INFO
+    venue_match = re.search(r'Հասցե[։\:](.*?)(?:\n|$)', content_raw, re.IGNORECASE | re.DOTALL)
+    venue_hy = venue_match.group(1).strip()[:80] if venue_match else ""
+
+    price_match = re.search(r'(\d{3,4}[-\d]*)\s*դրամ', content_raw)
+    price_hy = price_match.group(1) if price_match else ""
+
+    time_match = re.search(r'(\d{1,2}:\d{2})', content_raw)
+    time_hy = time_match.group(1) if time_match else ""
+
+    # 3. FALLBACK content (if no description)
+    if not snippet_hy:
         paragraphs = soup.select("p")
         if paragraphs:
-            content_hy = "\n".join(_safe_text(p) for p in paragraphs[:3])
+            snippet_hy = "\n".join(_safe_text(p) for p in paragraphs[:2])[:120] + "..."
+
+    content_hy = snippet_hy  # short version for cards
 
     # Նկար — Tomsarkgh event cover (valid CSS selectors)
     img_selectors = [
@@ -179,15 +196,22 @@ def scrape_tomsarkgh_event_page(url: str, category: str):
     title_en = title_hy
     content_en = content_hy
 
-    save_news(
-        title_hy=title_hy,
-        title_en=title_en,
-        content_hy=content_hy,
-        content_en=content_en,
-        image_url=image_url,
-        category=category,
-        source_url=url,
-    )
+    # Structured data save
+    news_data = {
+        "title_hy": title_hy[:200],
+        "content_hy": content_hy[:500],
+        "snippet_hy": snippet_hy[:150],  # NEW
+        "venue_hy": venue_hy[:100],      # NEW  
+        "price_hy": price_hy[:20],       # NEW
+        "image_url": image_url,
+        "url": url,
+        "source": "tomsarkgh",
+        "category": category,
+        "pub_date": datetime.now(),
+        "pub_date_hy": f"Այսօր"  # կամ date parsing
+    }
+
+    news.insert_one(news_data)
 
     logger.info(f"Tomsarkgh event saved: [{category}] {title_hy[:80]}")
 
