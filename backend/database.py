@@ -409,7 +409,10 @@ def get_news_by_id(news_id: int):
     
     if DATABASE_URL:
         cur.execute(
-            "SELECT * FROM news WHERE id = %s AND published = TRUE",
+            """
+            SELECT * FROM news 
+            WHERE id = %s AND published = TRUE
+            """,
             (news_id,),
         )
     else:
