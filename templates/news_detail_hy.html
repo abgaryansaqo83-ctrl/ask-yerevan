@@ -1,47 +1,61 @@
-{% extends "base.html" %}
-{% block title %}{{ news['title_hy'] or "Նորություն" }} · AskYerevan{% endblock %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ article.title_hy }} - AskYerevan</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+    <div class="detail-container">
+        <!-- HERO IMAGE -->
+        {% if article.image_url %}
+        <div class="detail-hero">
+            <img src="{{ article.image_url | safe }}" alt="{{ article.title_hy }}" class="detail-hero-img">
+        </div>
+        {% endif %}
 
-{% block content %}
-<section class="news-detail">
-    <a href="/hy/news" class="back-btn">← Վերադառնալ նորություններ</a>
-    
-    {% if news['image_url'] %}
-    <div class="news-detail__image">
-        <img src="{{ news['image_url'] }}" alt="{{ news['title_hy'] or 'Նորություն' }}" class="js-lightbox-image">
-    </div>
-    {% endif %}
-    
-    <header class="news-detail__header">
-        <h1>{{ news['title_hy'] or "Նորություն" }}</h1>
-        <div class="news-detail__meta">
-            <span class="meta-date">
-                📅 {{ news['created_at'].strftime('%d.%m.%Y') if news['created_at'] else 'Անհայտ' }}
-            </span>
-            {% if news.get('category') and news['category'] != 'general' %}
-            <span class="meta-category">
-                {% if news['category'] == 'culture' %}🏛️ Մշակույթ
-                {% elif news['category'] == 'events' %}🎉 Միջոցառումներ
-                {% elif news['category'] == 'city' %}🏙️ Քաղաքային
-                {% elif news['category'] == 'important' %}⚠️ Կարևոր
-                {% elif news['category'] == 'holiday_events' %}⛄ Տարվա տոներ
+        <!-- TITLE + CATEGORY -->
+        <div class="detail-header">
+            <a href="/hy/news" class="back-btn">← Վերադառնալ</a>
+            <h1 class="detail-title">{{ article.title_hy }}</h1>
+            
+            {% if article.category %}
+            <span class="detail-category">
+                {% if article.category == 'events' %}🎉 Միջոցառումներ
+                {% elif article.category == 'holiday_events' %}⛄ Տարվա տոներ
+                {% elif article.category == 'culture' %}🏛️ Մշակույթ
+                {% else %}{{ article.category|replace('_', ' ')|title }}
                 {% endif %}
             </span>
             {% endif %}
         </div>
-    </header>
-    
-    <div class="news-detail__content">
-        {{ news['content_hy'] or "Տեքստ չկա" | safe }}
+
+        <!-- STRUCTURED INFO -->
+        <div class="detail-meta">
+            {% if article.snippet_hy %}
+            <p class="detail-snippet">{{ article.snippet_hy }}</p>
+            {% endif %}
+            
+            <div class="detail-schedule">
+                {% if article.venue_hy %}
+                <div class="schedule-item">
+                    📍 <strong>{{ article.venue_hy }}</strong>
+                </div>
+                {% endif %}
+                {% if article.price_hy %}
+                <div class="schedule-item">
+                    💰 <strong>{{ article.price_hy }} AMD</strong>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- FULL CONTENT -->
+        {% if article.content_hy %}
+        <div class="detail-content">
+            {{ article.content_hy }}
+        </div>
+        {% endif %}
     </div>
-    
-    {% if news['source_url'] %}
-    <p class="news-source">
-        <a href="{{ news['source_url'] }}" target="_blank" rel="noopener">
-            Գրա&#1365;ն՝ {{ news['source_url'][:50] }}...
-        </a>
-    </p>
-    {% endif %}
-    
-    <a href="/hy/news" class="back-btn back-btn--bottom">← Վերադառնալ նորություններ</a>
-</section>
-{% endblock %}
+</body>
+</html>
