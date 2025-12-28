@@ -140,40 +140,40 @@ def scrape_tomsarkgh_event_page(url: str, category: str):
         if paragraphs:
             content_hy = "\n".join(_safe_text(p) for p in paragraphs[:3])
 
-    # Նկար — Tomsarkgh event cover (Facebook pixel բացառելով)
+    # Նկար — Tomsarkgh event cover (valid CSS selectors)
     img_selectors = [
-        "img[src*='/uploads/']",                    # uploads folder (main images)
-        ".event-poster img, .poster img",           # poster images
-        "img[width>=200], img[height>=200]",        # large images
-        ".main-image img, .hero-image img",         # hero/main images
-        "img[alt*='event'], img[alt*='poster']",    # event-related alt
+        "img[src*='/uploads/']",                    # uploads folder
+        ".event-image img", ".event-cover img",     # event image classes
+        ".event-poster img", ".poster img",         # poster images
+        ".main-image img", ".hero-image img",       # hero/main images
+        "img[alt*='event']", "img[alt*='poster']",  # event-related alt
+        ".content img", "article img"               # content images
     ]
 
-    # Facebook/Google tracking pixel-ները բացառել
-    exclude_selectors = [
-        "img[src*='facebook.com/tr?id']",
-        "img[src*='google-analytics.com']",
-        "img[src*='pixel']",
-        "img[width='1'], img[height='1']",          # 1x1 tracking pixels
-    ]
+    # Tracking pixel exclude keywords
+    exclude_keywords = ["facebook", "google", "pixel", "analytics", "track"]
 
     img_el = None
     for selector in img_selectors:
         candidates = soup.select(selector)
         for candidate in candidates:
-            src = candidate.get("src", "")
-            # Tracking pixel չէ, valid URL
-            if any(exclude in src.lower() for exclude in ["facebook", "google", "pixel"]):
+            src = candidate.get("src", "").lower()
+            # Tracking pixel չէ
+            if any(keyword in src for keyword in exclude_keywords):
                 continue
-            if src and (src.startswith("http") or src.startswith("/uploads/")):
+            if src and len(src) > 50:  # reasonable image URL length
                 img_el = candidate
                 break
         if img_el:
             break
 
     image_url = img_el.get("src") if img_el else None
-    if image_url and image_url.startswith("/"):
-        image_url = BASE_TOMSARKGH_URL + image_url
+    if image_url:
+        if image_url.startswith("/"):
+            image_url = BASE_TOMSARKGH_URL + image_url
+        # Remove tracking parameters if any
+        if any(keyword in image_url.lower() for keyword in exclude_keywords):
+            image_url = None
 
     # Պարզ տարբերակ՝ հայերենն ենք լրացնում, անգլերենը նույն տեքստով/կամ placeholder
     title_en = title_hy
