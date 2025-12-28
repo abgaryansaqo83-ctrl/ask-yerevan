@@ -3,22 +3,19 @@
 
 {% block content %}
 <section class="news-detail">
-    <!-- Back button -->
     <a href="/en/news" class="back-btn">← Back to news</a>
     
-    <!-- Image -->
     {% if news['image_url'] %}
     <div class="news-detail__image">
         <img src="{{ news['image_url'] }}" alt="{{ news['title_en'] or news['title_hy'] or 'News' }}" class="js-lightbox-image">
     </div>
     {% endif %}
     
-    <!-- Header -->
     <header class="news-detail__header">
         <h1>{{ news['title_en'] or news['title_hy'] or "News" }}</h1>
         <div class="news-detail__meta">
             <span class="meta-date">
-                📅 {{ news['created_at'].strftime('%d.%m.%Y') if news['created_at'] else 'Unknown date' }}
+                📅 {{ news['created_at'].strftime('%d.%m.%Y') if news['created_at'] else 'Unknown' }}
             </span>
             {% if news.get('category') and news['category'] != 'general' %}
             <span class="meta-category">
@@ -33,12 +30,10 @@
         </div>
     </header>
     
-    <!-- Full content -->
     <div class="news-detail__content">
         {{ news['content_en'] or news['content_hy'] or "No content" | safe }}
     </div>
     
-    <!-- Source link (եթե կա) -->
     {% if news['source_url'] %}
     <p class="news-source">
         <a href="{{ news['source_url'] }}" target="_blank" rel="noopener">
@@ -47,7 +42,6 @@
     </p>
     {% endif %}
     
-    <!-- Back button bottom -->
     <a href="/en/news" class="back-btn back-btn--bottom">← Back to news</a>
 </section>
 {% endblock %}
