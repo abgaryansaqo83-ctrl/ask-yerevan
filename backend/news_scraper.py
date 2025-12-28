@@ -1,4 +1,4 @@
-# backend/news_scraper.py
+# backend/news_scraper.py - COMPLETE BILINGUAL VERSION
 
 import re
 import requests
@@ -11,7 +11,9 @@ from backend.utils.logger import logger
 
 BASE_TOMSARKGH_URL = "https://www.tomsarkgh.am"
 
-# EventType mapping → ինչ category ենք դնում news table-ում
+# =============================================================================
+# EVENT TYPE MAPPING
+# =============================================================================
 TOMSARKGH_EVENT_TYPES = [
     # Կինո
     {"event_type": 6, "category": "events"},
@@ -21,7 +23,7 @@ TOMSARKGH_EVENT_TYPES = [
     {"event_type": 54, "category": "events"},
     # Ակումբ և փաբ
     {"event_type": 31, "category": "events"},
-    # Տարվա տոներ (քն텐츠ի տեսակ՝ հատուկ տոնական)
+    # Տարվա տոներ
     {"event_type": 41, "category": "holiday_events"},
 ]
 
@@ -38,24 +40,27 @@ PANARMENIAN_RSS_SOURCES = [
     },
 ]
 
-
+# =============================================================================
+# UTILITY FUNCTIONS
+# =============================================================================
 def parse_rss_datetime(dt_str: str) -> datetime | None:
     """Parse common RSS datetime formats to datetime or return None."""
     try:
-        # Օրինակ: Tue, 24 Dec 2024 15:32:00 +0400
         return datetime.strptime(dt_str, "%a, %d %b %Y %H:%M:%S %z")
     except Exception:
         return None
 
+def _safe_text(el):
+    return el.get_text(strip=True) if el else ""
 
 HEADERS = {
     "User-Agent": "AskYerevanBot/1.0 (+https://askyerevan.am)",
     "Accept": "application/rss+xml, application/xml;q=0.9, */*;q=0.8",
 }
 
-def _safe_text(el):
-    return el.get_text(strip=True) if el else ""
-    
+# =============================================================================
+# PANARMENIAN RSS SCRAPER (DISABLED - READY)
+# =============================================================================
 def scrape_panarmenian_culture():
     """Fetch culture news from PanARMENIAN RSS feeds."""
     for src in PANARMENIAN_RSS_SOURCES:
@@ -69,30 +74,21 @@ def scrape_panarmenian_culture():
             resp.raise_for_status()
 
             root = ET.fromstring(resp.content)
-
-            # RSS structure: <rss><channel><item>...</item></channel></rss>
             for item in root.findall("./channel/item"):
                 title = (item.findtext("title") or "").strip()
                 description = (item.findtext("description") or "").strip()
                 link = (item.findtext("link") or "").strip()
                 pub_date_raw = (item.findtext("pubDate") or "").strip()
 
-                published_at = parse_rss_datetime(pub_date_raw)
-
                 if not title or not link:
                     continue
 
-                # Քեզ մոտ DB schema-ից կախված՝ հարմարեցնում ենք դաշտերի map-ը.
                 if lang == "hy":
-                    title_hy = title
-                    title_en = title  # placeholder
-                    content_hy = description
-                    content_en = description  # placeholder
+                    title_hy, title_en = title, title  # placeholder
+                    content_hy, content_en = description, description
                 else:
-                    title_hy = title  # placeholder
-                    title_en = title
-                    content_hy = description  # placeholder
-                    content_en = description
+                    title_hy, title_en = title, title
+                    content_hy, content_en = description, description
 
                 save_news(
                     title_hy=title_hy,
@@ -100,90 +96,132 @@ def scrape_panarmenian_culture():
                     content_hy=content_hy,
                     content_en=content_en,
                     image_url=None,
-                    category="culture",
+                    category=category_slug,
                     source_url=link,
                 )
-
-
                 logger.info(f"PanARMENIAN [{lang}] added: {title[:80]}")
 
         except Exception as e:
             logger.error(f"PanARMENIAN culture scraper error ({url}): {e}")
 
-
+# =============================================================================
+# TOMSARKGH BILINGUAL EVENT SCRAPER (MAIN)
+# =============================================================================
 def scrape_tomsarkgh_event_page(url: str, category: str):
+    """
+    Bilingual Tomsarkgh event scraper:
+    - Scrapes HY + EN versions automatically
+    - Extracts venue, price, snippet
+    - Perfect for hy/en toggle sites
+    """
     try:
         logger.info(f"Tomsarkgh event page: {url}")
-        resp = requests.get(url, timeout=15)
-        resp.raise_for_status()
-        soup = BeautifulSoup(resp.text, "html.parser")
-
-        # Վերնագիր
-        title_el = soup.select_one("h1") or soup.select_one(".event-title")
-        title_hy = _safe_text(title_el) or "Միջոցառում"
-
-        # Content parsing (ՆՈՐ)
-        desc_el = soup.select_one(".event-description") or soup.select_one("article") or soup.select_one(".content")
-        content_raw = _safe_text(desc_el)
-        snippet_hy = content_raw[:120].rsplit(' ', 1)[0] + "..." if content_raw else ""
         
-        venue_match = re.search(r'Հասցե[։\:](.*?)(?:\n|$)', content_raw, re.IGNORECASE | re.DOTALL)
-        venue_hy = venue_match.group(1).strip()[:80] if venue_match else ""
-        price_match = re.search(r'(\d{3,4}[-\d]*)\s*դրամ', content_raw)
+        # =====================================================
+        # 1. BILINGUAL PARSING (HY + EN)
+        # =====================================================
+        # Armenian version (default)
+        resp_hy = requests.get(url, timeout=15)
+        resp_hy.raise_for_status()
+        soup_hy = BeautifulSoup(resp_hy.text, "html.parser")
+        
+        title_hy = _safe_text(soup_hy.select_one("h1")) or "Միջոցառում"
+        desc_hy = soup_hy.select_one(".description, .event_resume, article, .content")
+        content_hy_raw = _safe_text(desc_hy)
+        
+        # English version (lang=en toggle)
+        url_en = url.replace("/hy/event/", "/en/event/")
+        title_en = title_hy  # fallback
+        content_en_raw = content_hy_raw
+        
+        try:
+            resp_en = requests.get(url_en, timeout=10)
+            resp_en.raise_for_status()
+            soup_en = BeautifulSoup(resp_en.text, "html.parser")
+            title_en = _safe_text(soup_en.select_one("h1")) or title_hy
+            desc_en = soup_en.select_one(".description, .event_resume, article, .content")
+            content_en_raw = _safe_text(desc_en) or content_hy_raw
+        except Exception as e:
+            logger.debug(f"EN version fallback: {e}")
+        
+        # =====================================================
+        # 2. STRUCTURED EXTRACTION (venue, price, snippet)
+        # =====================================================
+        snippet_hy = content_hy_raw[:120].rsplit(' ', 1)[0] + "..." if content_hy_raw else ""
+        
+        # Venue (Հասցե կամ Կազմակերպիչ)
+        venue_match = re.search(r'(Հասցե|Կազմակերպիչ|Venue)[։\:](.*?)(?:\n|$)', content_hy_raw, re.IGNORECASE | re.DOTALL)
+        venue_hy = venue_match.group(2).strip()[:80] if venue_match else ""
+        
+        # Price
+        price_match = re.search(r'(\d{3,4}[-\d]*)\s*(?:դրամ|AMD)', content_hy_raw)
         price_hy = price_match.group(1) if price_match else ""
         
-        content_hy = snippet_hy
-
-        # Նկար (նույնը մնում ա)
+        content_hy = content_hy_raw[:500]
+        content_en = content_en_raw[:500]
+        
+        # =====================================================
+        # 3. IMAGE EXTRACTION
+        # =====================================================
         img_el = None
-        img_selectors = ["img[src*='/uploads/']", ".hero img", ".poster img"]
+        img_selectors = [
+            "img[src*='/thumbnails/']",  # priority
+            "img[src*='/uploads/']", 
+            ".event_photo img",
+            ".hero img, .poster img",
+            "meta[property='og:image']",
+        ]
+        
         for selector in img_selectors:
-            candidates = soup.select(selector)
-            for candidate in candidates:
-                src = candidate.get("src", "").lower()
-                if src and len(src) > 30:
+            candidates = soup_hy.select(selector)
+            for candidate in candidates[:3]:
+                src = candidate.get("src") or candidate.get("content")
+                if src and len(src) > 30 and "facebook" not in src.lower():
                     img_el = candidate
                     break
             if img_el:
                 break
-        image_url = img_el.get("src") if img_el else None
+                
+        image_url = img_el.get("src") or img_el.get("content") if img_el else None
         if image_url and image_url.startswith("/"):
             image_url = "https://www.tomsarkgh.am" + image_url
 
-        # SQLITE SAVE (ՆՈՐ)
+        # =====================================================
+        # 4. POSTGRESQL SAVE (BILINGUAL)
+        # =====================================================
         from backend.database import get_connection
         conn = get_connection()
         cursor = conn.cursor()
         
-        # POSTGRESQL SAVE (SQLite-ի փոխարեն)
         cursor.execute("""
-            INSERT INTO news (title_hy, content_hy, snippet_hy, venue_hy, price_hy, 
-                              image_url, source_url, category)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO news (title_hy, title_en, content_hy, content_en, snippet_hy, 
+                              venue_hy, price_hy, image_url, source_url, category)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             title_hy[:200],
+            title_en[:200],
             content_hy[:500],
+            content_en[:500],
             snippet_hy[:150],
             venue_hy[:100],
             price_hy[:20],
             image_url,
-            url,        # url → source_url
+            url,
             category
         ))
-
+        
         conn.commit()
         conn.close()
-        logger.info(f"✅ Saved: {title_hy[:50]} | 📍{venue_hy} | 💰{price_hy}")
+        logger.info(f"✅ [{category}] {title_hy[:40]} | 🇭🇺{title_en[:30]} | 📍{venue_hy[:20]} | 💰{price_hy}")
         
     except Exception as e:
         logger.error(f"Tomsarkgh event page error ({url}): {e}")
 
-
+# =============================================================================
+# TOMSARKGH LIST FETCHER
+# =============================================================================
 def fetch_tomsarkgh_list(event_type: int, days_ahead: int = 2) -> list[str]:
-    """
-    Վերադարձնում է տոմսարկղի list էջից event link-երի ցուցակը
-    տրված EventType-ի (օր. 6 - կինո, 16 - կրկես, 41 - տոնական):
-    """
+    """Fetch event links from Tomsarkgh list page."""
     today = date.today()
     start = today.strftime("%m/%d/%Y")
     end = (today + timedelta(days=days_ahead)).strftime("%m/%d/%Y")
@@ -203,11 +241,8 @@ def fetch_tomsarkgh_list(event_type: int, days_ahead: int = 2) -> list[str]:
         return []
 
     soup = BeautifulSoup(resp.text, "html.parser")
-
     links: list[str] = []
 
-    # Event-ի քարտերը սովորաբար լինում են .events-block կամ նման div-երի մեջ
-    # Կուզենք վերցնել բոլոր <a href="/hy/event/..."> հղումները
     for a in soup.select("a[href*='/hy/event/']"):
         href = a.get("href", "").strip()
         if not href:
@@ -223,11 +258,11 @@ def fetch_tomsarkgh_list(event_type: int, days_ahead: int = 2) -> list[str]:
     logger.info(f"Tomsarkgh list: found {len(links)} events for type={event_type}")
     return links
 
+# =============================================================================
+# MAIN TOMSARKGH SCRAPER
+# =============================================================================
 def scrape_tomsarkgh_events():
-    """
-    Քաշում է տոմսարկղի մի քանի EventType-երի միջոցառումներ և
-    գրանցում news table-ում որպես 'events' կամ 'holiday_events'.
-    """
+    """Scrape multiple Tomsarkgh event types."""
     for cfg in TOMSARKGH_EVENT_TYPES:
         event_type = cfg["event_type"]
         category = cfg["category"]
@@ -236,18 +271,23 @@ def scrape_tomsarkgh_events():
         if not links:
             continue
 
-        for url in links:
+        for url in links[:5]:  # limit per category
             scrape_tomsarkgh_event_page(url=url, category=category)
 
-
+# =============================================================================
+# MAIN RUNNER
+# =============================================================================
 def run_all_scrapers():
     """Run all news scrapers"""
-    logger.info("Running auto news scrapers...")
+    logger.info("🚀 Running auto news scrapers...")
 
-    # Տոմսարկղի միջոցառումներ + տարվա տոներ
+    # Tomsarkgh events + holidays (MAIN)
     scrape_tomsarkgh_events()
 
-    # Եթե հետո գտնենք PanARMENIAN-ի համար անվտանգ ուղի, սա կբացենք
+    # PanARMENIAN culture (future)
     # scrape_panarmenian_culture()
 
-    logger.info("Auto news scraping complete")
+    logger.info("✅ Auto news scraping complete")
+
+if __name__ == "__main__":
+    run_all_scrapers()
