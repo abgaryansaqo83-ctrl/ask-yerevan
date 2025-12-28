@@ -579,28 +579,38 @@ def count_violations(user_id: int, chat_id: int, vtype: str, within_hours: int) 
     conn.close()
     return int(row["cnt"] if row else 0)
 
-def delete_old_news():
+def delete_old_news(days: int = 30) -> int:  # 365 → 30
     """
-    Ջնջում է created_at-ով 1 տարուց հին լուրերը։
+    Delete news older than X days (30 days default).
     """
     conn = get_connection()
     cur = get_cursor(conn)
+    
+    try:
+        cutoff_date = datetime.now() - timedelta(days=days)
+        
+        if DATABASE_URL:
+            cur.execute(
+                "DELETE FROM news WHERE created_at < %s AND published = TRUE",
+                (cutoff_date,)
+            )
+        else:
+            cur.execute(
+                "DELETE FROM news WHERE datetime(created_at) < datetime(?) AND published = 1",
+                (cutoff_date,)
+            )
+        
+        deleted_count = cur.rowcount
+        conn.commit()
+        logger.info(f"🧹 Deleted {deleted_count} news older than {days} days")
+        return deleted_count
+        
+    except Exception as e:
+        logger.error(f"❌ Cleanup error: {e}")
+        conn.rollback()
+        return 0
+    finally:
+        cur.close()
+        conn.close()
 
-    if DATABASE_URL:
-        cur.execute(
-            """
-            DELETE FROM news
-            WHERE created_at < NOW() - INTERVAL '1 year'
-            """
-        )
-    else:
-        cur.execute(
-            """
-            DELETE FROM news
-            WHERE created_at < datetime('now', '-1 year')
-            """
-        )
-
-    conn.commit()
-    conn.close()
 
