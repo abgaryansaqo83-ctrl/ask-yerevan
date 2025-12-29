@@ -927,6 +927,42 @@ main.container {
     text-align: right;
 }
 
+.priority-date, .priority-price {
+    font-size: 1rem;
+    color: #475569;
+    font-weight: 600;
+    text-align: right;
+}
+
+/* 4 ԳԻԾ EVENT DETAILS */
+.event-details {
+  margin: 20px 0;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.label {
+  font-weight: 600;
+  color: #555;
+}
+
+.value {
+  color: #333;
+  font-size: 16px;
+}
+
 /* ===========================
    About էջ
    =========================== */
