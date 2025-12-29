@@ -1,63 +1,132 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ news.title_en or news.title_hy }} - AskYerevan</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/static/css/main.css">
-</head>
-<body>
-    <div class="detail-container">
-        <!-- HERO IMAGE -->
-        {% if news.image_url %}
-        <div class="detail-hero">
-            <img src="{{ news.image_url | safe }}" alt="{{ news.title_en or news.title_hy }}" class="detail-hero-img">
-        </div>
-        {% endif %}
+{% extends "base.html" %}
+{% block title %}{{ news.title_en }} - AskYerevan{% endblock %}
 
-        <!-- TITLE + CATEGORY -->
-        <div class="detail-header">
+{% block content %}
+
+<article class="detail-container">
+    {% if news.image_url %}
+    <div class="detail-hero">
+        <img src="{{ news.image_url }}" alt="{{ news.title_en }}" class="detail-hero-img">
+    </div>
+    {% endif %}
+
+    <div class="detail-content-wrapper">
+        <!-- Back button -->
+        <div class="back-wrapper">
             <a href="/en/news" class="back-btn">← Back</a>
-            <h1 class="detail-title">{{ news.title_en or news.title_hy }}</h1>
-            
-            {% if news.category %}
-            <span class="detail-category">
-                {% if news.category == 'events' %}🎉 Events
-                {% elif news.category == 'holiday_events' %}⛄ Holiday Events
-                {% elif news.category == 'culture' %}🏛️ Culture
-                {% elif news.category == 'city' %}🏙️ City
-                {% elif news.category == 'important' %}⚠️ Important
-                {% else %}{{ news.category|replace('_', ' ')|title }}
-                {% endif %}
-            </span>
-            {% endif %}
         </div>
 
-        <!-- STRUCTURED INFO -->
-        <div class="detail-meta">
-            {% if news.snippet_hy %}
-            <p class="detail-snippet">{{ news.snippet_hy }}</p>
-            {% endif %}
-            
-            <div class="detail-schedule">
-                {% if news.venue_hy %}
-                <div class="schedule-item">
-                    📍 <strong>{{ news.venue_hy }}</strong>
-                </div>
-                {% endif %}
-                {% if news.price_hy %}
-                <div class="schedule-item">
-                    💰 <strong>{{ news.price_hy }} AMD</strong>
-                </div>
-                {% endif %}
+        <h1 class="detail-title">{{ news.title_en }}</h1>
+        
+        <!-- 4-line event info -->
+        <div class="event-details">
+            <div class="detail-row">
+                <span class="label">📅 Date</span>
+                <span class="value">{{ news.eventdate or 'Not specified' }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">🕐 Time</span>
+                <span class="value">{{ news.eventtime or 'Not specified' }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">📍 Venue</span>
+                <span class="value">{{ news.venue_hy or 'Not specified' }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">💰 Price</span>
+                <span class="value">
+                    {% if news.price_hy %}
+                        {{ news.price_hy }} AMD
+                    {% else %}
+                        Not specified
+                    {% endif %}
+                </span>
             </div>
         </div>
 
-        <!-- FULL CONTENT -->
-        {% if news.content_hy %}
-        <div class="detail-content">
-            {{ news.content_hy }}
+        {% if news.content_en %}
+        <div class="detail-description">
+            {{ news.content_en|safe }}
         </div>
         {% endif %}
     </div>
-</body>
-</html>
+</article>
+
+<style>
+.detail-container {
+  max-width: 900px;
+  margin: 0 auto 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.detail-hero { height: 280px; overflow: hidden; background: #f5f5f5; }
+.detail-hero-img { width: 100%; height: 100%; object-fit: cover; }
+
+.detail-content-wrapper { padding: 2rem; }
+.detail-title { font-size: 1.8rem; font-weight: 700; margin: 0 0 1.5rem; line-height: 1.3; }
+
+/* Back button */
+.back-wrapper { margin-top: 1rem; margin-bottom: 0.75rem; }
+.back-btn {
+  display: inline-block;
+  padding: 0.45rem 1.1rem;
+  background: #2B7A8D;
+  color: #fff;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.back-btn:hover { background: #1f5a6b; }
+
+/* 4-line layout */
+.event-details {
+  margin-bottom: 2rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  overflow: hidden;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.detail-row:last-child { border-bottom: none; }
+
+.label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 1rem;
+}
+
+.value {
+  color: #1f2937;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.detail-description {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #444;
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .detail-container { margin: 1rem; }
+  .detail-hero { height: 220px; }
+  .detail-content-wrapper { padding: 1.5rem; }
+  .detail-title { font-size: 1.5rem; }
+  .detail-row { padding: 14px 18px; flex-direction: column; align-items: flex-start; gap: 4px; }
+  .label, .value { text-align: left; }
+}
+</style>
+{% endblock %}
