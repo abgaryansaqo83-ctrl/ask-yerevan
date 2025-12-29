@@ -109,63 +109,47 @@ def fetch_tomsarkgh_events(event_type: int, days_ahead: int = 3) -> List[str]:  
 # SINGLE EVENT SCRAPER — BETTER STRUCTURED DATA
 # =============================================================================
 def scrape_tomsarkgh_event(url: str, category: str) -> bool:
-    """Extract DATE/TIME/VENUE/PRICE + IMAGE."""
+    """ՊԼՈՏ Parser - Christmas Hogwarts example."""
     try:
         logger.info(f"🔗 [{category}] {url}")
-        resp_hy = requests.get(url, timeout=15, headers=HEADERS)
-        resp_hy.raise_for_status()
-        soup_hy = BeautifulSoup(resp_hy.text, "html.parser")
+        resp = requests.get(url, timeout=15, headers=HEADERS)
+        resp.raise_for_status()
+        soup = BeautifulSoup(resp.text, "html.parser")
         
         # TITLE
-        title_hy = _safe_text(soup_hy.select_one("h1")) or "Միջոցառում"
-        full_text = soup_hy.get_text()
+        title_hy = _safe_text(soup.select_one("h1")) or "Միջոցառում"
         
-        # 📅 DATE
-        event_date = ""
-        date_patterns = [r'(\d{1,2}[./]\d{1,2}[./]\d{2,4})', r'(\d{1,2}\s+(?:հունվար|փետրվար|մարտ|ապրիլ|մայիս|հունիս|հուլիս|օգոստոս|սեպտեմբեր|հոկտեմբեր|նոյեմբեր|դեկտեմբեր))']
-        for pattern in date_patterns:
-            match = re.search(pattern, full_text)
-            if match:
-                event_date = match.group(1).strip()
-                break
+        # FULL TEXT (ամբողջը)
+        full_text = soup.get_text()
+        
+        # 📅 DATE - regex patterns
+        date_match = re.search(r'(\d{1,2}\.\d{1,2}\.?\d{2,4}|\d{1,2}\s+(?:հունվար|փետրվար|դեկտեմբեր))', full_text)
+        event_date = date_match.group(1) if date_match else ""
         
         # 🕐 TIME
-        event_time = ""
         time_match = re.search(r'(\d{1,2}:\d{2})', full_text)
-        if time_match:
-            event_time = time_match.group(1)
+        event_time = time_match.group(1) if time_match else ""
         
-        # 📍 VENUE
-        venue_hy = ""
-        venue_patterns = [r'(Cinema Star|Aram Khachaturyan|Karen Demirchyan|Philharmonia|Venue|Թատրոն|Կինո)[^\n\r]{0,50}', r'(?:Վայր|Հասցե)[:\s]*([^\n\r]{5,50})']
-        for pattern in venue_patterns:
-            match = re.search(pattern, full_text, re.IGNORECASE)
-            if match:
-                venue_hy = match.group(1).strip()[:40]
-                break
+        # 📍 VENUE - կոնկրետ patterns
+        venue_match = re.search(r'(?:Վայր|Հասցե|Կայարան|Գնացք)[:\s]*([^\n\r]{5,50})', full_text)
+        venue_hy = venue_match.group(1).strip()[:50] if venue_match else ""
         
-        # 💰 PRICE
-        price_hy = ""
-        price_match = re.search(r'(\d{1,4})\s*(?:դր\.?|AMD)', full_text)
-        if price_match:
-            price_hy = price_match.group(1)
+        # 💰 PRICE - կոնկրետ pattern
+        price_match = re.search(r'(\d{1,4}(?:,\d{3})?|\d{1,4})\s*(?:դր\.?|դրամ)', full_text)
+        price_hy = price_match.group(1).replace(',', '') if price_match else ""
         
-        # IMAGE (Չդիպչենք)
+        # IMAGE
         image_url = None
-        for selector in ["meta[property='og:image']", "img[src*='thumbnails']"]:
-            img = soup_hy.select_one(selector)
-            if img:
-                image_url = img.get("content") or img.get("src")
-                if image_url and not image_url.startswith("http"):
-                    image_url = BASE_TOMSARKGH_URL + image_url
-                break
+        img = soup.select_one("meta[property='og:image']")
+        if img:
+            image_url = img.get("content")
         
-        # SAVE
+        # SAVE (bilingual fallback)
         save_news(
             title_hy=title_hy[:200],
-            title_en=title_hy[:200],  # Fallback HY → EN
-            content_hy=full_text[:400],
-            content_en=full_text[:400],  # Fallback HY → EN
+            title_en=title_hy[:200],
+            content_hy=full_text[:500],
+            content_en=full_text[:500],
             image_url=image_url,
             category=category,
             source_url=url,
@@ -175,13 +159,12 @@ def scrape_tomsarkgh_event(url: str, category: str) -> bool:
             price_hy=price_hy,
         )
         
-        logger.info(f"✅ {title_hy[:30]} | 📅{event_date} | 📍{venue_hy[:15]}")
+        logger.info(f"✅ {title_hy[:40]} | 📅{event_date} | 🕐{event_time} | 📍{venue_hy} | 💰{price_hy}")
         return True
         
     except Exception as e:
         logger.error(f"❌ {url}: {e}")
         return False
-
 
 # =============================================================================
 # PANARMENIAN RSS (Culture only - optional)
