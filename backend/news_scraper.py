@@ -108,58 +108,47 @@ def fetch_tomsarkgh_events(event_type: int, days_ahead: int = 3) -> List[str]:  
 # =============================================================================
 # SINGLE EVENT SCRAPER — BETTER STRUCTURED DATA
 # =============================================================================
+
 def scrape_tomsarkgh_event(url: str, category: str) -> bool:
-    """ՊԼՈՏ Parser - Christmas Hogwarts example."""
     try:
-        logger.info(f"🔗 [{category}] {url}")
         resp = requests.get(url, timeout=15, headers=HEADERS)
-        resp.raise_for_status()
         soup = BeautifulSoup(resp.text, "html.parser")
         
-        # TITLE
-        title_hy = _safe_text(soup.select_one("h1")) or "Միջոցառում"
+        # TITLE - event-title կամ h1
+        title_elem = soup.select_one("h1, .event-title, h4.event-title")
+        title_hy = title_elem.get_text(strip=True)[:200] if title_elem else "Միջոցառում"
         
-        # FULL TEXT (ամբողջը)
-        full_text = soup.get_text()
+        # IMAGE - thumbnails
+        img_elem = soup.select_one("img[src*='thumbnails']")
+        image_url = img_elem.get("src") if img_elem else None
+        if image_url and not image_url.startswith("http"):
+            image_url = "https://www.tomsarkgh.am" + image_url
         
-        # 📅 DATE - regex patterns
-        date_match = re.search(r'(\d{1,2}\.\d{1,2}\.?\d{2,4}|\d{1,2}\s+(?:հունվար|փետրվար|դեկտեմբեր))', full_text)
-        event_date = date_match.group(1) if date_match else ""
+        # DATE - .event-date
+        date_elem = soup.select_one(".event-date")
+        event_date = date_elem.get_text(strip=True) if date_elem else ""
         
-        # 🕐 TIME
-        time_match = re.search(r'(\d{1,2}:\d{2})', full_text)
-        event_time = time_match.group(1) if time_match else ""
+        # VENUE - .event-venue
+        venue_elem = soup.select_one(".event-venue a")
+        venue_hy = venue_elem.get_text(strip=True)[:50] if venue_elem else ""
         
-        # 📍 VENUE - կոնկրետ patterns
-        venue_match = re.search(r'(?:Վայր|Հասցե|Կայարան|Գնացք)[:\s]*([^\n\r]{5,50})', full_text)
-        venue_hy = venue_match.group(1).strip()[:50] if venue_match else ""
+        # PRICE - .event-short
+        price_elem = soup.select_one(".event-short")
+        price_hy = re.search(r'(\d{1,4})', price_elem.get_text()).group(1) if price_elem else ""
         
-        # 💰 PRICE - կոնկրետ pattern
-        price_match = re.search(r'(\d{1,4}(?:,\d{3})?|\d{1,4})\s*(?:դր\.?|դրամ)', full_text)
-        price_hy = price_match.group(1).replace(',', '') if price_match else ""
+        # CONTENT - description
+        content_elem = soup.select_one(".event-description, .description, p")
+        full_text = content_elem.get_text(strip=True)[:400] if content_elem else title_hy
         
-        # IMAGE
-        image_url = None
-        img = soup.select_one("meta[property='og:image']")
-        if img:
-            image_url = img.get("content")
-        
-        # SAVE (bilingual fallback)
         save_news(
-            title_hy=title_hy[:200],
-            title_en=title_hy[:200],
-            content_hy=full_text[:500],
-            content_en=full_text[:500],
-            image_url=image_url,
-            category=category,
-            source_url=url,
-            event_date=event_date,
-            event_time=event_time,
-            venue_hy=venue_hy,
-            price_hy=price_hy,
+            title_hy=title_hy, title_en=title_hy,
+            content_hy=full_text, content_en=full_text,
+            image_url=image_url, category=category,
+            source_url=url, event_date=event_date,
+            event_time="", venue_hy=venue_hy, price_hy=price_hy
         )
         
-        logger.info(f"✅ {title_hy[:40]} | 📅{event_date} | 🕐{event_time} | 📍{venue_hy} | 💰{price_hy}")
+        logger.info(f"SAVED {title_hy[:30]} | 📅{event_date} 📍{venue_hy} 💰{price_hy}")
         return True
         
     except Exception as e:
