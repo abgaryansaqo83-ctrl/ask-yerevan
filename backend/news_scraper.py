@@ -213,6 +213,16 @@ def scrape_panarmenian_culture():
             logger.error(f"PanARMENIAN error: {e}")
 
 # =============================================================================
+# MAIN SCRAPER — SCRAPE ALL CATEGORIES
+# =============================================================================
+def scrape_tomsarkgh_events():
+    """Main scraper: all Tomsarkgh categories."""
+    logger.info("🎭 Starting Tomsarkgh scraper...")
+    
+    total_saved = 0
+    for event_type,
+    
+# =============================================================================
 # MAIN RUNNER
 # =============================================================================
 def run_all_scrapers():
