@@ -71,11 +71,11 @@ def parse_price(text: str) -> str:
 # =============================================================================
 # TOMSARKGH LIST FETCHER
 # =============================================================================
-def fetch_tomsarkgh_events(event_type: int, days_ahead: int = 7) -> List[str]:
+def fetch_tomsarkgh_events(event_type: int, days_ahead: int = 3) -> List[str]:  # 7 → 3
     """Fetch event URLs from Tomsarkgh category page."""
     today = date.today()
     start = today.strftime("%m/%d/%Y")
-    end = (today + timedelta(days=days_ahead)).strftime("%m/%d/%Y")
+    end = (today + timedelta(days=days_ahead)).strftime("%m/%d/%Y")  # 7 → 3
     
     params = {
         "EventType[]": str(event_type),
@@ -163,7 +163,9 @@ def scrape_tomsarkgh_event(url: str, category: str) -> bool:
         # SAVE
         save_news(
             title_hy=title_hy[:200],
+            title_en=title_hy[:200],  # Fallback HY → EN
             content_hy=full_text[:400],
+            content_en=full_text[:400],  # Fallback HY → EN
             image_url=image_url,
             category=category,
             source_url=url,
