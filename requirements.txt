@@ -11,3 +11,4 @@ openai>=1.0.0
 beautifulsoup4==4.12.3
 jinja2
 selenium==4.15.2
+playwright==1.44.0
