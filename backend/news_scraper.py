@@ -72,11 +72,11 @@ def parse_price(text: str) -> str:
 # =============================================================================
 # TOMSARKGH LIST FETCHER
 # =============================================================================
-def fetch_tomsarkgh_events(event_type: int, days_ahead: int = 3) -> List[str]:  # 7 → 3
+def fetch_tomsarkgh_events(event_type: int, days_ahead: int = 3) -> List[str]:
     """Fetch event URLs from Tomsarkgh category page."""
     today = date.today()
     start = today.strftime("%m/%d/%Y")
-    end = (today + timedelta(days=days_ahead)).strftime("%m/%d/%Y")  # 7 → 3
+    end = (today + timedelta(days=days_ahead)).strftime("%m/%d/%Y")
     
     params = {
         "EventType[]": str(event_type),
@@ -95,7 +95,6 @@ def fetch_tomsarkgh_events(event_type: int, days_ahead: int = 3) -> List[str]:  
     soup = BeautifulSoup(resp.text, "html.parser")
     links = []
     
-    # Extract event links
     for a in soup.select("a[href*='/hy/event/']"):
         href = a.get("href", "").strip()
         if href and '/hy/event/' in href:
@@ -104,14 +103,13 @@ def fetch_tomsarkgh_events(event_type: int, days_ahead: int = 3) -> List[str]:  
                 links.append(full_url)
     
     logger.info(f"✅ Found {len(links)} events for type={event_type}")
-    return links[:10]  # Limit per category
+    return links[:10]
 
 # =============================================================================
-# SINGLE EVENT SCRAPER — BETTER STRUCTURED DATA
+# MAIN TOMSARKGH SCRAPER — LIST PAGE PARSING
 # =============================================================================
-
 def scrape_tomsarkgh_events():
-    """Parse LIST page - ALL data from list items"""
+    """Parse LIST page - ALL data from list items (title + date + venue + price)"""
     categories = [
         ("events", 16), ("city", 7), ("culture", 10), ("holiday_events", 54)
     ]
@@ -120,13 +118,11 @@ def scrape_tomsarkgh_events():
     for category, event_type in categories:
         logger.info(f"📋 Category {category} (type {event_type})")
         
-        # Get list page
+        # LIST PAGE
         list_url = f"https://www.tomsarkgh.am/hy/category/{event_type}"
-        resp = requests.get(list_url, headers=HEADERS)
+        resp = requests.get(list_url, headers=HEADERS, timeout=15)
         soup = BeautifulSoup(resp.text, "html.parser")
-        
-        # Parse event boxes
-        event_divs = soup.select(".event-box-item")[:5]  # Top 5
+        event_divs = soup.select(".event-box-item")[:5]
         
         saved = 0
         for div in event_divs:
@@ -137,7 +133,7 @@ def scrape_tomsarkgh_events():
                 
                 # TITLE
                 title = div.select_one("h4.event-title a")
-                title_hy = title.get_text(strip=True)[:200] if title else "Event"
+                title_hy = title.get_text(strip=True)[:200] if title else "Միջոցառում"
                 
                 # IMAGE
                 img = div.select_one(".event-photo img")
@@ -157,7 +153,13 @@ def scrape_tomsarkgh_events():
                 price_hy = price_match.group(1) if price_match else ""
                 
                 # SAVE
-                save_news(title_hy, title_hy, title_hy, title_hy, image_url, category, url, event_date, "", venue_hy, price_hy)
+                save_news(
+                    title_hy=title_hy, title_en=title_hy,
+                    content_hy=title_hy, content_en=title_hy,
+                    image_url=image_url, category=category,
+                    source_url=url, event_date=event_date,
+                    event_time="", venue_hy=venue_hy, price_hy=price_hy
+                )
                 saved += 1
                 logger.info(f"SAVED {title_hy[:30]} | 📅{event_date} 📍{venue_hy} 💰{price_hy}")
                 
@@ -172,59 +174,6 @@ def scrape_tomsarkgh_events():
     return total_saved
 
 # =============================================================================
-# PANARMENIAN RSS (Culture only - optional)
-# =============================================================================
-def scrape_panarmenian_culture():
-    """Scrape culture news from PanARMENIAN RSS (DISABLED by default)."""
-    rss_feeds = [
-        "https://stickers.panarmenian.net/feeds/arm/news/culture",
-        "https://stickers.panarmenian.net/feeds/eng/news/culture",
-    ]
-    
-    for url in rss_feeds:
-        try:
-            resp = requests.get(url, timeout=15, headers=HEADERS)
-            root = ET.fromstring(resp.content)
-            
-            for item in root.findall(".//item")[:5]:  # Limit 5 per feed
-                title = item.findtext("title", "").strip()
-                link = item.findtext("link", "").strip()
-                desc = item.findtext("description", "").strip()
-                
-                if title and link:
-                    save_news(
-                        title_hy=title, title_en=title,
-                        content_hy=desc[:500], content_en=desc[:500],
-                        category="culture",
-                        source_url=link,
-                    )
-                    logger.info(f"📖 PanARMENIAN culture: {title[:60]}")
-        except Exception as e:
-            logger.error(f"PanARMENIAN error: {e}")
-
-# =============================================================================
-# MAIN SCRAPER — SCRAPE ALL CATEGORIES
-# =============================================================================
-def scrape_tomsarkgh_events():
-    """Main scraper: all Tomsarkgh categories."""
-    logger.info("🎭 Starting Tomsarkgh scraper...")
-    total_saved = 0
-    
-    for event_type, category in TOMSARKGH_CATEGORIES.items():
-        logger.info(f"📋 Category {category} (type {event_type})")
-        links = fetch_tomsarkgh_events(event_type)
-        
-        saved = 0
-        for url in links[:5]:  # 5 per category
-            if scrape_tomsarkgh_event(url, category):
-                saved += 1
-        
-        total_saved += saved
-        logger.info(f"✅ {category}: {saved} saved")
-    
-    return total_saved
-    
-# =============================================================================
 # MAIN RUNNER
 # =============================================================================
 def run_all_scrapers():
@@ -233,9 +182,6 @@ def run_all_scrapers():
     
     # Main: Tomsarkgh events (all categories)
     total = scrape_tomsarkgh_events()
-    
-    # Optional: PanARMENIAN culture RSS
-    # scrape_panarmenian_culture()
     
     logger.info(f"✅ === SCRAPER COMPLETE: {total} items ===")
     return total
