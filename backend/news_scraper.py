@@ -96,7 +96,6 @@ def fetch_tomsarkgh_events(event_type: int, days_ahead: int = 7) -> List[str]:
     soup = BeautifulSoup(resp.text, "html.parser")
     links: List[str] = []
 
-    # ցանկացած event link՝ /hy/event/XXXXX...
     for a in soup.select("a[href*='/hy/event/']"):
         href = a.get("href", "").strip()
         if not href or "/hy/event/" not in href:
@@ -106,7 +105,6 @@ def fetch_tomsarkgh_events(event_type: int, days_ahead: int = 7) -> List[str]:
             links.append(full_url)
 
     logger.info(f"✅ Found {len(links)} events for type={event_type}")
-    # սահմանափակենք, որ Render‑ը չպայթի
     return links[:20]
 
 
@@ -116,47 +114,38 @@ def fetch_tomsarkgh_events(event_type: int, days_ahead: int = 7) -> List[str]:
 
 def _parse_event_datetime(soup: BeautifulSoup) -> (str, str):
     """
-    Parse event_date (YYYY-MM-DD կամ human string) և event_time ("14:00" կամ "14:00, 18:00").
-    Նախընտրում ենք schema.org meta=startDate, հետո՝ fallback regex.
+    Return (eventdate, eventtime) strings.
     """
-    # primary: <meta itemprop="startDate" content="2025-12-30 14:00">
     meta = soup.select_one("meta[itemprop='startDate']")
-    event_date = ""
-    event_time = ""
+    eventdate = ""
+    eventtime = ""
 
     if meta and meta.get("content"):
         raw = meta["content"].strip()  # "2025-12-30 14:00"
-        # բաժանել օրը և ժամը
         parts = raw.split()
         if len(parts) >= 1:
-            event_date = parts[0]
+            eventdate = parts[0]
         if len(parts) >= 2:
-            event_time = parts[1]
+            eventtime = parts[1]
 
-    # fallback՝ regex ամբողջ տեքստի վրա
     txt = _full_text(soup)
-    if not event_date:
+    if not eventdate:
         m = re.search(r"(\d{4}-\d{2}-\d{2})", txt)
         if m:
-            event_date = m.group(1)
-    if not event_time:
+            eventdate = m.group(1)
+    if not eventtime:
         m = re.search(r"(\d{1,2}[:․]\d{2})", txt)
         if m:
-            event_time = m.group(1).replace("․", ":")
+            eventtime = m.group(1).replace("․", ":")
 
-    return event_date[:32], event_time[:32]
+    return eventdate[:32], eventtime[:32]
 
 
 def _parse_event_venue(soup: BeautifulSoup) -> str:
-    """
-    Parse venue_hy՝ հիմնականում .occurrence_venue span[itemprop='name'].
-    Օրինակ՝ «Ուլիխանյան ակումբ»։
-    """
     el = soup.select_one(".occurrence_venue span[itemprop='name']")
     if el:
         return _safe_text(el)[:100]
 
-    # fallback: event_resume / description‑ից venue նշում
     txt = _full_text(soup)
     m = re.search(
         r"(թատրոն|ակումբ|ջազ ակումբ|համերգասրահ|cinema|hall)[^\n]{0,80}",
@@ -167,27 +156,21 @@ def _parse_event_venue(soup: BeautifulSoup) -> str:
 
 
 def _parse_event_price(soup: BeautifulSoup) -> str:
-    """
-    Parse price_hy՝ նախընտրում ենք schema.org Offer price meta, հետո՝ տեքստային regex.
-    """
-    meta_price = soup.select_one("span[itemprop='offers'] meta[itemprop='price'], meta[itemprop='price']")
+    meta_price = soup.select_one(
+        "span[itemprop='offers'] meta[itemprop='price'], meta[itemprop='price']"
+    )
     if meta_price and meta_price.get("content"):
-        # օրինակ "5000.00" → "5000"
         raw = meta_price["content"].strip()
         m = re.match(r"(\d+)", raw)
         if m:
             return m.group(1)
 
-    # fallback՝ ամբողջ description‑ից
     txt = _full_text(soup)
     m = re.search(r"(\d{3,}(?:[-–]\d{3,})?)\s*(?:դր\.?|դրամ|AMD)", txt)
     return m.group(1).replace("–", "-") if m else ""
 
 
 def _parse_event_image(soup: BeautifulSoup) -> Optional[str]:
-    """
-    Event image՝ նախ og:image, հետո .event_photo img.
-    """
     og = soup.select_one("meta[property='og:image']")
     if og and og.get("content"):
         return og["content"].strip()
@@ -201,50 +184,35 @@ def _parse_event_image(soup: BeautifulSoup) -> Optional[str]:
 
 
 def _parse_event_description(soup: BeautifulSoup) -> str:
-    """
-    Full Armenian description from .description #eventDesc։
-    """
     desc = soup.select_one(".description #eventDesc, .description span#eventDesc")
     if not desc:
         desc = soup.select_one(".description")
     text = desc.decode_contents() if desc else ""
-    # մի քիչ մաքրում ենք՝ <br> → newline, strip
     if text:
         text = BeautifulSoup(text, "html.parser").get_text("\n", strip=True)
     return text[:4000]
 
 
 def scrape_tomsarkgh_event(url: str, category: str) -> bool:
-    """
-    Scrape SINGLE event page և պահի DB‑ում՝ save_news(...).
-    Լցնում ենք՝ title_hy, content_hy, image_url, event_date, event_time, venue_hy, price_hy.
-    """
+    """Scrape single event page and save to DB."""
     try:
         logger.info(f"🎫 Scraping event: {url}")
         resp = requests.get(url, headers=HEADERS, timeout=15)
         resp.raise_for_status()
         soup = BeautifulSoup(resp.text, "html.parser")
 
-        # TITLE
         title_el = soup.select_one("h1.event-name") or soup.select_one("h1")
         title_hy = _safe_text(title_el)[:200] or "Միջոցառում"
 
-        # DESCRIPTION
         content_hy = _parse_event_description(soup)
-
-        # DATE/TIME/VENUE/PRICE
-        event_date, event_time = _parse_event_datetime(soup)
+        eventdate, eventtime = _parse_event_datetime(soup)
         venue_hy = _parse_event_venue(soup)
         price_hy = _parse_event_price(soup)
-
-        # IMAGE
         image_url = _parse_event_image(soup)
 
-        # Bilingual: այս պահին EN version-ը չենք քաշում, պահում ենք HY որպես fallback
         title_en = title_hy
         content_en = content_hy
 
-        # SAVE
         save_news(
             title_hy=title_hy,
             title_en=title_en,
@@ -253,13 +221,13 @@ def scrape_tomsarkgh_event(url: str, category: str) -> bool:
             image_url=image_url,
             category=category,
             source_url=url,
-            event_date=event_date,
-            event_time=event_time,
+            eventdate=eventdate,
+            eventtime=eventtime,
             venue_hy=venue_hy,
             price_hy=price_hy,
         )
         logger.info(
-            f"SAVED [{category}] {title_hy[:40]} | 📅{event_date} ⏰{event_time} "
+            f"SAVED [{category}] {title_hy[:40]} | 📅{eventdate} ⏰{eventtime} "
             f"📍{venue_hy[:20]} 💰{price_hy}"
         )
         return True
@@ -274,12 +242,7 @@ def scrape_tomsarkgh_event(url: str, category: str) -> bool:
 # =============================================================================
 
 def scrape_tomsarkgh_events() -> int:
-    """
-    Main scraper:
-    1) անցնում է TOMSARKGH_CATEGORIES mapping‑ի վրա,
-    2) յուրաքանչյուր EventType‑ի համար քաշում է list‑ից URL‑ներ,
-    3) ամեն URL‑ի համար քաշում է event page և save_news().
-    """
+    """Scrape all mapped Tomsarkgh categories."""
     logger.info("▶️ Starting Tomsarkgh scraper (event pages)")
     total_saved = 0
 
@@ -310,11 +273,7 @@ def scrape_tomsarkgh_events() -> int:
 # =============================================================================
 
 def run_all_scrapers() -> int:
-    """
-    Run complete news scraping cycle.
-    Հիմա ակտիվ է միայն Tomsarkgh; մյուս աղբյուրները (PanARMENIAN, News.am)
-    կարող ենք ավելացնել հետո։
-    """
+    """Run complete news scraping cycle (currently only Tomsarkgh)."""
     logger.info("🚀 === NEWS SCRAPER START ===")
     total = scrape_tomsarkgh_events()
     logger.info(f"🏁 === NEWS SCRAPER DONE: {total} items ===")
