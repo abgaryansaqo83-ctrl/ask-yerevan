@@ -110,38 +110,40 @@ def fetch_tomsarkgh_events(event_type: int, days_ahead: int = 3) -> List[str]:  
 # SINGLE EVENT SCRAPER — BETTER STRUCTURED DATA
 # =============================================================================
 
-def scrape_tomsarkgh_event(url: str, category: str) -> bool:
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
-        try:
-            page.goto(url, wait_until="networkidle")
-            page.wait_for_timeout(3000)  # 3s JS render
-            
-            # TITLE
-            title_hy = page.locator("h1, .event-title").text_content().strip()[:200]
-            
-            # CONTENT
-            full_text = page.locator("body").inner_text()[:400]
-            
-            # DATE/TIME/VENUE/PRICE - rendered text
-            event_date = re.search(r'(\d{1,2}\.\d{1,2}\.?\d{2,4})', full_text).group(1) if re.search(r'(\d{1,2}\.\d{1,2}\.?\d{2,4})', full_text) else ""
-            event_time = re.search(r'(\d{1,2}:\d{2})', full_text).group(1) if re.search(r'(\d{1,2}:\d{2})', full_text) else ""
-            venue_hy = re.search(r'(?:Վայր|Հասցե|Թատրոն)[:\s]*([^\n]{5,50})', full_text).group(1)[:50] if re.search(r'(?:Վայր|Հասցե|Թատրոն)[:\s]*([^\n]{5,50})', full_text) else ""
-            price_hy = re.search(r'(\d{1,4})', full_text).group(1) if re.search(r'(\d{1,4})', full_text) else ""
-            
-            # IMAGE
-            image_url = page.locator("img[src*='thumbnails']").get_attribute("src")
-            
-            save_news(title_hy, title_hy, full_text, full_text, image_url, category, url, event_date, event_time, venue_hy, price_hy)
-            logger.info(f"SAVED {title_hy[:30]} | 📅{event_date} 🕐{event_time} 📍{venue_hy} 💰{price_hy}")
-            return True
-            
-        except Exception as e:
-            logger.error(f"❌ {url}: {e}")
-            return False
-        finally:
-            browser.close()
+def scrape_tomsarkgh_list_event(event_div, category: str) -> bool:
+    """Parse from LIST page (title + date + venue + price)"""
+    try:
+        # LINK
+        link_elem = event_div.select_one("a")
+        url = "https://www.tomsarkgh.am" + link_elem.get("href") if link_elem else ""
+        
+        # TITLE
+        title_elem = event_div.select_one("h4.event-title a")
+        title_hy = title_elem.get_text(strip=True)[:200] if title_elem else "Միջոցառում"
+        
+        # IMAGE
+        img_elem = event_div.select_one(".event-photo img")
+        image_url = "https://www.tomsarkgh.am" + img_elem.get("src") if img_elem else ""
+        
+        # DATE (.event-date)
+        date_elem = event_div.select_one(".event-date")
+        event_date = date_elem.get_text(strip=True) if date_elem else ""
+        
+        # VENUE (.event-venue)
+        venue_elem = event_div.select_one(".event-venue a")
+        venue_hy = venue_elem.get_text(strip=True)[:50] if venue_elem else ""
+        
+        # PRICE (.event-short)
+        price_elem = event_div.select_one(".event-short")
+        price_hy = re.search(r'(\d{1,4})', price_elem.get_text()).group(1) if price_elem else ""
+        
+        save_news(title_hy, title_hy, title_hy, title_hy, image_url, category, url, event_date, "", venue_hy, price_hy)
+        logger.info(f"SAVED {title_hy[:30]} | 📅{event_date} 📍{venue_hy} 💰{price_hy}")
+        return True
+        
+    except Exception as e:
+        logger.error(f"❌ List parse: {e}")
+        return False
 
 # =============================================================================
 # PANARMENIAN RSS (Culture only - optional)
