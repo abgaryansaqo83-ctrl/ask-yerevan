@@ -194,13 +194,14 @@ def _parse_event_description(soup: BeautifulSoup) -> str:
 
 
 def scrape_tomsarkgh_event(url: str, category: str) -> bool:
-    """Scrape single event page and save to DB."""
+    """Scrape single event page (HY + optional EN) and save to DB."""
     try:
         logger.info(f"🎫 Scraping event: {url}")
         resp = requests.get(url, headers=HEADERS, timeout=15)
         resp.raise_for_status()
         soup = BeautifulSoup(resp.text, "html.parser")
 
+        # ---------- HY VERSION ----------
         title_el = soup.select_one("h1.event-name") or soup.select_one("h1")
         title_hy = _safe_text(title_el)[:200] or "Միջոցառում"
 
@@ -210,9 +211,39 @@ def scrape_tomsarkgh_event(url: str, category: str) -> bool:
         price_hy = _parse_event_price(soup)
         image_url = _parse_event_image(soup)
 
+        # ---------- EN VERSION (optional) ----------
         title_en = title_hy
         content_en = content_hy
 
+        try:
+            if "/hy/event" in url:
+                url_en = url.replace("/hy/event", "/en/event")
+            else:
+                # fallback՝ hy → en overall
+                url_en = url.replace("/hy/", "/en/")
+
+            resp_en = requests.get(url_en, headers=HEADERS, timeout=10)
+            resp_en.raise_for_status()
+            soup_en = BeautifulSoup(resp_en.text, "html.parser")
+
+            title_en_el = soup_en.select_one("h1.event-name") or soup_en.select_one("h1")
+            en_title = _safe_text(title_en_el)
+            if en_title:
+                title_en = en_title[:200]
+
+            desc_en = soup_en.select_one(".description #eventDesc, .description, article, .content")
+            if desc_en:
+                text_en = BeautifulSoup(
+                    desc_en.decode_contents(), "html.parser"
+                ).get_text("\n", strip=True)
+                if text_en:
+                    content_en = text_en[:4000]
+
+        except Exception:
+            # Եթե EN էջը չկա կամ error եղավ, մնում ենք HY fallback‑ին
+            logger.debug(f"EN version unavailable for {url}")
+
+        # ---------- SAVE ----------
         save_news(
             title_hy=title_hy,
             title_en=title_en,
@@ -226,6 +257,7 @@ def scrape_tomsarkgh_event(url: str, category: str) -> bool:
             venue_hy=venue_hy,
             price_hy=price_hy,
         )
+
         logger.info(
             f"SAVED [{category}] {title_hy[:40]} | 📅{eventdate} ⏰{eventtime} "
             f"📍{venue_hy[:20]} 💰{price_hy}"
@@ -235,7 +267,6 @@ def scrape_tomsarkgh_event(url: str, category: str) -> bool:
     except Exception as e:
         logger.error(f"❌ Event error: {url} — {e}")
         return False
-
 
 # =============================================================================
 # MAIN TOMSARKGH SCRAPER — FULL FLOW
