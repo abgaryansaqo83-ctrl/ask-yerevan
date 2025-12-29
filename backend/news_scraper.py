@@ -24,25 +24,24 @@ HEADERS = {
 # EVENT TYPE MAPPING (Tomsarkgh → Our Categories)
 # =============================================================================
 TOMSARKGH_CATEGORIES = {
-    # 🎉 Միջոցառումներ (events)
-    6: "events",   # Կինո / Cinema
-    16: "events",  # Կրկես / Circus  
+    # 🎉 ՄԻՋՕՑԱՌՈՒՄՆԵՌ (events)
+    16: "events",  # Կրկես  
     54: "events",  # Stand-up
-    31: "events",  # Ակումբ/փաբ / Clubs & Pubs
+    31: "events",  # Ակումբ/փաբ
+    21: "events",  # Պար
+    6: "events",   # Կինո
     
-    # ⛄ Տարվա տոներ (holiday_events)
+    # ⛄ ՏՕՆԵՌ (holiday_events)
     41: "holiday_events",
     
-    # 🏛️ Մշակույթ (culture)
-    1: "culture",  # Թատրոն / Theater
-    2: "culture",  # Կոնցերտ / Concert
-    12: "culture", # Օպերա-բալետ / Opera-Ballet
+    # 🏛️ ՄՇԱԿՈՒՅԹ (culture)
+    1: "culture",  # Թատրոն
+    12: "culture", # Օպերա-բալետ
+    2: "culture",  # Կոնցերտ
+    10: "culture", # Պոպ
     
-    # 🏙️ Քաղաքային (city) - քաղաքի իրադարձություններ
+    # 🏙️ ՔԱՂԱՅԻՆ (city)
     7: "city",     # Other events
-    
-    # ⚠️ Կարևոր (important) - հատուկ իրադարձություններ
-    55: "important", # Special events
 }
 
 # =============================================================================
@@ -110,79 +109,50 @@ def fetch_tomsarkgh_events(event_type: int, days_ahead: int = 7) -> List[str]:
 # SINGLE EVENT SCRAPER — BETTER STRUCTURED DATA
 # =============================================================================
 def scrape_tomsarkgh_event(url: str, category: str) -> bool:
-    """Scrape single event with PRIORITY: date/time/venue/price."""
+    """Extract DATE/TIME/VENUE/PRICE + IMAGE."""
     try:
-        logger.info(f"🔗 Scraping: {url}")
-        
+        logger.info(f"🔗 [{category}] {url}")
         resp_hy = requests.get(url, timeout=15, headers=HEADERS)
         resp_hy.raise_for_status()
         soup_hy = BeautifulSoup(resp_hy.text, "html.parser")
         
-        # 1️⃣ TITLE (ՎԵՌՆԱԳԻՌ)
+        # TITLE
         title_hy = _safe_text(soup_hy.select_one("h1")) or "Միջոցառում"
-        
-        # 2️⃣ STRUCTURED DATA (ՊԱՌՏԱԴԻՌ)
-        event_date = ""
-        event_time = ""
-        venue_hy = ""
-        price_hy = ""
-        
-        # DATE parsing (ամսաթիվ)
-        date_patterns = [
-            r'(\d{1,2}\.?\s*(?:հունվար|փետրվար|մարտ|ապրիլ|մայիս|հունիս|հուլիս|օգոստոս|սեպտեմբեր|հոկտեմբեր|նոյեմբեր|դեկտեմբեր)\s*\d{4})',
-            r'(\d{1,2}[./-]\d{1,2}[./-]?\d{2,4})',
-            r'(today|tomorrow|\d{1,2}\s*(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec))',
-        ]
         full_text = soup_hy.get_text()
+        
+        # 📅 DATE
+        event_date = ""
+        date_patterns = [r'(\d{1,2}[./]\d{1,2}[./]\d{2,4})', r'(\d{1,2}\s+(?:հունվար|փետրվար|մարտ|ապրիլ|մայիս|հունիս|հուլիս|օգոստոս|սեպտեմբեր|հոկտեմբեր|նոյեմբեր|դեկտեմբեր))']
         for pattern in date_patterns:
-            match = re.search(pattern, full_text, re.IGNORECASE)
+            match = re.search(pattern, full_text)
             if match:
                 event_date = match.group(1).strip()
                 break
         
-        # TIME parsing (ժամ)
-        time_match = re.search(r'(\d{1,2}:\d{2})\s*(?:-|по|-|մինչև|\d{1,2}:\d{2})?', full_text)
+        # 🕐 TIME
+        event_time = ""
+        time_match = re.search(r'(\d{1,2}:\d{2})', full_text)
         if time_match:
             event_time = time_match.group(1)
         
-        # VENUE parsing (վայր/հասցե)
-        venue_patterns = [
-            r'(?:Հասցե|Վայր|Թատրոն|Կինո|Venue|Place|Локация)[:։]\s*([^\n\r]{5,100})',
-            r'([A-ZԱ-Ֆ][a-zա-ֆ\s]+(?:թատրոն|կինո|սրահ|hall|cinema|Venue))',
-        ]
+        # 📍 VENUE
+        venue_hy = ""
+        venue_patterns = [r'(Cinema Star|Aram Khachaturyan|Karen Demirchyan|Philharmonia|Venue|Թատրոն|Կինո)[^\n\r]{0,50}', r'(?:Վայր|Հասցե)[:\s]*([^\n\r]{5,50})']
         for pattern in venue_patterns:
-            match = re.search(pattern, full_text, re.IGNORECASE | re.DOTALL)
+            match = re.search(pattern, full_text, re.IGNORECASE)
             if match:
-                venue_hy = match.group(1).strip()[:80]
+                venue_hy = match.group(1).strip()[:40]
                 break
         
-        # PRICE parsing (գին)
-        price_patterns = [
-            r'(\d{3,})[.,]?\d*\s*(?:դր\.?|AMD|դրամ)',
-            r'\$(\d{1,3}(?:,\d{3})*)',
-        ]
-        for pattern in price_patterns:
-            match = re.search(pattern, full_text)
-            if match:
-                price_hy = match.group(1).replace(',', '')
-                break
+        # 💰 PRICE
+        price_hy = ""
+        price_match = re.search(r'(\d{1,4})\s*(?:դր\.?|AMD)', full_text)
+        if price_match:
+            price_hy = price_match.group(1)
         
-        # 3️⃣ CONTENT (մնացածը → content)
-        desc_hy = soup_hy.select_one(".description, .event_resume, .content, article p")
-        content_hy = _safe_text(desc_hy)[:600]
-        
-        # English (fallback)
-        title_en = title_hy
-        content_en = content_hy
-        
-        # 4️⃣ IMAGE (ՉԴԻՊՉԵՆՔ)
-        img_selectors = [
-            "meta[property='og:image']",
-            "img[src*='thumbnails']", 
-            ".event-image img",
-        ]
+        # IMAGE (Չդիպչենք)
         image_url = None
-        for selector in img_selectors:
+        for selector in ["meta[property='og:image']", "img[src*='thumbnails']"]:
             img = soup_hy.select_one(selector)
             if img:
                 image_url = img.get("content") or img.get("src")
@@ -190,56 +160,26 @@ def scrape_tomsarkgh_event(url: str, category: str) -> bool:
                     image_url = BASE_TOMSARKGH_URL + image_url
                 break
         
-        # 5️⃣ SAVE with PRIORITY fields
+        # SAVE
         save_news(
-            title_hy=title_hy.strip()[:200],
-            title_en=title_en.strip()[:200],
-            content_hy=content_hy.strip(),
-            content_en=content_en.strip(),
+            title_hy=title_hy[:200],
+            content_hy=full_text[:400],
             image_url=image_url,
             category=category,
             source_url=url,
-            event_date=event_date,      # ✅ ՆՈՌ
-            event_time=event_time,      # ✅ ՆՈՌ  
-            venue_hy=venue_hy,          # ✅ ՆՈՌ
-            price_hy=price_hy,          # ✅ ՆՈՌ
+            event_date=event_date,
+            event_time=event_time,
+            venue_hy=venue_hy,
+            price_hy=price_hy,
         )
         
-        logger.info(f"✅ [{category}] {title_hy[:40]} | 📅{event_date} | 📍{venue_hy[:20]} | 💰{price_hy}")
+        logger.info(f"✅ {title_hy[:30]} | 📅{event_date} | 📍{venue_hy[:15]}")
         return True
         
     except Exception as e:
-        logger.error(f"❌ Event error ({url}): {e}")
+        logger.error(f"❌ {url}: {e}")
         return False
 
-# =============================================================================
-# MAIN SCRAPER — SCRAPE ALL CATEGORIES
-# =============================================================================
-def scrape_tomsarkgh_events():
-    """Main scraper: all Tomsarkgh categories for our submenu."""
-    logger.info("🎭 Starting Tomsarkgh bilingual scraper...")
-    
-    total_saved = 0
-    for event_type, category in TOMSARKGH_CATEGORIES.items():
-        logger.info(f"--- Category: {category} (type {event_type}) ---")
-        
-        # Get event list
-        links = fetch_tomsarkgh_events(event_type)
-        if not links:
-            logger.warning(f"No events for {category}")
-            continue
-        
-        # Scrape each event (limit 8 per category)
-        saved_count = 0
-        for url in links[:8]:
-            if scrape_tomsarkgh_event(url, category):
-                saved_count += 1
-        
-        total_saved += saved_count
-        logger.info(f"✅ {category}: {saved_count}/{len(links)} saved")
-    
-    logger.info(f"🎉 TOTAL: {total_saved} events scraped!")
-    return total_saved
 
 # =============================================================================
 # PANARMENIAN RSS (Culture only - optional)
