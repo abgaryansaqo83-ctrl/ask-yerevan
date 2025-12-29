@@ -5,10 +5,9 @@
 <!-- FLOATING HEADER -->
 <div class="detail-floating-header">
     <div class="container">
-        <a href="/hy/news" class="back-btn">← Վերադառնալ</a>
-        {% if news.category %}
-        <span class="detail-category-badge">{{ news.category|replace('_', ' ')|title }}</span>
-        {% endif %}
+        <div class="card-footer">
+          <a href="/hy/news" class="back-btn">← Վերադառնալ</a>
+        </div>
     </div>
 </div>
 
