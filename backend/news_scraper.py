@@ -110,40 +110,66 @@ def fetch_tomsarkgh_events(event_type: int, days_ahead: int = 3) -> List[str]:  
 # SINGLE EVENT SCRAPER — BETTER STRUCTURED DATA
 # =============================================================================
 
-def scrape_tomsarkgh_list_event(event_div, category: str) -> bool:
-    """Parse from LIST page (title + date + venue + price)"""
-    try:
-        # LINK
-        link_elem = event_div.select_one("a")
-        url = "https://www.tomsarkgh.am" + link_elem.get("href") if link_elem else ""
+def scrape_tomsarkgh_events():
+    """Parse LIST page - ALL data from list items"""
+    categories = [
+        ("events", 16), ("city", 7), ("culture", 10), ("holiday_events", 54)
+    ]
+    
+    total_saved = 0
+    for category, event_type in categories:
+        logger.info(f"📋 Category {category} (type {event_type})")
         
-        # TITLE
-        title_elem = event_div.select_one("h4.event-title a")
-        title_hy = title_elem.get_text(strip=True)[:200] if title_elem else "Միջոցառում"
+        # Get list page
+        list_url = f"https://www.tomsarkgh.am/hy/category/{event_type}"
+        resp = requests.get(list_url, headers=HEADERS)
+        soup = BeautifulSoup(resp.text, "html.parser")
         
-        # IMAGE
-        img_elem = event_div.select_one(".event-photo img")
-        image_url = "https://www.tomsarkgh.am" + img_elem.get("src") if img_elem else ""
+        # Parse event boxes
+        event_divs = soup.select(".event-box-item")[:5]  # Top 5
         
-        # DATE (.event-date)
-        date_elem = event_div.select_one(".event-date")
-        event_date = date_elem.get_text(strip=True) if date_elem else ""
+        saved = 0
+        for div in event_divs:
+            try:
+                # LINK
+                link = div.select_one("a")
+                url = "https://www.tomsarkgh.am" + link.get("href") if link else ""
+                
+                # TITLE
+                title = div.select_one("h4.event-title a")
+                title_hy = title.get_text(strip=True)[:200] if title else "Event"
+                
+                # IMAGE
+                img = div.select_one(".event-photo img")
+                image_url = "https://www.tomsarkgh.am" + img.get("src") if img else ""
+                
+                # DATE
+                date_elem = div.select_one(".event-date")
+                event_date = date_elem.get_text(strip=True) if date_elem else ""
+                
+                # VENUE
+                venue_elem = div.select_one(".event-venue a")
+                venue_hy = venue_elem.get_text(strip=True)[:50] if venue_elem else ""
+                
+                # PRICE
+                price_elem = div.select_one(".event-short")
+                price_match = re.search(r'(\d{1,4})', price_elem.get_text()) if price_elem else None
+                price_hy = price_match.group(1) if price_match else ""
+                
+                # SAVE
+                save_news(title_hy, title_hy, title_hy, title_hy, image_url, category, url, event_date, "", venue_hy, price_hy)
+                saved += 1
+                logger.info(f"SAVED {title_hy[:30]} | 📅{event_date} 📍{venue_hy} 💰{price_hy}")
+                
+            except Exception as e:
+                logger.error(f"Parse error: {e}")
+                continue
         
-        # VENUE (.event-venue)
-        venue_elem = event_div.select_one(".event-venue a")
-        venue_hy = venue_elem.get_text(strip=True)[:50] if venue_elem else ""
-        
-        # PRICE (.event-short)
-        price_elem = event_div.select_one(".event-short")
-        price_hy = re.search(r'(\d{1,4})', price_elem.get_text()).group(1) if price_elem else ""
-        
-        save_news(title_hy, title_hy, title_hy, title_hy, image_url, category, url, event_date, "", venue_hy, price_hy)
-        logger.info(f"SAVED {title_hy[:30]} | 📅{event_date} 📍{venue_hy} 💰{price_hy}")
-        return True
-        
-    except Exception as e:
-        logger.error(f"❌ List parse: {e}")
-        return False
+        logger.info(f"✅ {category}: {saved}/5 saved")
+        total_saved += saved
+    
+    logger.info(f"✅ === SCRAPER COMPLETE: {total_saved} items ===")
+    return total_saved
 
 # =============================================================================
 # PANARMENIAN RSS (Culture only - optional)
