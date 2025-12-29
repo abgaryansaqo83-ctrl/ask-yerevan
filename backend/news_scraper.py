@@ -13,6 +13,7 @@ import xml.etree.ElementTree as ET
 from typing import List, Dict, Optional
 from backend.database import save_news
 from backend.utils.logger import logger
+from playwright.sync_api import sync_playwright
 
 BASE_TOMSARKGH_URL = "https://www.tomsarkgh.am"
 HEADERS = {
@@ -110,50 +111,37 @@ def fetch_tomsarkgh_events(event_type: int, days_ahead: int = 3) -> List[str]:  
 # =============================================================================
 
 def scrape_tomsarkgh_event(url: str, category: str) -> bool:
-    try:
-        resp = requests.get(url, timeout=15, headers=HEADERS)
-        soup = BeautifulSoup(resp.text, "html.parser")
-        
-        # TITLE - event-title կամ h1
-        title_elem = soup.select_one("h1, .event-title, h4.event-title")
-        title_hy = title_elem.get_text(strip=True)[:200] if title_elem else "Միջոցառում"
-        
-        # IMAGE - thumbnails
-        img_elem = soup.select_one("img[src*='thumbnails']")
-        image_url = img_elem.get("src") if img_elem else None
-        if image_url and not image_url.startswith("http"):
-            image_url = "https://www.tomsarkgh.am" + image_url
-        
-        # DATE - .event-date
-        date_elem = soup.select_one(".event-date")
-        event_date = date_elem.get_text(strip=True) if date_elem else ""
-        
-        # VENUE - .event-venue
-        venue_elem = soup.select_one(".event-venue a")
-        venue_hy = venue_elem.get_text(strip=True)[:50] if venue_elem else ""
-        
-        # PRICE - .event-short
-        price_elem = soup.select_one(".event-short")
-        price_hy = re.search(r'(\d{1,4})', price_elem.get_text()).group(1) if price_elem else ""
-        
-        # CONTENT - description
-        content_elem = soup.select_one(".event-description, .description, p")
-        full_text = content_elem.get_text(strip=True)[:400] if content_elem else title_hy
-        
-        save_news(
-            title_hy=title_hy, title_en=title_hy,
-            content_hy=full_text, content_en=full_text,
-            image_url=image_url, category=category,
-            source_url=url, event_date=event_date,
-            event_time="", venue_hy=venue_hy, price_hy=price_hy
-        )
-        
-        logger.info(f"SAVED {title_hy[:30]} | 📅{event_date} 📍{venue_hy} 💰{price_hy}")
-        return True
-        
-    except Exception as e:
-        logger.error(f"❌ {url}: {e}")
-        return False
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        try:
+            page.goto(url, wait_until="networkidle")
+            page.wait_for_timeout(3000)  # 3s JS render
+            
+            # TITLE
+            title_hy = page.locator("h1, .event-title").text_content().strip()[:200]
+            
+            # CONTENT
+            full_text = page.locator("body").inner_text()[:400]
+            
+            # DATE/TIME/VENUE/PRICE - rendered text
+            event_date = re.search(r'(\d{1,2}\.\d{1,2}\.?\d{2,4})', full_text).group(1) if re.search(r'(\d{1,2}\.\d{1,2}\.?\d{2,4})', full_text) else ""
+            event_time = re.search(r'(\d{1,2}:\d{2})', full_text).group(1) if re.search(r'(\d{1,2}:\d{2})', full_text) else ""
+            venue_hy = re.search(r'(?:Վայր|Հասցե|Թատրոն)[:\s]*([^\n]{5,50})', full_text).group(1)[:50] if re.search(r'(?:Վայր|Հասցե|Թատրոն)[:\s]*([^\n]{5,50})', full_text) else ""
+            price_hy = re.search(r'(\d{1,4})', full_text).group(1) if re.search(r'(\d{1,4})', full_text) else ""
+            
+            # IMAGE
+            image_url = page.locator("img[src*='thumbnails']").get_attribute("src")
+            
+            save_news(title_hy, title_hy, full_text, full_text, image_url, category, url, event_date, event_time, venue_hy, price_hy)
+            logger.info(f"SAVED {title_hy[:30]} | 📅{event_date} 🕐{event_time} 📍{venue_hy} 💰{price_hy}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"❌ {url}: {e}")
+            return False
+        finally:
+            browser.close()
 
 # =============================================================================
 # PANARMENIAN RSS (Culture only - optional)
