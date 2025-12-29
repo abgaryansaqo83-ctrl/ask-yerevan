@@ -2,16 +2,7 @@
 {% block title %}{{ news.title_hy }} - AskYerevan{% endblock %}
 
 {% block content %}
-<!-- FLOATING HEADER -->
-<div class="detail-floating-header">
-    <div class="container">
-        <div class="card-footer">
-          <a href="/hy/news" class="back-btn">← Վերադառնալ</a>
-        </div>
-    </div>
-</div>
 
-<!-- DETAIL PAGE -->
 <article class="detail-container">
     {% if news.image_url %}
     <div class="detail-hero">
@@ -20,17 +11,22 @@
     {% endif %}
 
     <div class="detail-content-wrapper">
+        <!-- Հետ կոճակ -->
+        <div class="back-wrapper">
+            <a href="/hy/news" class="back-btn">← Հետ</a>
+        </div>
+
         <h1 class="detail-title">{{ news.title_hy }}</h1>
         
         <!-- 4 ԳԻԾ EVENT INFO -->
         <div class="event-details">
             <div class="detail-row">
                 <span class="label">📅 Ամսաթիվ</span>
-                <span class="value">{{ news.event_date or 'Ոչ նշված' }}</span>
+                <span class="value">{{ news.eventdate or 'Ոչ նշված' }}</span>
             </div>
             <div class="detail-row">
                 <span class="label">🕐 Ժամ</span>
-                <span class="value">{{ news.event_time or 'Ոչ նշված' }}</span>
+                <span class="value">{{ news.eventtime or 'Ոչ նշված' }}</span>
             </div>
             <div class="detail-row">
                 <span class="label">📍 Վայր</span>
@@ -38,7 +34,13 @@
             </div>
             <div class="detail-row">
                 <span class="label">💰 Գին</span>
-                <span class="value">{{ news.price_hy or 'Ոչ նշված' }} դր.</span>
+                <span class="value">
+                    {% if news.price_hy %}
+                        {{ news.price_hy }} դր.
+                    {% else %}
+                        Ոչ նշված
+                    {% endif %}
+                </span>
             </div>
         </div>
 
@@ -51,16 +53,34 @@
 </article>
 
 <style>
-.detail-floating-header { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); z-index: 100; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 12px; padding: 0.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
-.detail-floating-header .container { display: flex; align-items: center; gap: 1rem; padding: 0; }
-.back-btn { padding: 0.6rem 1.2rem; background: #2B7A8D; color: white; border-radius: 8px; text-decoration: none; font-weight: 500; }
-.back-btn:hover { background: #1f5a6b; }
+.detail-container {
+  max-width: 900px;
+  margin: 0 auto 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
 
-.detail-container { max-width: 900px; margin: 0 auto 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); overflow: hidden; position: relative; padding-top: 70px; }
 .detail-hero { height: 280px; overflow: hidden; background: #f5f5f5; }
 .detail-hero-img { width: 100%; height: 100%; object-fit: cover; }
+
 .detail-content-wrapper { padding: 2rem; }
 .detail-title { font-size: 1.8rem; font-weight: 700; margin: 0 0 1.5rem; line-height: 1.3; }
+
+/* Հետ կոճակ */
+.back-wrapper { margin-top: 1rem; margin-bottom: 0.75rem; }
+.back-btn {
+  display: inline-block;
+  padding: 0.45rem 1.1rem;
+  background: #2B7A8D;
+  color: #fff;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.back-btn:hover { background: #1f5a6b; }
 
 /* 4 ԳԻԾ LAYOUT */
 .event-details {
@@ -79,9 +99,7 @@
   border-bottom: 1px solid #e2e8f0;
 }
 
-.detail-row:last-child {
-  border-bottom: none;
-}
+.detail-row:last-child { border-bottom: none; }
 
 .label {
   font-weight: 600;
@@ -95,12 +113,17 @@
   font-weight: 500;
 }
 
-.detail-description { font-size: 1.05rem; line-height: 1.7; color: #444; margin-top: 1rem; }
+.detail-description {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #444;
+  margin-top: 1rem;
+}
 
-@media (max-width: 768px) { 
-  .detail-container { margin: 1rem; padding-top: 65px; } 
-  .detail-hero { height: 220px; } 
-  .detail-content-wrapper { padding: 1.5rem; } 
+@media (max-width: 768px) {
+  .detail-container { margin: 1rem; }
+  .detail-hero { height: 220px; }
+  .detail-content-wrapper { padding: 1.5rem; }
   .detail-title { font-size: 1.5rem; }
   .detail-row { padding: 14px 18px; flex-direction: column; align-items: flex-start; gap: 4px; }
   .label, .value { text-align: left; }
