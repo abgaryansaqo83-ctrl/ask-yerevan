@@ -2,41 +2,126 @@
 {% block title %}AskYerevan · News{% endblock %}
 
 {% block content %}
-<section class="news-section">
-    <h1>📰 News</h1>
-    
-    <!-- Category Filter -->
-    <div class="news-filters">
-        <a href="/en/news" class="filter-btn {{ 'active' if not current_category }}"> All </a>
-        <a href="/en/news?category=culture" class="filter-btn {{ 'active' if current_category == 'culture' }}"> 🏛️ Culture </a>
-        <a href="/en/news?category=events" class="filter-btn {{ 'active' if current_category == 'events' }}"> 🎉 Events </a>
-        <a href="/en/news?category=city" class="filter-btn {{ 'active' if current_category == 'city' }}"> 🏙️ City </a>
-        <a href="/en/news?category=important" class="filter-btn {{ 'active' if current_category == 'important' }}"> ⚠️ Important </a>
-        <a href="/en/news?category=holiday_events" class="filter-btn {{ 'active' if current_category == 'holiday_events' }}"> ⛄ Holiday specials </a>
+<!-- MINI HERO -->
+<section class="news-hero-mini">
+    <div class="container">
+        <h1>📰 News</h1>
     </div>
+</section>
+
+<!-- STICKY SUBMENU -->
+<nav class="news-submenu">
+    <div class="submenu-wrapper">
+        <a href="/en/news" class="submenu-item {{ 'active' if not category else '' }}">🔹 All</a>
+        <a href="/en/news?category=culture" class="submenu-item culture {{ 'active' if category == 'culture' }}">🏛️ Culture</a>
+        <a href="/en/news?category=events" class="submenu-item events {{ 'active' if category == 'events' }}">🎉 Events</a>
+        <a href="/en/news?category=city" class="submenu-item city {{ 'active' if category == 'city' }}">🏙️ City</a>
+        <a href="/en/news?category=important" class="submenu-item important {{ 'active' if category == 'important' }}">⚠️ Important</a>
+        <a href="/en/news?category=holiday_events" class="submenu-item holiday {{ 'active' if category == 'holiday_events' }}">⛄ Holidays</a>
+    </div>
+</nav>
+
+<!-- COMPACT GRID -->
+<section class="news-container">
     {% if news_list and news_list|length > 0 %}
-        <div class="news-grid">
-            {% for item in news_list %}
-            <a href="/en/news/{{ item['id'] }}" class="news-card-link">
-            <article class="news-card">
+    <div class="news-grid">
+        {% for item in news_list %}
+        <a href="/en/news/{{ item['id'] }}" class="news-card {{ item['category'] or 'general' }}">
+            <div class="news-card-image">
                 {% if item['image_url'] %}
-                <div class="news-card__image">
-                    <img src="{{ item['image_url'] }}" alt="{{ item['title_en'] }}">
+                <img src="{{ item['image_url'] }}" alt="{{ item['title_en'] }}" loading="lazy">
+                {% else %}
+                <div class="image-placeholder">
+                    {% if item['category'] == 'culture' %}🎨
+                    {% elif item['category'] == 'events' %}🎉
+                    {% elif item['category'] == 'city' %}🏙️
+                    {% elif item['category'] == 'important' %}⚠️
+                    {% elif item['category'] == 'holiday_events' %}⛄
+                    {% else %}📰{% endif %}
                 </div>
                 {% endif %}
-                <div class="news-card__body">
-                    <h3 class="news-card__title">{{ item['title_en'] }}</h3>
-                    <p class="news-card__snippet">{{ item['content_en'][:150] }}{% if item['content_en']|length > 150 %}...{% endif %}</p>
-                    <div class="news-card__footer">
-                        <span class="news-card__date">{{ item['created_at'].strftime('%d.%m.%Y') if item['created_at'] else '' }}</span>
-                    </div>
+                <!-- CATEGORY BADGE (EN) -->
+                {% if item['category'] %}
+                <span class="category-badge">
+                    {% if item['category'] == 'culture' %}Culture
+                    {% elif item['category'] == 'events' %}Events
+                    {% elif item['category'] == 'city' %}City
+                    {% elif item['category'] == 'important' %}Important
+                    {% elif item['category'] == 'holiday_events' %}Holidays
+                    {% else %}{{ item['category']|replace('_', ' ')|title }}{% endif %}
+                </span>
+                {% endif %}
+            </div>
+            <div class="news-card-content">
+                <h3 class="event-title">
+                    {{ item['title_en'][:50] }}{% if item['title_en']|length > 50 %}...{% endif %}
+                </h3>
+                <div class="event-info">
+                    {% if item['eventdate'] %}
+                    <span class="event-item">📅 {{ item['eventdate'] }}</span>
+                    {% endif %}
+                    {% if item['venue_hy'] %}
+                    <span class="event-item">
+                        📍 {{ item['venue_hy'][:18] }}{% if item['venue_hy']|length > 18 %}...{% endif %}
+                    </span>
+                    {% endif %}
+                    {% if item['price_hy'] %}
+                    <span class="event-item price">💰 {{ item['price_hy'] }}</span>
+                    {% endif %}
                 </div>
-            </article>
-            </a>
-            {% endfor %}
-        </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
     {% else %}
-        <p>No news yet. Check back soon.</p>
+    <div class="news-empty">
+        <div class="empty-icon">📭</div>
+        <h2>No news yet</h2>
+    </div>
     {% endif %}
 </section>
+
+<style>
+/* MINI HERO */
+.news-hero-mini { background: linear-gradient(135deg, #2B7A8D, #1f5a6b); color: white; padding: 1rem 0; text-align: center; }
+.news-hero-mini h1 { font-size: 1.8rem; margin: 0; font-weight: 700; }
+
+/* SUBMENU */
+.news-submenu { background: white; border-bottom: 1px solid #e1e8ed; position: sticky; top: 0; z-index: 100; }
+.submenu-wrapper { max-width: 1200px; margin: 0 auto; display: flex; gap: 0.5rem; padding: 0.5rem 1rem; overflow-x: auto; }
+.submenu-item { padding: 0.5rem 1rem; border: 1px solid #d4e8ed; background: white; border-radius: 20px; font-weight: 500; text-decoration: none; white-space: nowrap; }
+.submenu-item:hover, .submenu-item.active { background: #2B7A8D; color: white; border-color: #2B7A8D; }
+
+/* GRID */
+.news-container { max-width: 1200px; margin: 1rem auto; padding: 0 1rem; }
+.news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.2rem; }
+
+/* CARDS */
+.news-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-decoration: none; display: block; }
+.news-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+.news-card-image { position: relative; height: 160px; background: linear-gradient(135deg, #2B7A8D, #1f5a6b); overflow: hidden; }
+.news-card-image img { width: 100%; height: 100%; object-fit: cover; }
+.image-placeholder { display: flex; align-items: center; justify-content: center; height: 100%; font-size: 2.2rem; color: #2B7A8D; background: rgba(255,255,255,0.2); }
+
+/* CATEGORY BADGE */
+.category-badge {
+    position: absolute; top: 0.5rem; right: 0.5rem;
+    padding: 0.3rem 0.7rem; background: rgba(255,255,255,0.9);
+    color: #2B7A8D; border-radius: 12px; font-size: 0.7rem; font-weight: 600;
+}
+
+/* CONTENT */
+.news-card-content { padding: 1rem; }
+.event-title { font-size: 1rem; font-weight: 600; margin: 0 0 0.5rem; line-height: 1.3; color: #1a1a1a; }
+.event-info { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.8rem; }
+.event-item { color: #666; }
+.event-item.price { color: #059669; font-weight: 600; }
+
+/* MOBILE */
+@media (max-width: 768px) {
+    .news-hero-mini h1 { font-size: 1.5rem; }
+    .news-grid { grid-template-columns: 1fr; gap: 1rem; }
+    .news-card-image { height: 140px; }
+}
+</style>
 {% endblock %}
