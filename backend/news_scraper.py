@@ -218,9 +218,21 @@ def scrape_panarmenian_culture():
 def scrape_tomsarkgh_events():
     """Main scraper: all Tomsarkgh categories."""
     logger.info("🎭 Starting Tomsarkgh scraper...")
-    
     total_saved = 0
-    for event_type,
+    
+    for event_type, category in TOMSARKGH_CATEGORIES.items():
+        logger.info(f"📋 Category {category} (type {event_type})")
+        links = fetch_tomsarkgh_events(event_type)
+        
+        saved = 0
+        for url in links[:5]:  # 5 per category
+            if scrape_tomsarkgh_event(url, category):
+                saved += 1
+        
+        total_saved += saved
+        logger.info(f"✅ {category}: {saved} saved")
+    
+    return total_saved
     
 # =============================================================================
 # MAIN RUNNER
