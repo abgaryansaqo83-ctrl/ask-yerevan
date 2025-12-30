@@ -4,7 +4,12 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from datetime import date
 
-from backend.database import get_all_news, init_db, get_news_by_id
+from backend.database import (
+    init_db,
+    get_all_news,
+    get_news_by_id,
+    get_random_news_with_image,
+)
 
 import logging
 
@@ -45,24 +50,38 @@ async def root_redirect(request: Request):
 
 # Index
 @app.get("/hy", response_class=HTMLResponse)
-async def index_hy(request: Request):
+async def indexhy(request: Request):
+    hero_events = get_random_news_with_image("events")
+    hero_city = get_random_news_with_image("city")
+    hero_culture = get_random_news_with_image("culture")
+
     return templates.TemplateResponse(
-        "index_hy.html",
+        "indexhy.html",
         {
             "request": request,
             "lang": "hy",
-            "is_winter_theme": is_winter_theme_enabled(),
+            "iswintertheme": iswinterthemeenabled(),
+            "hero_events": hero_events,
+            "hero_city": hero_city,
+            "hero_culture": hero_culture,
         },
     )
 
 @app.get("/en", response_class=HTMLResponse)
-async def index_en(request: Request):
+async def indexen(request: Request):
+    hero_events = get_random_news_with_image("events")
+    hero_city = get_random_news_with_image("city")
+    hero_culture = get_random_news_with_image("culture")
+
     return templates.TemplateResponse(
-        "index_en.html",
+        "indexen.html",
         {
             "request": request,
             "lang": "en",
-            "is_winter_theme": is_winter_theme_enabled(),
+            "iswintertheme": iswinterthemeenabled(),
+            "hero_events": hero_events,
+            "hero_city": hero_city,
+            "hero_culture": hero_culture,
         },
     )
 
