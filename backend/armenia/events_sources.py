@@ -84,9 +84,7 @@ def _scrape_one_tomsarkgh_event(url: str) -> Dict[str, Any] | None:
         price_text = "գինը նշված չէ"
 
     return {
-        ...
         "price": price_text,
-        ...
     }
 
 def _collect_event_links(category_url: str, limit: int) -> list[str]:
