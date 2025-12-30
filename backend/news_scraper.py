@@ -1,12 +1,9 @@
 # =============================================================================
-# backend/news_scraper.py — TOMSARKGH EVENT SCRAPER
-# =============================================================================
-# Scrape events from tomsarkgh.am with proper categories for AskYerevan
-# Categories in DB: culture, events, city, holiday_events, important (manual)
+# backend/news_scraper.py
 # =============================================================================
 
 import re
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from typing import List, Optional
 
 import requests
