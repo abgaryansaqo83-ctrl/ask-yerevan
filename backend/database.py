@@ -495,10 +495,6 @@ def get_news_by_id(news_id: int):
     return row
 
 def get_random_news_with_image(category: str):
-    """
-    Վերադարձնում է պատահական նորություն տվյալ category-ից,
-    որի image_url-ը ոչ թե NULL է։
-    """
     conn = get_connection()
     cur = get_cursor(conn)
 
