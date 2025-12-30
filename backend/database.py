@@ -494,6 +494,51 @@ def get_news_by_id(news_id: int):
     conn.close()
     return row
 
+def get_upcoming_holiday_events(days_ahead: int = 14, limit: int = 10):
+    """
+    Վերադարձնում է մոտակա holiday_events կատեգորիայի իրադարձությունները
+    eventdate-ի հիման վրա, հաջորդ `days_ahead` օրերի մեջ։
+    """
+    conn = get_connection()
+    cur = get_cursor(conn)
+
+    today = date.today()
+    end_date = today + timedelta(days=days_ahead)
+
+    if DATABASE_URL:
+        cur.execute(
+            """
+            SELECT *
+            FROM news
+            WHERE category = %s
+              AND eventdate IS NOT NULL
+              AND eventdate >= %s
+              AND eventdate <= %s
+              AND published = TRUE
+            ORDER BY eventdate, eventtime
+            LIMIT %s
+            """,
+            ("holiday_events", today.isoformat(), end_date.isoformat(), limit),
+        )
+    else:
+        cur.execute(
+            """
+            SELECT *
+            FROM news
+            WHERE category = ?
+              AND eventdate IS NOT NULL
+              AND eventdate >= ?
+              AND eventdate <= ?
+              AND published = 1
+            ORDER BY eventdate, eventtime
+            LIMIT ?
+            """,
+            ("holiday_events", today.isoformat(), end_date.isoformat(), limit),
+        )
+
+    rows = cur.fetchall()
+    conn.close()
+    return rows
 
 def delete_old_news(days: int = 30) -> int:
     """
