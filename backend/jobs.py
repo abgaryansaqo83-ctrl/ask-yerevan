@@ -6,13 +6,10 @@ from aiogram import Bot
 
 from config.settings import settings
 from backend.utils.logger import logger
+from backend.database import get_events_for_date
 from backend.armenia.traffic import get_traffic_status
 from backend.armenia.weather import get_yerevan_weather
-from backend.armenia.events import (
-    get_week_premiere,
-    get_next_day_films_and_plays,
-    get_festival_events_7days,
-)
+from backend.armenia.events import get_festival_events_7days
 from backend.armenia.recommend import get_recommendations
 
 BASE_URL = "https://ask-yerevan.onrender.com"  # հետո կփոխես www.askyerevan.am
@@ -123,17 +120,56 @@ async def send_holiday_events():
 # ================ 3. Չորեքշաբթի–կիրակի՝ հաջորդ օրվա event-ներ (09:00) ================
 
 async def send_next_day_events():
+    """
+    Չորեքշաբթի–կիրակի 09:00 — ուղարկում է վաղվա event-ները DB-ից.
+    ամեն event առանձին քարտանման մեսիջով AskYerevan link-ով։
+    """
     bot = _get_bot()
     chat_id = _get_group_chat_id()
 
     try:
         tomorrow = datetime.date.today() + datetime.timedelta(days=1)
-        messages = await get_next_day_films_and_plays(target_date=tomorrow)
+        rows = get_events_for_date(target_date=tomorrow, max_per_category=3)
 
-        for msg in messages:
-            await bot.send_message(chat_id, msg)
+        if not rows:
+            logger.info("ℹ️ No events found for tomorrow")
+            await bot.send_message(chat_id, "Վաղվա համար միջոցառումներ դեռ չկան։")
+            return
 
-        logger.info("🎬 Next day events sent to group")
+        for item in rows:
+            # aiogram Row → dict մուտք
+            news_id = item["id"]
+            title = item["title_hy"]
+
+            eventdate = item.get("eventdate") or tomorrow.isoformat()
+            eventtime = item.get("eventtime") or "Ոչ նշված"
+            venue = item.get("venue_hy") or "Ոչ նշված"
+            price = item.get("price_hy")
+
+            url = f"{BASE_URL}/hy/news/{news_id}"
+
+            lines = [
+                f"{title}",
+                "",
+                f"📅 {eventdate}",
+                f"🕒 {eventtime}",
+                f"📍 {venue}",
+            ]
+            if price:
+                lines.append(f"💰 {price} դր.")
+            lines.append("")
+            lines.append(f"🔗 Մանրամասն՝ {url}")
+
+            caption = "\n".join(lines)
+
+            image_url = item.get("image_url")
+            if image_url:
+                await bot.send_photo(chat_id, photo=image_url, caption=caption)
+            else:
+                await bot.send_message(chat_id, caption)
+
+        logger.info("🎬 Next day events (from DB) sent to group")
+
     except Exception as e:
         logger.error(f"❌ Next day events failed: {e}")
     finally:
