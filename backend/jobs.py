@@ -9,7 +9,6 @@ from backend.utils.logger import logger
 from backend.database import get_events_for_date
 from backend.armenia.traffic import get_traffic_status
 from backend.armenia.weather import get_yerevan_weather
-from backend.armenia.events import get_festival_events_7days
 from backend.armenia.recommend import get_recommendations
 
 BASE_URL = "https://ask-yerevan.onrender.com"  # հետո կփոխես www.askyerevan.am
@@ -174,23 +173,6 @@ async def send_next_day_events():
         logger.error(f"❌ Next day events failed: {e}")
     finally:
         await bot.session.close()
-
-
-# ================ 4. Չորեքշաբթի՝ փառատոններ (09:30) ===================
-
-async def send_festival_events():
-    bot = _get_bot()
-    chat_id = _get_group_chat_id()
-
-    try:
-        text = await get_festival_events_7days()
-        await bot.send_message(chat_id, text)
-        logger.info("🎉 Festival events sent to group")
-    except Exception as e:
-        logger.error(f"❌ Festival events failed: {e}")
-    finally:
-        await bot.session.close()
-
 
 # ================ 6. Recommendation handler (bot.py-ում) ===================
 
