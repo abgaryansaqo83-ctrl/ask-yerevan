@@ -1,5 +1,3 @@
-# backend/armenia/events_sources.py
-
 from datetime import datetime
 from typing import List, Dict, Any
 
@@ -53,7 +51,7 @@ def _scrape_one_tomsarkgh_event(url: str) -> Dict[str, Any] | None:
     venue_span = soup.select_one("div.occurrence_venue span[itemprop=name]")
     place = venue_span.get_text(strip=True) if venue_span else "Unknown venue"
 
-    # Գին (փորձում ենք գտնել price block-ը, եթե չկա՝ թողնում ենք placeholder)
+    # Գին
     price_block = soup.select_one(".event-price, .event_prices, .prices, .event-price-block")
     if price_block:
         price_text = price_block.get_text(strip=True)
@@ -70,6 +68,7 @@ def _scrape_one_tomsarkgh_event(url: str) -> Dict[str, Any] | None:
         "url": url,
         "source": "tomsarkgh",
     }
+
 
 def _collect_event_links(category_url: str, limit: int) -> list[str]:
     """
@@ -162,12 +161,12 @@ def fetch_misc_events_from_tomsarkgh(limit: int = 20) -> List[Dict[str, Any]]:
     for url in links:
         ev = _scrape_one_tomsarkgh_event(url)
         if ev is not None:
-            ev["category"] = "festival"  # generic cultural events
+            ev["category"] = "festival"
             events.append(ev)
     return events
 
 
-# ---------- Aggregated LIVE fetcher for /news ----------
+# ---------- Aggregated LIVE fetcher for menu buttons ----------
 
 def fetch_live_events_for_category(kind: str, limit: int = 20) -> List[Dict[str, Any]]:
     """
