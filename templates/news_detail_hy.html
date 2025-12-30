@@ -2,54 +2,59 @@
 {% block title %}{{ news.title_hy }} - AskYerevan{% endblock %}
 
 {% block content %}
-
 <article class="detail-container">
-    {% if news.image_url %}
+  {% if news.image_url %}
     <div class="detail-hero">
-        <img src="{{ news.image_url }}" alt="{{ news.title_hy }}" class="detail-hero-img">
+      <img src="{{ news.image_url }}" alt="{{ news.title_hy }}" class="detail-hero-img">
     </div>
+  {% endif %}
+
+  <div class="detail-content-wrapper">
+    <div class="back-wrapper">
+      <a href="/hy/news" class="back-btn">← Հետ</a>
+    </div>
+
+    <h1 class="detail-title">{{ news.title_hy }}</h1>
+
+    {# Event info՝ եթե գոնե մեկ դաշտ կա #}
+    {% if news.eventdate or news.eventtime or news.venue_hy or news.price_hy %}
+      <div class="event-details">
+        {% if news.eventdate %}
+          <div class="detail-row">
+            <span class="label">📅 Ամսաթիվ</span>
+            <span class="value">{{ news.eventdate }}</span>
+          </div>
+        {% endif %}
+
+        {% if news.eventtime %}
+          <div class="detail-row">
+            <span class="label">🕐 Ժամ</span>
+            <span class="value">{{ news.eventtime }}</span>
+          </div>
+        {% endif %}
+
+        {% if news.venue_hy %}
+          <div class="detail-row">
+            <span class="label">📍 Վայր</span>
+            <span class="value">{{ news.venue_hy }}</span>
+          </div>
+        {% endif %}
+
+        {% if news.price_hy %}
+          <div class="detail-row">
+            <span class="label">💰 Գին</span>
+            <span class="value">{{ news.price_hy }} դր.</span>
+          </div>
+        {% endif %}
+      </div>
     {% endif %}
 
-    <div class="detail-content-wrapper">
-        <!-- Հետ կոճակ -->
-        <div class="back-wrapper">
-            <a href="/hy/news" class="back-btn">← Հետ</a>
-        </div>
-
-        <h1 class="detail-title">{{ news.title_hy }}</h1>
-        
-        <!-- 4 ԳԻԾ EVENT INFO -->
-        <div class="event-details">
-            <div class="detail-row">
-                <span class="label">📅 Ամսաթիվ</span>
-                <span class="value">{{ news.eventdate or 'Ոչ նշված' }}</span>
-            </div>
-            <div class="detail-row">
-                <span class="label">🕐 Ժամ</span>
-                <span class="value">{{ news.eventtime or 'Ոչ նշված' }}</span>
-            </div>
-            <div class="detail-row">
-                <span class="label">📍 Վայր</span>
-                <span class="value">{{ news.venue_hy or 'Ոչ նշված' }}</span>
-            </div>
-            <div class="detail-row">
-                <span class="label">💰 Գին</span>
-                <span class="value">
-                    {% if news.price_hy %}
-                        {{ news.price_hy }} դր.
-                    {% else %}
-                        Ոչ նշված
-                    {% endif %}
-                </span>
-            </div>
-        </div>
-
-        {% if news.content_hy %}
-        <div class="detail-description">
-            {{ news.content_hy|safe }}
-        </div>
-        {% endif %}
-    </div>
+    {% if news.content_hy %}
+      <div class="detail-description">
+        {{ news.content_hy|safe }}
+      </div>
+    {% endif %}
+  </div>
 </article>
 
 <style>
