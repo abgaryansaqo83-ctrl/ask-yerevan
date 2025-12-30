@@ -540,6 +540,59 @@ def get_upcoming_holiday_events(days_ahead: int = 14, limit: int = 10):
     conn.close()
     return rows
 
+
+def get_events_for_date(target_date: date,
+                        max_per_category: int = 3):
+    """
+    Վերադարձնում է նշված օրվա event-ները news աղյուսակից՝
+    ըստ category-ի սահմանափակումով:
+    max_per_category – ամեն կատեգորիայից առավելագույն քանակը։
+    """
+    conn = get_connection()
+    cur = get_cursor(conn)
+
+    # պետական օրվա համար մեզ հետաքրքրում են այս կատեգորիաները
+    categories = ["events", "culture", "city", "holiday_events"]
+
+    results = []
+
+    if DATABASE_URL:
+        for cat in categories:
+            cur.execute(
+                """
+                SELECT *
+                FROM news
+                WHERE eventdate = %s
+                  AND category = %s
+                  AND published = TRUE
+                ORDER BY eventtime, created_at
+                LIMIT %s
+                """,
+                (target_date.isoformat(), cat, max_per_category),
+            )
+            rows = cur.fetchall()
+            results.extend(rows)
+    else:
+        for cat in categories:
+            cur.execute(
+                """
+                SELECT *
+                FROM news
+                WHERE eventdate = ?
+                  AND category = ?
+                  AND published = 1
+                ORDER BY eventtime, created_at
+                LIMIT ?
+                """,
+                (target_date.isoformat(), cat, max_per_category),
+            )
+            rows = cur.fetchall()
+            results.extend(rows)
+
+    conn.close()
+    return results
+
+
 def delete_old_news(days: int = 30) -> int:
     """
     Delete news older than X days (30 days default).
