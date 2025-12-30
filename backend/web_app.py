@@ -56,7 +56,7 @@ async def indexhy(request: Request):
     hero_culture = get_random_news_with_image("culture")
 
     return templates.TemplateResponse(
-        "indexhy.html",
+        "index_hy.html",
         {
             "request": request,
             "lang": "hy",
@@ -74,7 +74,7 @@ async def indexen(request: Request):
     hero_culture = get_random_news_with_image("culture")
 
     return templates.TemplateResponse(
-        "indexen.html",
+        "index_en.html",
         {
             "request": request,
             "lang": "en",
