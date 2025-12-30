@@ -49,8 +49,7 @@
       <article class="home-card">
         <div class="home-card__inner">
           <div class="home-card__thumb">
-            <img src="/static/img/home-preview/news-last.jpg"
-                 alt="Վերջին հրապարակում՝ նորություններ">
+            <img src="{{ hero_events.imageurl if hero_events else 'static/img/default-news.jpg' }}" alt="Նորություններ"/>
           </div>
           <div class="home-card__body">
             <h3 class="home-card__title">Նորություններ</h3>
