@@ -25,6 +25,13 @@ from aiogram.types import (
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.state import State, StatesGroup
+from aiogram import F
+from aiogram.types import (
+    Message,
+    CallbackQuery,
+    InlineKeyboardMarkup,
+    InlineKeyboardButton,
+)
 
 from config.settings import settings
 from backend.utils.logger import logger
@@ -32,6 +39,7 @@ from backend.languages import get_text
 from backend.ai.response import generate_reply
 from backend.utils.listings import detect_listing_category
 from backend.database import save_user
+from backend.database import save_news
 from backend.database import (
     save_listing,
     register_violation,
@@ -86,6 +94,7 @@ class AddNewsForm(StatesGroup):
     waiting_for_content_hy = State()
     waiting_for_content_en = State()
     waiting_for_image = State()
+    waiting_for_category = State()  # ՆՈՐ state — category ընտրության համար
 
 # ========== Լեզվի ընտրություն ==========
 
@@ -483,16 +492,17 @@ async def publish_to_group_command(message: Message):
         await message.answer(f"❌ Սխալ հրապարակելիս:\n{e}")
 
 # ========== /addnews (owner only) — ԱՅՍՏԵՂ ==========
+
 @dp.message(Command("addnews"))
 async def cmd_addnews(message: Message, state: FSMContext):
     if message.from_user.id != OWNER_ID:
         await message.answer("❌ Այս հրամանը հասանելի է միայն բոտի տիրոջը։")
         return
-    
+
     await message.answer(
         "📰 Նոր նորություն ավելացնել\n\n"
         "1️⃣ Ուղարկիր վերնագիրը *հայերեն*",
-        parse_mode="Markdown"
+        parse_mode="Markdown",
     )
     await state.set_state(AddNewsForm.waiting_for_title_hy)
 
@@ -522,36 +532,133 @@ async def process_content_hy(message: Message, state: FSMContext):
 async def process_content_en(message: Message, state: FSMContext):
     await state.update_data(content_en=message.text)
     await message.answer(
-        "5️⃣ Ուղարկիր նկարի URL (կամ գրիր /skip, եթե չկա)",
-        parse_mode="Markdown"
+        "5️⃣ Ուղարկիր նկարը՝\n"
+        "- կամ ուղարկիր *նկարի URL*\n"
+        "- կամ ուղարկիր *ֆոտո* (camera / gallery)\n"
+        "Կամ գրիր /skip, եթե չի պետք նկարը։",
+        parse_mode="Markdown",
     )
     await state.set_state(AddNewsForm.waiting_for_image)
 
 
+# ===== Նկարների քայլ — URL կամ photo =====
+
 @dp.message(AddNewsForm.waiting_for_image)
 async def process_image(message: Message, state: FSMContext):
-    from backend.database import save_news
-    
+    """
+    Այստեղ աջակցում ենք.
+    - text => URL (կամ /skip)
+    - photo => պահում ենք photo_file_id (Telegram-ում host եղած)
+    """
     data = await state.get_data()
-    
-    image_url = None if message.text == "/skip" else message.text
-    
-    # Save to database
-    news_id = save_news(
-        title_hy=data['title_hy'],
-        title_en=data['title_en'],
-        content_hy=data['content_hy'],
-        content_en=data['content_en'],
-        image_url=image_url
-    )
-    
-    await message.answer(
-        f"✅ Նորությունը հրապարակվեց!\n"
-        f"ID: {news_id}\n\n"
-        f"Տես վեբ կայքում՝ https://ask-yerevan.onrender.com/hy/news"
-    )
-    await state.clear()
 
+    image_url: str | None = None
+    photo_file_id: str | None = None
+
+    # Եթե user-ը գրել է /skip → բաց ենք թողնում նկարը
+    if message.text == "/skip":
+        image_url = None
+
+    # Եթե ուղարկվածը տեքստ է (URL)
+    elif message.text and not message.photo:
+        image_url = message.text.strip()
+
+    # Եթե ուղարկվածը իրական photo է (camera/gallery)
+    elif message.photo:
+        # վերցնում ենք ամենամեծ չափի photo-ի file_id
+        photo_file_id = message.photo[-1].file_id
+
+    # Պահում ենք FSM-ում
+    await state.update_data(
+        image_url=image_url,
+        photo_file_id=photo_file_id,
+    )
+
+    # Category ընտրության կոճակները
+    kb = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text="🏠 ԳԼԽԱՎՈՐ", callback_data="addnews:general"),
+            ],
+            [
+                InlineKeyboardButton(text="🏙 ՔԱՂԱՔԱՅԻՆ", callback_data="addnews:city"),
+            ],
+            [
+                InlineKeyboardButton(text="⚠️ ԿԱՐԵՎՈՐ", callback_data="addnews:important"),
+            ],
+        ]
+    )
+
+    await message.answer(
+        "6️⃣ Ընտրիր կայքի բաժինը․\n\n"
+        "🏠 ԳԼԽԱՎՈՐ — հիմնական նորություններ\n"
+        "🏙 ՔԱՂԱՔԱՅԻՆ — քաղաքի առօրյա, ծառայություններ, միջոցառումներ\n"
+        "⚠️ ԿԱՐԵՎՈՐ — հատուկ / շտապ ինֆո",
+        reply_markup=kb,
+    )
+    await state.set_state(AddNewsForm.waiting_for_category)
+
+
+# ===== Category callback — իրական save դեպի DB =====
+
+@dp.callback_query(F.data.startswith("addnews:"), AddNewsForm.waiting_for_category)
+async def process_addnews_category(callback: CallbackQuery, state: FSMContext):
+    if callback.from_user.id != OWNER_ID:
+        await callback.answer("Այս հրամանը հասանելի է միայն տիրոջը։", show_alert=True)
+        return
+
+    category = callback.data.split(":", 1)[1]  # general / city / important
+
+    data = await state.get_data()
+
+    title_hy = data["title_hy"]
+    title_en = data["title_en"]
+    content_hy = data["content_hy"]
+    content_en = data["content_en"]
+    image_url = data.get("image_url")
+    photo_file_id = data.get("photo_file_id")  # եթե ֆոտո էր, սա լրացված կլինի
+
+    # Այստեղ 2 տարբերակ ունես՝ ինչպես պահես նկարը DB-ի մեջ.
+    # 1) Եթե backend / template-ը հարմարված է image_url-ի վրա,
+    #    հիմա կարող ես արդեն անցնել ՊԱՐԶ վարիանտի՝ image_url-ում պահել հենց file_id,
+    #    template-ում եթե սկսվում է "http" չէ, ապա image tag-ի փոխարեն
+    #    օգտագործես Telegram-proxy կամ դեռ ոչինչ չցուցադրես։
+    #
+    # 2) Ավելի ճիշտ տարբերակ՝ bot-ում download անես ֆոտոն և upload անես
+    #    քո media storage (S3, Render disk, և այլն) ու ստացած public URL-ը գրես image_url.
+    #
+    # Հիմա կթողնենք պարզ տարբերակը՝
+    # - եթե user-ը ուղարկել է URL → image_url = URL
+    # - եթե user-ը ուղարկել է photo → image_url = file_id (առանց download)
+    # հետո, երբ media storage-դ պատրաստ լինի, կարող ես այս հատվածը փոխել՝
+    # Telegram-ից download + backend upload logic դնելու համար. [web:270]
+
+    if not image_url and photo_file_id:
+        # պարզ պահեստավորում՝ file_id-ը պահում ենք image_url դաշտում
+        image_url = photo_file_id
+
+    news_id = save_news(
+        title_hy=title_hy,
+        title_en=title_en,
+        content_hy=content_hy,
+        content_en=content_en,
+        image_url=image_url,
+        category=category,
+    )
+
+    # Հանում ենք inline keyboard-ը, որ երկրորդ անգամ չսեղմեն
+    await callback.message.edit_reply_markup(reply_markup=None)
+
+    await callback.message.answer(
+        f"✅ Նորությունը հրապարակվեց `{category}` բաժնում.\n"
+        f"ID: {news_id}\n\n"
+        f"Տես վեբ կայքում՝ https://ask-yerevan.onrender.com/hy/news",
+        parse_mode="Markdown",
+    )
+
+    await state.clear()
+    await callback.answer("Պահպանվեց 🚀")
+    
 
 # ========== /sqlquery (owner only — database debug) ==========
 
