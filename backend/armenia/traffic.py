@@ -2,7 +2,7 @@
 
 import aiohttp
 import asyncio
-from typing import List
+from typing import List, Dict, Any
 from config.settings import settings
 from ..utils.logger import setup_logger
 
@@ -25,7 +25,6 @@ KEY_ROUTES = [
     ("40.2100,44.5300", "40.1850,44.5250"),  # Պաշտպանության → Ֆիզիկայի
 ]
 
-
 ROUTE_NAMES = {
     0: "Սպիտակաձի → Նաիրի",
     1: "Բաղրամյան → Թումանյան",
@@ -38,14 +37,14 @@ ROUTE_NAMES = {
 async def get_traffic_status(api_key: str = None) -> str:
     """
     Երկուշաբթի–ուրբաթ 08:30 խցանումների հաղորդագրություն.
-    Կենտրոն գնացող փողոցներ, որտեղ խցանում կա.
+    Ստուգում ենք մի քանի հիմնական ուղղություններ դեպի կենտրոն։
     """
     api_key = api_key or settings.GOOGLE_DIRECTIONS_KEY
 
     if not api_key:
         return "🚗 Խցանումների տվյալները ժամանակավորապես անհասանելի են։"
 
-    congested_routes = []
+    congested_routes: List[Dict[str, Any]] = []
 
     async with aiohttp.ClientSession() as session:
         tasks = []
@@ -69,7 +68,10 @@ async def check_route_congestion(
     route_id: int,
     api_key: str,
 ) -> dict:
-    """Ստուգում է մեկ route-ի խցանումը."""
+    """
+    Ստուգում է մեկ route-ի խցանումը Google Directions API-ով.
+    Ավելի զգայուն շեմ՝ 1.05 (5%+ դանդաղելը արդեն խցանում ենք համարում)։
+    """
     url = (
         f"{GOOGLE_DIRECTIONS_BASE}?"
         f"origin={origin}&destination={destination}"
@@ -80,11 +82,11 @@ async def check_route_congestion(
     try:
         async with session.get(url) as resp:
             if resp.status != 200:
+                logger.warning(f"Route {route_id} HTTP {resp.status}")
                 return {"route_id": route_id, "congested": False}
 
             data = await resp.json()
 
-            # Ստուգում ենք duration_in_traffic vs duration (typical)
             if "routes" not in data or not data["routes"]:
                 return {"route_id": route_id, "congested": False}
 
@@ -94,23 +96,27 @@ async def check_route_congestion(
 
             leg = route["legs"][0]
 
-            # Եթե duration_in_traffic չկա, չի համարում «առանց խցանման», ուղղակի skip
             if "duration_in_traffic" not in leg or "duration" not in leg:
+                # Եթե traffic data չկա, չենք եզրակացնում, որ աշխարհում ամեն ինչ OK է,
+                # ուղղակի skip ենք անում այս ուղին։
                 return {"route_id": route_id, "congested": False}
 
-            duration_traffic = leg["duration_in_traffic"]["value"]
-            duration_typical = leg["duration"]["value"]
+            duration_traffic = leg["duration_in_traffic"]["value"]  # վայրկյան
+            duration_typical = leg["duration"]["value"]  # վայրկյան
 
             if duration_typical <= 0:
                 return {"route_id": route_id, "congested": False}
 
-            # Ավելի զգայուն շեմ՝ 1.1 (10%‑ից ավելի երկարացվելը արդեն խցանում է)
-            congested = duration_traffic > (duration_typical * 1.1)
+            ratio = duration_traffic / duration_typical
+
+            # Ավելի զգայուն շեմ՝ 1.05 → 5%+ դանդաղը արդեն նշում ենք որպես խցանում
+            congested = ratio >= 1.05
 
             return {
                 "route_id": route_id,
                 "congested": congested,
-                "duration_traffic": duration_traffic / 60,  # minutes
+                "ratio": ratio,
+                "duration_traffic": duration_traffic / 60,  # րոպե
                 "duration_typical": duration_typical / 60,
                 "name": ROUTE_NAMES.get(route_id, f"Route {route_id}"),
             }
@@ -121,25 +127,52 @@ async def check_route_congestion(
 
 
 def _format_traffic_report(routes: List[dict]) -> str:
-    """Խցանումների հաշվետվության ֆորմատ."""
+    """
+    Խցանումների հաշվետվության ֆորմատ.
+    3 մակարդակ՝ միջին / խիտ / գրեթե կանգնած։
+    Վերնագիրն էլ փոխում ենք ըստ ընդհանուր իրավիճակի։
+    """
     if not routes:
-        return "🚗 ✅ Երևանի կենտրոնական փողոցներում խցանումներ չկան։ Մաղթում եմ անխափան երթևեկություն։"
+        return (
+            "🚗 ✅ Երևանի հիմնական երթուղիներում զգալի խցանումներ չկան։\n"
+            "Մաղթում եմ անխափան երթևեկություն։"
+        )
 
-    lines = ["🚨 <b>Խցանումներ դեպի կենտրոն</b>\n\n"]
+    # Max ratio overall՝ հասկանալու համար ընդհանուր ծանրությունը
+    max_ratio = max((r.get("ratio", 1.0) for r in routes), default=1.0)
+
+    if max_ratio >= 1.7:
+        header = "🚨 <b>Երևանում լուրջ խցանումներ են</b>\n"
+    elif max_ratio >= 1.3:
+        header = "⚠️ <b>Երևանում խիտ խցանումներ կան</b>\n"
+    else:
+        header = "ℹ️ <b>Երևանում միջին խցանումներ են</b>\n"
+
+    lines = [header, "Հիմնական ուղղություններ դեպի կենտրոն.\n"]
 
     for route in routes:
         name = route["name"]
+        ratio = route.get("ratio", 1.0)
         dur_t = route.get("duration_traffic")
         dur_n = route.get("duration_typical")
 
-        if dur_t is not None and dur_n is not None and dur_t > dur_n * 1.5:
+        if ratio >= 1.7:
             status = "գրեթե կանգնած է"
+        elif ratio >= 1.3:
+            status = "խիտ խցանում"
         else:
-            status = "խցանում կա"
+            status = "միջին խցանում"
 
-        line = f"📍 {name} — {status}\n"
+        extra = ""
+        if dur_t is not None and dur_n is not None:
+            extra = f" ({dur_n:.0f} → {dur_t:.0f} րոպե)"
+
+        line = f"📍 {name} — {status}{extra}\n"
         lines.append(line)
 
-    lines.append("\n💡 Խորհուրդ՝ օգտագործիր Google Maps-ը իրական ժամանակի տվյալների համար։")
+    lines.append(
+        "\n💡 Խորհուրդ՝ օգտագործիր Google Maps-ը կամ Waze-ը "
+        "իրական ժամանակի երթևեկությունը տեսնելու համար։"
+    )
 
     return "\n".join(lines)
