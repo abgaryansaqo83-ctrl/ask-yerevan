@@ -14,7 +14,7 @@ from backend.database import delete_old_news
 
 from .jobs import (
     send_morning_broadcast,
-    send_week_premiere,
+    send_holiday_events,
     send_next_day_events,
     send_festival_events,
     send_traffic_report,
@@ -50,11 +50,11 @@ def create_scheduler() -> AsyncIOScheduler:
 
     # ================ ԵՐԿՈՒՇԱԲԹԻ ===================
 
-    # 08:30 — Շաբաթվա պրեմիերա
+    # 08:30 — տարվա տոներ
     scheduler.add_job(
-        send_week_premiere,
+        send_holiday_events,
         CronTrigger(day_of_week="mon", hour=8, minute=30, timezone=TIMEZONE),
-        id="week_premiere",
+        id="holiday_events",
         replace_existing=True,
     )
 
