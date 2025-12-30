@@ -24,23 +24,15 @@ from aiogram.types import (
 )
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.fsm.state import State, StatesGroup
-from aiogram import F
-from aiogram.types import (
-    Message,
-    CallbackQuery,
-    InlineKeyboardMarkup,
-    InlineKeyboardButton,
-)
 
 from config.settings import settings
 from backend.utils.logger import logger
 from backend.languages import get_text
 from backend.ai.response import generate_reply
 from backend.utils.listings import detect_listing_category
-from backend.database import save_user
-from backend.database import save_news
 from backend.database import (
+    save_user,
+    save_news,
     save_listing,
     register_violation,
     count_violations,
