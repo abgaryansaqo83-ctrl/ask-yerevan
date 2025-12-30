@@ -67,14 +67,6 @@ def create_scheduler() -> AsyncIOScheduler:
         replace_existing=True,
     )
 
-    # 09:30 — Փառատոններ (միայն չորեքշաբթի)
-    scheduler.add_job(
-        send_festival_events,
-        CronTrigger(day_of_week="wed", hour=9, minute=30, timezone=TIMEZONE),
-        id="festival_events",
-        replace_existing=True,
-    )
-
     # ================ ՆՈՐՈՒԹՅՈՒՆՆԵՐԻ ԱՎՏՈՄԱՏ ՔԱՇՈՒՄ ===================
 
     # ԱՄԵՆ ԳԻՇԵՌ 03:00 AM — ՆՈՌ ԵՎԵՆՏՆԵՌ ՔԱՇՈՒՄ + 30 ՕՌ ՄԱՔՌՈՒՄ
