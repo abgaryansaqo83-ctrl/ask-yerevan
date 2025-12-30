@@ -60,7 +60,7 @@ async def indexhy(request: Request):
         {
             "request": request,
             "lang": "hy",
-            "iswintertheme": iswinterthemeenabled(),
+            "iswintertheme": is_winter_theme_enabled(),
             "hero_events": hero_events,
             "hero_city": hero_city,
             "hero_culture": hero_culture,
@@ -78,7 +78,7 @@ async def indexen(request: Request):
         {
             "request": request,
             "lang": "en",
-            "iswintertheme": iswinterthemeenabled(),
+            "iswintertheme": is_winter_theme_enabled(),
             "hero_events": hero_events,
             "hero_city": hero_city,
             "hero_culture": hero_culture,
