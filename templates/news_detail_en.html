@@ -2,54 +2,58 @@
 {% block title %}{{ news.title_en }} - AskYerevan{% endblock %}
 
 {% block content %}
-
 <article class="detail-container">
-    {% if news.image_url %}
+  {% if news.image_url %}
     <div class="detail-hero">
-        <img src="{{ news.image_url }}" alt="{{ news.title_en }}" class="detail-hero-img">
+      <img src="{{ news.image_url }}" alt="{{ news.title_en }}" class="detail-hero-img">
     </div>
+  {% endif %}
+
+  <div class="detail-content-wrapper">
+    <div class="back-wrapper">
+      <a href="/en/news" class="back-btn">← Back</a>
+    </div>
+
+    <h1 class="detail-title">{{ news.title_en }}</h1>
+
+    {% if news.eventdate or news.eventtime or news.venue_en or news.price_en %}
+      <div class="event-details">
+        {% if news.eventdate %}
+          <div class="detail-row">
+            <span class="label">📅 Date</span>
+            <span class="value">{{ news.eventdate }}</span>
+          </div>
+        {% endif %}
+
+        {% if news.eventtime %}
+          <div class="detail-row">
+            <span class="label">🕐 Time</span>
+            <span class="value">{{ news.eventtime }}</span>
+          </div>
+        {% endif %}
+
+        {% if news.venue_en or news.venue_hy %}
+          <div class="detail-row">
+            <span class="label">📍 Venue</span>
+            <span class="value">{{ news.venue_en or news.venue_hy }}</span>
+          </div>
+        {% endif %}
+
+        {% if news.price_en or news.price_hy %}
+          <div class="detail-row">
+            <span class="label">💰 Price</span>
+            <span class="value">{{ news.price_en or news.price_hy }}</span>
+          </div>
+        {% endif %}
+      </div>
     {% endif %}
 
-    <div class="detail-content-wrapper">
-        <!-- Back button -->
-        <div class="back-wrapper">
-            <a href="/en/news" class="back-btn">← Back</a>
-        </div>
-
-        <h1 class="detail-title">{{ news.title_en }}</h1>
-        
-        <!-- 4-line event info -->
-        <div class="event-details">
-            <div class="detail-row">
-                <span class="label">📅 Date</span>
-                <span class="value">{{ news.eventdate or 'Not specified' }}</span>
-            </div>
-            <div class="detail-row">
-                <span class="label">🕐 Time</span>
-                <span class="value">{{ news.eventtime or 'Not specified' }}</span>
-            </div>
-            <div class="detail-row">
-                <span class="label">📍 Venue</span>
-                <span class="value">{{ news.venue_hy or 'Not specified' }}</span>
-            </div>
-            <div class="detail-row">
-                <span class="label">💰 Price</span>
-                <span class="value">
-                    {% if news.price_hy %}
-                        {{ news.price_hy }} AMD
-                    {% else %}
-                        Not specified
-                    {% endif %}
-                </span>
-            </div>
-        </div>
-
-        {% if news.content_en %}
-        <div class="detail-description">
-            {{ news.content_en|safe }}
-        </div>
-        {% endif %}
-    </div>
+    {% if news.content_en or news.content_hy %}
+      <div class="detail-description">
+        {{ (news.content_en or news.content_hy)|safe }}
+      </div>
+    {% endif %}
+  </div>
 </article>
 
 <style>
