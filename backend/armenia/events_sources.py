@@ -51,24 +51,43 @@ def _scrape_one_tomsarkgh_event(url: str) -> Dict[str, Any] | None:
     venue_span = soup.select_one("div.occurrence_venue span[itemprop=name]")
     place = venue_span.get_text(strip=True) if venue_span else "Unknown venue"
 
-    # Գին
+    # Գին (փորձում ենք գտնել price block-ը, եթե չկա՝ փնտրում ենք տեքստով)
     price_block = soup.select_one(".event-price, .event_prices, .prices, .event-price-block")
+    price_text = None
     if price_block:
         price_text = price_block.get_text(strip=True)
-    else:
+
+    if not price_text:
+        # փնտրել common pattern-ներ ամբողջ էջի տեքստում
+        full_text = soup.get_text(" ", strip=True)
+
+        candidates = []
+        patterns = [
+            "Տոմսերի արժեքը",
+            "Տոմսի արժեքը",
+            "Цена билетов",
+            "Price:",
+            "Ticket price",
+        ]
+        for p in patterns:
+            idx = full_text.find(p)
+            if idx != -1:
+                # կտրում ենք մինչև մոտ 80-120 սիմվոլ
+                snippet = full_text[idx: idx + 120]
+                candidates.append(snippet)
+
+        if candidates:
+            # վերցնում ենք ամենաառաջինը
+            price_text = candidates[0]
+
+    if not price_text:
         price_text = "գինը նշված չէ"
 
     return {
-        "title": title,
-        "date": date_part,
-        "time": time_part,
-        "place": place,
-        "city": "Yerevan",
+        ...
         "price": price_text,
-        "url": url,
-        "source": "tomsarkgh",
+        ...
     }
-
 
 def _collect_event_links(category_url: str, limit: int) -> list[str]:
     """
