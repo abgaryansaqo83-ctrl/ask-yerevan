@@ -308,7 +308,202 @@ def scrape_tomsarkgh_events_en_only(urls: list[str]) -> int:
         if scrape_tomsarkgh_event(url, category="events"):
             saved += 1
     return saved
-    
+
+# ==========================
+#  YEREVAN.AM CITY/IMPORTANT
+# ==========================
+
+YEREVAN_NEWS_BASE_HY = "https://www.yerevan.am"
+YEREVAN_NEWS_LIST_HY = "https://www.yerevan.am/hy/news/"
+YEREVAN_NEWS_LIST_EN = "https://www.yerevan.am/en/news/"
+
+YEREVAN_DAYS_BACK = 15  # վերջին 15 օրվա news
+YEREVAN_TIMEOUT = 10
+
+
+def _parse_yerevan_date(date_text: str) -> datetime | None:
+    """
+    Օրինակ Ֆորմատներ՝
+    18.12.2025
+    05.01.2026
+    """
+    if not date_text:
+        return None
+    date_text = date_text.strip()
+    try:
+        return datetime.strptime(date_text, "%d.%m.%Y")
+    except Exception:
+        logger.warning(f"Yerevan date parse failed for '{date_text}'")
+        return None
+
+
+def _extract_yerevan_list_items(lang: str = "hy") -> list[tuple[str, str, datetime]]:
+    """
+    Վերադարձնում է list [(detail_url, title, date), ...]
+    Միայն վերջին 15 օրվա համար:
+    """
+    list_url = YEREVAN_NEWS_LIST_HY if lang == "hy" else YEREVAN_NEWS_LIST_EN
+    logger.info(f"Yerevan list fetch {lang} -> {list_url}")
+
+    resp = requests.get(list_url, timeout=YEREVAN_TIMEOUT)
+    resp.raise_for_status()
+    soup = BeautifulSoup(resp.text, "html.parser")
+
+    items: list[tuple[str, str, datetime]] = []
+    cutoff = datetime.now() - timedelta(days=YEREVAN_DAYS_BACK)
+
+    # layout-ը մոտավորապես՝ div.news-list > article / li
+    for block in soup.select(".news-list article, .news-list-item, .news-list li"):
+        # detail link
+        a = block.select_one("a")
+        if not a:
+            continue
+        href = a.get("href") or ""
+        if not href:
+            continue
+        if not href.startswith("http"):
+            href = YEREVAN_NEWS_BASE_HY + href
+
+        # title
+        title = (a.get_text(strip=True) or "")[:200]
+        if not title:
+            continue
+
+        # date
+        date_el = (
+            block.select_one(".date")
+            or block.select_one(".news-date")
+            or block.select_one("time")
+        )
+        date_text = date_el.get_text(strip=True) if date_el else ""
+        pub_date = _parse_yerevan_date(date_text)
+        if not pub_date:
+            continue
+
+        if pub_date < cutoff:
+            # Հին է, skip
+            continue
+
+        items.append((href, title, pub_date))
+
+    logger.info(f"Yerevan list {lang}: {len(items)} items within last {YEREVAN_DAYS_BACK} days")
+    return items
+
+
+def _fetch_yerevan_detail(url_hy: str, url_en: str | None, category: str) -> bool:
+    """
+    Քաշում է մեկ news HY/EN, պահում է որպես city/important:
+    """
+    try:
+        # HY էջ
+        resp_hy = requests.get(url_hy, timeout=YEREVAN_TIMEOUT)
+        resp_hy.raise_for_status()
+        soup_hy = BeautifulSoup(resp_hy.text, "html.parser")
+
+        # Վերնագիր HY
+        title_el_hy = soup_hy.select_one("h1") or soup_hy.select_one(".news-title")
+        title_hy = (title_el_hy.get_text(strip=True) if title_el_hy else "")[:200]
+
+        # Նկար
+        image_el = (
+            soup_hy.select_one("meta[property='og:image']")
+            or soup_hy.select_one(".news-image img")
+            or soup_hy.select_one("article img")
+        )
+        image_url = None
+        if image_el:
+            image_url = image_el.get("content") or image_el.get("src")
+            if image_url and not image_url.startswith("http"):
+                image_url = YEREVAN_NEWS_BASE_HY + image_url
+
+        # Բովանդակություն HY
+        content_el_hy = (
+            soup_hy.select_one(".news-content")
+            or soup_hy.select_one("article")
+            or soup_hy.select_one(".text")
+        )
+        content_hy = content_el_hy.get_text("\n", strip=True) if content_el_hy else ""
+
+        # EN էջ (ըստ URL)
+        title_en = ""
+        content_en = ""
+        if url_en:
+            try:
+                resp_en = requests.get(url_en, timeout=YEREVAN_TIMEOUT)
+                resp_en.raise_for_status()
+                soup_en = BeautifulSoup(resp_en.text, "html.parser")
+
+                title_el_en = soup_en.select_one("h1") or soup_en.select_one(".news-title")
+                title_en = (title_el_en.get_text(strip=True) if title_el_en else "")[:200]
+
+                content_el_en = (
+                    soup_en.select_one(".news-content")
+                    or soup_en.select_one("article")
+                    or soup_en.select_one(".text")
+                )
+                content_en = content_el_en.get_text("\n", strip=True) if content_el_en else ""
+            except Exception as e:
+                logger.warning(f"Yerevan EN fetch failed {url_en}: {e}")
+
+        # fallback EN
+        if not title_en:
+            title_en = title_hy
+        if not content_en:
+            content_en = content_hy
+
+        savenews(
+            titlehy=title_hy,
+            titleen=title_en,
+            contenthy=content_hy,
+            contenten=content_en,
+            imageurl=image_url,
+            category=category,
+            sourceurl=url_hy,
+        )
+        logger.info(f"Yerevan news saved [{category}] {title_hy[:80]}")
+        return True
+
+    except Exception as e:
+        logger.error(f"Yerevan detail error {url_hy}: {e}")
+        return False
+
+
+def scrape_yerevan_news():
+    """
+    Քաշում է վերջին 15 օրվա քաղաքապետարանի news‑երը.
+    Հակառակ լեզուները match ենք անում slug‑ով, category֊ն փոխանցվելու է դրսից։
+    """
+    logger.info("Running Yerevan.am city/important scraper")
+
+    items_hy = _extract_yerevan_list_items(lang="hy")
+    items_en = _extract_yerevan_list_items(lang="en")
+
+    # map EN ըստ slug-ի
+    en_map: dict[str, str] = {}
+    for url_en, _, _ in items_en:
+        slug = url_en.rstrip("/").split("/")[-1]
+        en_map[slug] = url_en
+
+    saved = 0
+    for url_hy, title_hy, pub_date in items_hy:
+        slug = url_hy.rstrip("/").split("/")[-1]
+        url_en = en_map.get(slug)
+
+        # category logic – ըստ քո ցանկության՝ հիմա default city
+        category = "city"
+
+        # Այստեղ կարող ես ավելացնել քո ձեռքով keyword filter,
+        # օրինակ "metro", "transport" → important:
+        lower = title_hy.lower()
+        if any(k in lower for k in ["մետրո", "գազ", "ջուր", "շուրջօրյա", "թիկունք"]):
+            category = "important"
+
+        if _fetch_yerevan_detail(url_hy, url_en, category):
+            saved += 1
+
+    logger.info(f"Yerevan.am scraper complete: {saved} items saved")
+    return saved
+
 # =============================================================================
 # MAIN RUNNER
 # =============================================================================
@@ -316,6 +511,14 @@ def scrape_tomsarkgh_events_en_only(urls: list[str]) -> int:
 def run_all_scrapers() -> int:
     """Run complete news scraping cycle (Tomsarkgh HY + EN-only URLs)."""
     logger.info("🚀 === NEWS SCRAPER START ===")
+
+    # 0) Քաղաքապետարանի city / important news (վերջին 15 օր)
+    try:
+        total_yerevan = scrape_yerevan_news()
+        logger.info(f"🏙️ Yerevan.am news saved: {total_yerevan}")
+    except Exception as e:
+        logger.error(f"Yerevan.am scraper failed: {e}")
+        total_yerevan = 0
 
     # 1) հիմնական HY scraper (ինչպես նախկինում)
     total_hy = scrape_tomsarkgh_events()
@@ -333,7 +536,7 @@ def run_all_scrapers() -> int:
     saved_en = scrape_tomsarkgh_events_en_only(EN_EVENT_URLS)
     logger.info(f"✅ EN-only events updated: {saved_en}")
 
-    total = total_hy + saved_en
+    total = total_yerevan + total_hy + saved_en
     logger.info(f"🏁 === NEWS SCRAPER DONE: {total} items ===")
     return total
 
