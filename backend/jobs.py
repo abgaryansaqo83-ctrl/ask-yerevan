@@ -15,6 +15,8 @@ from backend.armenia.events import (
 )
 from backend.armenia.recommend import get_recommendations
 
+BASE_URL = "https://ask-yerevan.onrender.com"  # հետո կփոխես www.askyerevan.am
+
 
 def _get_bot() -> Bot:
     """Օգնական՝ ստեղծելու Bot instance-ը մեկ տեղից."""
@@ -60,18 +62,60 @@ async def send_traffic_report():
         await bot.session.close()
 
 
-# ================ 2. Երկուշաբթի՝ շաբաթվա պրեմիերա (08:30) ================
+# ================ 2. Երկուշաբթի՝ տարվա տոները (08:30) ================
 
-async def send_week_premiere():
+async def send_holiday_events():
+    """
+    Երկուշաբթի 08:30 — ուղարկում է մոտակա holiday_events-ի event-ները
+    (օրինակ՝ Ամանոր, Սուրբ Ծնունդ, Մարտի 8 և այլն), DB-ից։
+    Յուրաքանչյուր event առանձին մեսիջով, քարտանման caption-ով։
+    """
     bot = _get_bot()
     chat_id = _get_group_chat_id()
 
     try:
-        text = await get_week_premiere()
-        await bot.send_message(chat_id, text)
-        logger.info("✨ Weekly premiere sent to group")
+        rows = get_upcoming_holiday_events(days_ahead=14, limit=10)
+
+        if not rows:
+            logger.info("ℹ️ No upcoming holiday events found")
+            await bot.send_message(chat_id, "Տարվա տոների հատուկ միջոցառումներ դեռ չկան։")
+            return
+
+        for item in rows:
+            # aiogram Row → dict
+            news_id = item["id"]
+            title = item["title_hy"]
+            eventdate = item.get("eventdate") or "Ոչ նշված"
+            eventtime = item.get("eventtime") or "Ոչ նշված"
+            venue = item.get("venue_hy") or "Ոչ նշված"
+            price = item.get("price_hy")
+
+            url = f"{BASE_URL}/hy/news/{news_id}"
+
+            lines = [
+                f"{title}",
+                "",
+                f"📅 {eventdate}",
+                f"🕒 {eventtime}",
+                f"📍 {venue}",
+            ]
+            if price:
+                lines.append(f"💰 {price} դր.")
+            lines.append("")
+            lines.append(f"🔗 Մանրամասն՝ {url}")
+
+            caption = "\n".join(lines)
+
+            image_url = item.get("image_url")
+            if image_url:
+                await bot.send_photo(chat_id, photo=image_url, caption=caption)
+            else:
+                await bot.send_message(chat_id, caption)
+
+        logger.info("✨ Holiday events sent to group")
+
     except Exception as e:
-        logger.error(f"❌ Weekly premiere failed: {e}")
+        logger.error(f"❌ Holiday events failed: {e}")
     finally:
         await bot.session.close()
 
