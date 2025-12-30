@@ -18,13 +18,8 @@ EventCategory = Literal[
 
 
 def _format_event_line(title: str, place: str, time_str: str, price: str) -> str:
-    """
-    Մեկ իրադարձության տողի ֆորմատ.
-    🎫 Վերնագիր
-    📍 Վայր
-    🕒 Ժամ կամ օր
-    💸 Գին
-    """
+    if len(price) > 80:
+        price = price[:77] + "..."
     return (
         f"🎫 {title}\n"
         f"📍 {place}\n"
