@@ -494,6 +494,46 @@ def get_news_by_id(news_id: int):
     conn.close()
     return row
 
+def get_random_news_with_image(category: str):
+    """
+    Վերադարձնում է պատահական նորություն տվյալ category-ից,
+    որի image_url-ը ոչ թե NULL է։
+    """
+    conn = get_connection()
+    cur = get_cursor(conn)
+
+    if DATABASE_URL:
+        cur.execute(
+            """
+            SELECT id, image_url
+            FROM news
+            WHERE published = TRUE
+              AND category = %s
+              AND image_url IS NOT NULL
+            ORDER BY RANDOM()
+            LIMIT 1
+            """,
+            (category,),
+        )
+    else:
+        cur.execute(
+            """
+            SELECT id, image_url
+            FROM news
+            WHERE published = 1
+              AND category = ?
+              AND image_url IS NOT NULL
+            ORDER BY RANDOM()
+            LIMIT 1
+            """,
+            (category,),
+        )
+
+    row = cur.fetchone()
+    conn.close()
+    return row
+
+
 def get_upcoming_holiday_events(days_ahead: int = 14, limit: int = 10):
     """
     Վերադարձնում է մոտակա holiday_events կատեգորիայի իրադարձությունները
