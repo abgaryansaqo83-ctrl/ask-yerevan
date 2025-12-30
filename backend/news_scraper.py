@@ -333,11 +333,10 @@ def _parse_yerevan_date(date_text: str) -> datetime | None:
         logger.warning(f"Yerevan date parse failed for '{date_text}'")
         return None
 
-
 def _extract_yerevan_list_items(lang: str = "hy") -> list[tuple[str, str, datetime]]:
     """
     Վերադարձնում է list [(detail_url, title, date), ...]
-    Միայն վերջին 15 օրվա համար:
+    Միայն վերջին YEREVAN_DAYS_BACK օրվա համար:
     """
     list_url = YEREVAN_NEWS_LIST_HY if lang == "hy" else YEREVAN_NEWS_LIST_EN
     logger.info(f"Yerevan list fetch {lang} -> {list_url}")
@@ -349,8 +348,9 @@ def _extract_yerevan_list_items(lang: str = "hy") -> list[tuple[str, str, dateti
     items: list[tuple[str, str, datetime]] = []
     cutoff = datetime.now() - timedelta(days=YEREVAN_DAYS_BACK)
 
-    # layout-ը մոտավորապես՝ div.news-list > article / li
-    for block in soup.select(".news-list article, .news-list-item, .news-list li"):
+    # Նոր layout՝ culture / news list քարտեր
+    # div.news-main-body > div.col-xl-4 (յուրաքանչյուր քարտ)
+    for block in soup.select(".news-main-body .col-xl-4, .news-main-body .col-lg-4, .news-main-body .col-md-4"):
         # detail link
         a = block.select_one("a")
         if not a:
@@ -362,19 +362,21 @@ def _extract_yerevan_list_items(lang: str = "hy") -> list[tuple[str, str, dateti
             href = YEREVAN_NEWS_BASE_HY + href
 
         # title
-        title = (a.get_text(strip=True) or "")[:200]
+        title_el = block.select_one("h3, h4, .news-item-title")
+        title = (title_el.get_text(strip=True) if title_el else a.get_text(strip=True) or "")[:200]
         if not title:
             continue
 
         # date
         date_el = (
-            block.select_one(".date")
-            or block.select_one(".news-date")
+            block.select_one(".news-date")
+            or block.select_one(".news-item-date")
             or block.select_one("time")
         )
         date_text = date_el.get_text(strip=True) if date_el else ""
         pub_date = _parse_yerevan_date(date_text)
         if not pub_date:
+            # եթե չի parseվում, մինչև նոր debug skip
             continue
 
         if pub_date < cutoff:
@@ -385,7 +387,6 @@ def _extract_yerevan_list_items(lang: str = "hy") -> list[tuple[str, str, dateti
 
     logger.info(f"Yerevan list {lang}: {len(items)} items within last {YEREVAN_DAYS_BACK} days")
     return items
-
 
 def _fetch_yerevan_detail(url_hy: str, url_en: str | None, category: str) -> bool:
     """
