@@ -314,7 +314,7 @@ YEREVAN_NEWS_BASE_HY = "https://www.yerevan.am"
 YEREVAN_NEWS_LIST_HY = "https://www.yerevan.am/hy/news/"
 YEREVAN_NEWS_LIST_EN = "https://www.yerevan.am/en/news/"
 
-YEREVAN_DAYS_BACK = 15  # վերջին 15 օրվա news
+YEREVAN_DAYS_BACK = 30  # վերջին 30 օրվա news
 YEREVAN_TIMEOUT = 10
 
 
