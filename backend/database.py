@@ -629,9 +629,9 @@ def get_events_for_date(target_date: date,
     return results
 
 
-def delete_old_news(days: int = 30) -> int:
+def delete_old_news(days: int = 90) -> int:
     """
-    Delete news older than X days (30 days default).
+    Delete news older than X days (90 days default).
     """
     conn = get_connection()
     cur = get_cursor(conn)
