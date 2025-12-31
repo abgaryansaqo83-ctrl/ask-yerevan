@@ -9,6 +9,8 @@ from typing import List, Optional
 import requests
 from bs4 import BeautifulSoup
 
+from urllib.parse import urljoin
+
 from backend.database import save_news
 from backend.utils.logger import logger
 
@@ -115,6 +117,27 @@ TOMSARKGH_CATEGORIES = {
     7:  "city",           # Քաղաքային
 }
 
+def _parse_tkt_image(soup: BeautifulSoup) -> Optional[str]:
+    """
+    Վերադարձնում է TKT event-ի հիմնական նկարի URL-ը:
+    Նախ փորձում է og:image, հետո՝ գլխավոր img:
+    """
+    # 1) Open Graph og:image
+    og = soup.select_one("meta[property='og:image']")
+    if og and og.get("content"):
+        src = og["content"].strip()
+        if src:
+            return src
+
+    # 2) Բոլոր img-երից առաջին ոչ-պատահականը (եթե պետք լինի backup)
+    img = soup.select_one(".event-poster img, .event_image img, .product_image img, img")
+    if img and img.get("src"):
+        src = img["src"].strip()
+        if src:
+            return urljoin("https://www.tkt.am", src)
+
+    return None
+    
 def scrape_tkt_event_page(url_hy: str, url_en: str | None, section_slug: str) -> bool:
     """
     VERY SIMPLE parser for TKT sample events.
@@ -149,6 +172,9 @@ def scrape_tkt_event_page(url_hy: str, url_en: str | None, section_slug: str) ->
         # description՝ հիմա խորը չենք parse անում
         content_hy = ""
 
+        # ՆԿԱՐ
+        image_url = _parse_tkt_image(soup)
+
         # EN (մինիմալ)
         title_en = title_hy
         content_en = content_hy
@@ -171,7 +197,7 @@ def scrape_tkt_event_page(url_hy: str, url_en: str | None, section_slug: str) ->
             title_en=title_en,
             content_hy=content_hy,
             content_en=content_en,
-            image_url=None,
+            image_url=image_url,
             category=category,
             source_url=url_hy,
             eventdate=eventdate,
