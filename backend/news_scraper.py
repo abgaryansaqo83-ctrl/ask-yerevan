@@ -390,12 +390,11 @@ def scrape_tomsarkgh_event(url: str, category: str) -> bool:
         price_hy = _parse_event_price(soup)
         image_url = _parse_event_image(soup)
 
-                # ---------- EN VERSION (optional) ----------
+        # ---------- EN VERSION (optional) ----------
         title_en = title_hy
         content_en = content_hy
 
         try:
-            # էստեղ հիմք վերցնենք, թե ոնց ենք փոխում լեզուն
             if "/hy/event" in url:
                 url_en = url.replace("/hy/event", "/en/event")
             elif "/en/event" in url:
@@ -419,18 +418,10 @@ def scrape_tomsarkgh_event(url: str, category: str) -> bool:
                 ).get_text("\n", strip=True)
                 if text_en:
                     content_en = text_en[:4000]
-
         except Exception:
             logger.debug(f"EN version unavailable for {url}")
 
-        content_hy = _parse_event_description(soup)
-        eventdate, eventtime = _parse_event_datetime(soup)
-        venue_hy = _parse_event_venue(soup)
-        price_hy = _parse_event_price(soup)
-        image_url = _parse_event_image(soup)
-
-        # 🔽 ԱՅՍՏԵՂ ՆՈՐ ԳԾԵՐԸ
-        # category argument-ը գալիս է TOMSARKGH_CATEGORIES-ից,
+        # 🔽 category argument-ը գալիս է TOMSARKGH_CATEGORIES-ից,
         # բայց վերջնականը ճշգրտում ենք ըստ վերնագրի/տեքստի.
         final_category = map_tomsarkgh_category(title_hy, content_hy)
 
@@ -453,7 +444,6 @@ def scrape_tomsarkgh_event(url: str, category: str) -> bool:
             f"SAVED [{final_category}] {title_hy[:40]} | 📅{eventdate} ⏰{eventtime} "
             f"📍{venue_hy[:20]} 💰{price_hy}"
         )
-
         return True
 
     except Exception as e:
@@ -490,14 +480,6 @@ def scrape_tomsarkgh_events() -> int:
     logger.info(f"✅ === TOMSARKGH SCRAPER COMPLETE: {total_saved} items ===")
     return total_saved
 
-def scrape_tomsarkgh_events_en_only(urls: list[str]) -> int:
-    """Մշակում է միայն EN event URL-ներ՝ լրացնելով title_en/content_en."""
-    saved = 0
-    for url in urls:
-        # category-ը այս պահին կարող ես տալ generic, напр. "events"
-        if scrape_tomsarkgh_event(url, category="events"):
-            saved += 1
-    return saved
 
 # =============================================================================
 # MAIN RUNNER
@@ -514,19 +496,6 @@ def run_all_scrapers() -> int:
         logger.error(f"Tomsarkgh scraper failed: {e}")
         total_hy = 0
 
-    # 2) EN-only URLs (Tomsarkgh)
-    EN_EVENT_URLS = [
-        "https://www.tomsarkgh.am/en/event/50020/%D5%87%D5%B8%D5%B8%D6%82-%D4%B7%D5%A9%D5%A5%D6%80%D5%B6%D5%AB%D5%A1.html",
-        "https://www.tomsarkgh.am/en/event/50123/%D4%B2%D6%87%D5%A5%D5%BC%D5%A1%D5%B5%D5%AB%D5%B6-%D5%B3%D5%A5%D5%BA%D5%A8%D5%B6%D5%A9%D5%A1%D6%81.html",
-        "https://www.tomsarkgh.am/en/event/50303/Doom-Over.html",
-        "https://www.tomsarkgh.am/en/event/50262/%D0%90%D0%BD%D0%B0%D0%BA%D0%BE%D0%BD%D0%B4%D0%B0.html",
-        "https://www.tomsarkgh.am/en/event/50179/%D4%B7%D5%AC%D6%86%D5%A5%D6%80%D5%AB-%D5%B6%D5%B8%D6%80-%D5%BF%D5%A1%D6%80%D5%AB%D5%B6.html",
-        "https://www.tomsarkgh.am/en/event/44294/%D5%96%D5%B8%D6%80%D5%B7-%D6%87-%D4%B4%D5%A1%D5%BE%D5%AB%D5%A9-%D5%84%D5%B8%D6%82%D5%B7%D5%A5%D5%B2%D5%B5%D5%A1%D5%B6.html",
-        "https://www.tomsarkgh.am/en/event/50306/%D0%9A%D0%B2%D0%B8%D0%B7-harry-potter.html",
-    ]
-    saved_en = scrape_tomsarkgh_events_en_only(EN_EVENT_URLS)
-    logger.info(f"✅ EN-only events updated: {saved_en}")
-
     # 3) TKT sample events
     try:
         total_tkt = scrape_tkt_sample_events()
@@ -535,7 +504,7 @@ def run_all_scrapers() -> int:
         logger.error(f"TKT scraper failed: {e}")
         total_tkt = 0
 
-    total = total_hy + saved_en + total_tkt
+    total = total_hy + total_tkt
     logger.info(f"🏁 === NEWS SCRAPER DONE: {total} items ===")
     return total
 
