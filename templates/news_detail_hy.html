@@ -41,11 +41,20 @@
         {% endif %}
 
         {% if news.price_hy %}
-          <div class="detail-row">
-            <span class="label">💰 Գին</span>
-            <span class="value">{{ news.price_hy }} դր.</span>
-          </div>
-        {% endif %}
+          {% set price_str = news.price_hy|string %}
+
+          {# 0 / 00 / 0 դրամ → անվճար #}
+          {% if price_str|trim in ["0", "00"] or price_str|trim.startswith("0 ") %}
+            <div class="detail-row">
+              <span class="label">💰 Գին</span>
+              <span class="value">անվճար</span>
+            </div>
+          {% elif price_str %}
+            <div class="detail-row">
+              <span class="label">💰 Գին</span>
+              <span class="value">{{ price_str }} դր.</span>
+            </div>
+          {% endif %}
       </div>
     {% endif %}
 
