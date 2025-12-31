@@ -16,7 +16,8 @@
 
     <h1 class="detail-title">{{ news.title_en }}</h1>
 
-    {% if news.eventdate or news.eventtime or news.venue_en or news.price_en %}
+    {# Event info՝ if at least one field exists #}
+    {% if news.eventdate or news.eventtime or news.venue_en or news.price_hy %}
       <div class="event-details">
         {% if news.eventdate %}
           <div class="detail-row">
@@ -35,22 +36,34 @@
         {% if news.venue_en or news.venue_hy %}
           <div class="detail-row">
             <span class="label">📍 Venue</span>
-            <span class="value">{{ news.venue_en or news.venue_hy }}</span>
+            <span class="value">
+              {{ news.venue_en or news.venue_hy }}
+            </span>
           </div>
         {% endif %}
 
-        {% if news.price_en or news.price_hy %}
-          <div class="detail-row">
-            <span class="label">💰 Price</span>
-            <span class="value">{{ news.price_en or news.price_hy }}</span>
-          </div>
+        {% if news.price_hy %}
+          {% set price_str = news.price_hy|string %}
+
+          {# 0 / 00 / 0 AMD → Free #}
+          {% if price_str|trim in ["0", "00"] or price_str|trim.startswith("0 ") %}
+            <div class="detail-row">
+              <span class="label">💰 Price</span>
+              <span class="value">Free</span>
+            </div>
+          {% elif price_str %}
+            <div class="detail-row">
+              <span class="label">💰 Price</span>
+              <span class="value">{{ price_str }} AMD</span>
+            </div>
+          {% endif %}
         {% endif %}
       </div>
     {% endif %}
 
-    {% if news.content_en or news.content_hy %}
+    {% if news.content_en %}
       <div class="detail-description">
-        {{ (news.content_en or news.content_hy)|safe }}
+        {{ news.content_en|safe }}
       </div>
     {% endif %}
   </div>
@@ -86,7 +99,7 @@
 }
 .back-btn:hover { background: #1f5a6b; }
 
-/* 4-line layout */
+/* 4-row layout */
 .event-details {
   margin-bottom: 2rem;
   border: 1px solid #e2e8f0;
