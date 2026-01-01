@@ -141,7 +141,7 @@ def _parse_tkt_image(soup: BeautifulSoup) -> Optional[str]:
 def scrape_tkt_event_page(url_hy: str, url_en: str | None, section_slug: str) -> bool:
     """
     VERY SIMPLE parser for TKT sample events.
-    Հիմա մեզ պետք է միայն վերնագիրը, venue-ը, գինը, որ category mapping-ը ստուգենք.
+    Հիմա մեզ պետք է վերնագիրը, venue-ը, գինը, որ category mapping-ը ստուգենք.
     """
     try:
         logger.info(f"TKT: scraping {url_hy}")
@@ -149,49 +149,63 @@ def scrape_tkt_event_page(url_hy: str, url_en: str | None, section_slug: str) ->
         resp_hy.raise_for_status()
         soup = BeautifulSoup(resp_hy.text, "html.parser")
 
+        # --- TITLE ---
         title_el = soup.select_one("h1.event-title, h1.product_title, h1")
         title_hy = _safe_text(title_el)[:200]
 
         if not title_hy:
-            # Վերցնենք առաջին ոչ-դատարկ <h2> կամ .event-title class-ը body-ից
             alt_title = soup.select_one("h2, .event-title, .product_title")
             title_hy = _safe_text(alt_title)[:200] or "TKT միջոցառում"
 
-        # venue-ը՝ line, որտեղ կա Yerevan / Հայաստան
-        full_txt = _full_text(soup)
-        venue_hy = ""
-        for line in full_txt.splitlines():
-            if "Yerevan" in line or "Երևան" in line:
-                venue_hy = line.strip()[:200]
-                break
-
-        # գին
-        m_price = re.search(r"(\d[\d\s]{1,})(?:[.,]\d{2})?\s*(AMD|֏|դրամ|դր\.?)?", full_txt)
-        price_raw = m_price.group(1) if m_price else ""
-        price_hy = (
-            price_raw
-            .replace("\xa0", " ")   # nbsp
-            .replace(" ", "")       # եթե ուզում ես «10000»
-            .strip()
+        # --- VENUE (ամբողջ հասցե) ---
+        venue_block = soup.select_one(
+            ".event-location, .event__location, .event-details__place"
         )
+        if venue_block:
+            venue_hy = _safe_text(venue_block)[:200]
+        else:
+            # fallback՝ նախորդ line-ով
+            full_txt = _full_text(soup)
+            venue_hy = ""
+            for line in full_txt.splitlines():
+                if "Yerevan" in line or "Երևան" in line:
+                    venue_hy = line.strip()[:200]
+                    break
+            if not venue_hy:
+                venue_hy = "Երևան"
 
-        # 0 / 00 → թողնենք դատարկ, որ frontend-ը «անվճար» գրի
+        # --- PRICE (նվազագույն գին) ---
+        full_txt = _full_text(soup)
+        nums = re.findall(r"\d[\d\s]{1,}", full_txt)
+        prices = []
+        for n in nums:
+            try:
+                val = int(n.replace("\xa0", "").replace(" ", ""))
+                if val > 0:
+                    prices.append(val)
+            except ValueError:
+                continue
+
+        price_hy = str(min(prices)) if prices else "0"
         if price_hy in ("0", "00", ""):
             price_hy = "0"
 
-        # date/time crude
+        # --- DATE / TIME ---
         m_dt = re.search(r"(\d{2}\.\d{2}\.\d{4})\s+(\d{2}:\d{2})", full_txt)
         eventdate = m_dt.group(1) if m_dt else ""
         eventtime = m_dt.group(2) if m_dt else ""
 
-        # description՝ հիմա խորը չենք parse անում
-        desc_p = soup.select_one("div.event-description p, .event-description p, .product_description p")
-        content_hy = _safe_text(desc_p)
+        # --- DESCRIPTION ---
+        desc_p = soup.select_one(
+            "div.event-description p, .event-description p, "
+            ".product_description p, article p"
+        )
+        content_hy = _safe_text(desc_p)[:800]
 
-        # ՆԿԱՐ
+        # --- IMAGE ---
         image_url = _parse_tkt_image(soup)
 
-        # EN (մինիմալ)
+        # --- EN (մինիմալ) ---
         title_en = title_hy
         content_en = content_hy
         if url_en:
@@ -199,7 +213,9 @@ def scrape_tkt_event_page(url_hy: str, url_en: str | None, section_slug: str) ->
                 resp_en = requests.get(url_en, timeout=15, headers=HEADERS)
                 resp_en.raise_for_status()
                 soup_en = BeautifulSoup(resp_en.text, "html.parser")
-                title_en_el = soup_en.select_one("h1.event-title, h1.product_title, h1")
+                title_en_el = soup_en.select_one(
+                    "h1.event-title, h1.product_title, h1"
+                )
                 t_en = _safe_text(title_en_el)
                 if t_en:
                     title_en = t_en[:200]
@@ -227,7 +243,6 @@ def scrape_tkt_event_page(url_hy: str, url_en: str | None, section_slug: str) ->
     except Exception as e:
         logger.error(f"TKT error {url_hy}: {e}")
         return False
-
 
 def scrape_tkt_sample_events() -> int:
     """
