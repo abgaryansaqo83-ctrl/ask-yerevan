@@ -7,6 +7,7 @@ from datetime import date, datetime, timedelta
 from typing import List, Optional
 
 import requests
+import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
 
 from urllib.parse import urljoin
@@ -282,6 +283,73 @@ def scrape_tkt_sample_events() -> int:
             saved += 1
     logger.info(f"TKT sample events saved={saved}")
     return saved
+    
+
+def _parse_rss_pubdate(text: str) -> datetime | None:
+    """Parse RSS pubDate to datetime (UTC naive)."""
+    if not text:
+        return None
+    try:
+        dt = eut.parsedate_to_datetime(text)
+        # many RSS dates are timezone-aware, drop tzinfo for simplicity
+        if dt.tzinfo:
+            dt = dt.astimezone(tz=None).replace(tzinfo=None)
+        return dt
+    except Exception:
+        return None
+
+
+def scrape_panarmenian_culture() -> int:
+    """Scrape last ~30 days PanARMENIAN culture news into 'city' category."""
+    rss_feeds = [
+        ("hy", "https://stickers.panarmenian.net/feeds/arm/news/culture/"),
+        ("en", "https://stickers.panarmenian.net/feeds/eng/news/culture/"),
+    ]
+    saved = 0
+    cutoff = datetime.now() - timedelta(days=30)
+
+    for lang, url in rss_feeds:
+        try:
+            logger.info(f"PanARMENIAN {lang} RSS: {url}")
+            resp = requests.get(url, timeout=15, headers=HEADERS)
+            resp.raise_for_status()
+            root = ET.fromstring(resp.content)
+
+            for item in root.findall(".//item"):
+                pub_raw = (item.findtext("pubDate") or "").strip()
+                pub_dt = _parse_rss_pubdate(pub_raw)
+                if pub_dt and pub_dt < cutoff:
+                    continue  # հին է,_skip
+
+                title = (item.findtext("title") or "").strip()
+                link = (item.findtext("link") or "").strip()
+                desc = (item.findtext("description") or "").strip()
+
+                if not title or not link:
+                    continue
+
+                # language mapping (երկուսն էլ դնում ենք, որ UI‑ում չկոտրվի)
+                title_hy = title
+                title_en = title
+                content_hy = desc[:500]
+                content_en = desc[:500]
+
+                save_news(
+                    title_hy=title_hy,
+                    title_en=title_en,
+                    content_hy=content_hy,
+                    content_en=content_en,
+                    category="city",          # ← ՄԻԱՅՆ «քաղաքային»
+                    source_url=link,
+                    created_at=pub_dt,        # եթե save_news սա ընդունում է
+                )
+                saved += 1
+
+        except Exception as e:
+            logger.error(f"PanARMENIAN {lang} RSS error: {e}")
+
+    logger.info(f"PanARMENIAN culture→city: {saved} items saved")
+    return saved
 
 # =============================================================================
 # HELPERS
@@ -553,15 +621,8 @@ def run_all_scrapers() -> int:
         logger.error(f"Tomsarkgh scraper failed: {e}")
         total_hy = 0
 
-    # 3) TKT sample events
-    try:
-        total_tkt = scrape_tkt_sample_events()
-        logger.info(f"TKT sample events saved: {total_tkt}")
-    except Exception as e:
-        logger.error(f"TKT scraper failed: {e}")
-        total_tkt = 0
+    total += scrape_panarmenian_culture()  # կմիացնենք՝ արդեն city
 
-    total = total_hy + total_tkt
     logger.info(f"🏁 === NEWS SCRAPER DONE: {total} items ===")
     return total
 
