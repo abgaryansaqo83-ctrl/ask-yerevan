@@ -99,9 +99,14 @@ def map_tkt_category(section_slug: str, title: str, venue: str | None = None) ->
 
 BASE_TOMSARKGH_URL = "https://www.tomsarkgh.am"
 HEADERS = {
-    "User-Agent": "AskYerevanBot/1.0 (+https://askyerevan.am)",
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/122.0 Safari/537.36"
+    ),
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 }
+
 
 # Tomsarkgh EventType IDs → AskYerevan categories
 TOMSARKGH_CATEGORIES = {
