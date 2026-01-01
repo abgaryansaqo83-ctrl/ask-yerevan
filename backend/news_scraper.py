@@ -302,8 +302,8 @@ def _parse_rss_pubdate(text: str) -> datetime | None:
 def scrape_panarmenian_culture() -> int:
     """Scrape last ~30 days PanARMENIAN culture news into 'city' category."""
     rss_feeds = [
-        ("hy", "https://stickers.panarmenian.net/feeds/arm/news/culture/"),
-        ("en", "https://stickers.panarmenian.net/feeds/eng/news/culture/"),
+        ("hy", "https://stickers.panarmenian.net/feeds/arm/news/culture"),
+        ("en", "https://stickers.panarmenian.net/feeds/eng/news/culture"),
     ]
     saved = 0
     cutoff = datetime.now() - timedelta(days=30)
