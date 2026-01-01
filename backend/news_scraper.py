@@ -8,6 +8,7 @@ from typing import List, Optional
 
 import requests
 import xml.etree.ElementTree as ET
+import email.utils as eut
 from bs4 import BeautifulSoup
 
 from urllib.parse import urljoin
@@ -296,7 +297,6 @@ def _parse_rss_pubdate(text: str) -> datetime | None:
         return None
     try:
         dt = eut.parsedate_to_datetime(text)
-        # many RSS dates are timezone-aware, drop tzinfo for simplicity
         if dt.tzinfo:
             dt = dt.astimezone(tz=None).replace(tzinfo=None)
         return dt
@@ -305,10 +305,10 @@ def _parse_rss_pubdate(text: str) -> datetime | None:
 
 
 def scrape_panarmenian_culture() -> int:
-    """Scrape last ~30 days PanARMENIAN culture news into 'city' category."""
+    """Scrape last ~30 days PanARMENIAN news into 'city' category."""
     rss_feeds = [
-        ("hy", "https://stickers.panarmenian.net/feeds/arm/news/culture"),
-        ("en", "https://stickers.panarmenian.net/feeds/eng/news/culture"),
+        ("hy", "https://stickers.panarmenian.net/feeds/arm/news/"),
+        ("en", "https://stickers.panarmenian.net/feeds/eng/news/"),
     ]
     saved = 0
     cutoff = datetime.now() - timedelta(days=30)
@@ -321,10 +321,11 @@ def scrape_panarmenian_culture() -> int:
             root = ET.fromstring(resp.content)
 
             for item in root.findall(".//item"):
+                # pubDate filter – միայն վերջին 30 օրը
                 pub_raw = (item.findtext("pubDate") or "").strip()
                 pub_dt = _parse_rss_pubdate(pub_raw)
                 if pub_dt and pub_dt < cutoff:
-                    continue  # հին է,_skip
+                    continue
 
                 title = (item.findtext("title") or "").strip()
                 link = (item.findtext("link") or "").strip()
@@ -333,7 +334,13 @@ def scrape_panarmenian_culture() -> int:
                 if not title or not link:
                     continue
 
-                # language mapping (երկուսն էլ դնում ենք, որ UI‑ում չկոտրվի)
+                # Enclosure image (optional)
+                enclosure = item.find("enclosure")
+                image_url = None
+                if enclosure is not None:
+                    image_url = enclosure.get("url") or None
+
+                # Լեզվական mapping – հիմա երկու լեզվով նույնը ենք պահում
                 title_hy = title
                 title_en = title
                 content_hy = desc[:500]
@@ -344,16 +351,17 @@ def scrape_panarmenian_culture() -> int:
                     title_en=title_en,
                     content_hy=content_hy,
                     content_en=content_en,
-                    category="city",          # ← ՄԻԱՅՆ «քաղաքային»
+                    image_url=image_url,
+                    category="city",     # բոլորը «Քաղաքային» ենթաբաժին
                     source_url=link,
-                    created_at=pub_dt,        # եթե save_news սա ընդունում է
+                    # created_at=pub_dt,  # եթե save_news սա ընդունում է, կարող ես uncomment անել
                 )
                 saved += 1
 
         except Exception as e:
             logger.error(f"PanARMENIAN {lang} RSS error: {e}")
 
-    logger.info(f"PanARMENIAN culture→city: {saved} items saved")
+    logger.info(f"PanARMENIAN → city: {saved} items saved")
     return saved
 
 # =============================================================================
