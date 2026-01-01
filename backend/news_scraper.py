@@ -150,7 +150,12 @@ def scrape_tkt_event_page(url_hy: str, url_en: str | None, section_slug: str) ->
         soup = BeautifulSoup(resp_hy.text, "html.parser")
 
         title_el = soup.select_one("h1.event-title, h1.product_title, h1")
-        title_hy = _safe_text(title_el)[:200] or "Միջոցառում"
+        title_hy = _safe_text(title_el)[:200]
+
+        if not title_hy:
+            # Վերցնենք առաջին ոչ-դատարկ <h2> կամ .event-title class-ը body-ից
+            alt_title = soup.select_one("h2, .event-title, .product_title")
+            title_hy = _safe_text(alt_title)[:200] or "TKT միջոցառում"
 
         # venue-ը՝ line, որտեղ կա Yerevan / Հայաստան
         full_txt = _full_text(soup)
@@ -161,11 +166,18 @@ def scrape_tkt_event_page(url_hy: str, url_en: str | None, section_slug: str) ->
                 break
 
         # գին
-        m_price = re.search(r"(\d[\d\s]{1,})\s*(AMD|֏|դրամ|դր\.?)?", full_txt)
+        m_price = re.search(r"(\d[\d\s]{1,})(?:[.,]\d{2})?\s*(AMD|֏|դրամ|դր\.?)?", full_txt)
         price_raw = m_price.group(1) if m_price else ""
-        price_hy = price_raw.replace("\xa0", " ").strip()
-        if not price_hy:
-            price_hy = ""
+        price_hy = (
+            price_raw
+            .replace("\xa0", " ")   # nbsp
+            .replace(" ", "")       # եթե ուզում ես «10000»
+            .strip()
+        )
+
+        # 0 / 00 → թողնենք դատարկ, որ frontend-ը «անվճար» գրի
+        if price_hy in ("0", "00", ""):
+            price_hy = "0"
 
         # date/time crude
         m_dt = re.search(r"(\d{2}\.\d{2}\.\d{4})\s+(\d{2}:\d{2})", full_txt)
@@ -173,7 +185,8 @@ def scrape_tkt_event_page(url_hy: str, url_en: str | None, section_slug: str) ->
         eventtime = m_dt.group(2) if m_dt else ""
 
         # description՝ հիմա խորը չենք parse անում
-        content_hy = ""
+        desc_p = soup.select_one("div.event-description p, .event-description p, .product_description p")
+        content_hy = _safe_text(desc_p)
 
         # ՆԿԱՐ
         image_url = _parse_tkt_image(soup)
