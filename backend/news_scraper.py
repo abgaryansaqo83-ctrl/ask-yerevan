@@ -611,20 +611,28 @@ def scrape_tomsarkgh_events() -> int:
 # =============================================================================
 
 def run_all_scrapers() -> int:
-    """Run complete news scraping cycle (Tomsarkgh + TKT)."""
+    """Run complete news scraping cycle (Tomsarkgh + PanARMENIAN)."""
     logger.info("🚀 === NEWS SCRAPER START ===")
+
+    total = 0  # ← initialize
 
     # 1) Tomsarkgh
     try:
         total_hy = scrape_tomsarkgh_events()
+        total += total_hy
     except Exception as e:
         logger.error(f"Tomsarkgh scraper failed: {e}")
-        total_hy = 0
 
-    total += scrape_panarmenian_culture()  # կմիացնենք՝ արդեն city
+    # 2) PanARMENIAN → city
+    try:
+        total_pa = scrape_panarmenian_culture()
+        total += total_pa
+    except Exception as e:
+        logger.error(f"PanARMENIAN scraper failed: {e}")
 
     logger.info(f"🏁 === NEWS SCRAPER DONE: {total} items ===")
     return total
+
 
 if __name__ == "__main__":
     run_all_scrapers()
