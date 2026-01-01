@@ -53,13 +53,17 @@
                 {% endif %}
             </div>
             <div class="news-card-content">
-                <h3 class="event-title">{{ item['title_hy'][:50] }}{% if item['title_hy']|length > 50 %}...{% endif %}</h3>
+                <h3 class="event-title">
+                    {{ item['title_en'][:50] }}{% if item['title_en']|length > 50 %}...{% endif %}
+                </h3>
                 <div class="event-info">
-                    {% if item['event_date'] %}
-                    <span class="event-item">📅 {{ item['event_date'] }}</span>
+                    {% if item['eventdate'] %}
+                    <span class="event-item">📅 {{ item['eventdate'] }}</span>
                     {% endif %}
                     {% if item['venue_hy'] %}
-                    <span class="event-item">📍 {{ item['venue_hy'][:18] }}{% if item['venue_hy']|length > 18 %}...{% endif %}</span>
+                    <span class="event-item">
+                        📍 {{ item['venue_hy'][:18] }}{% if item['venue_hy']|length > 18 %}...{% endif %}
+                    </span>
                     {% endif %}
                     {% if item['price_hy'] %}
                     <span class="event-item price">💰 {{ item['price_hy'] }}</span>
@@ -72,7 +76,7 @@
     {% else %}
     <div class="news-empty">
         <div class="empty-icon">📭</div>
-        <h2>Նորություններ դեռ չկան</h2>
+        <h2>No news yet</h2>
     </div>
     {% endif %}
 </section>
