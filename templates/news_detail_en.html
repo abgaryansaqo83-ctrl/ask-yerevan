@@ -46,7 +46,7 @@
           {% set price_str = news.price_hy|string %}
 
           {# 0 / 00 / 0 AMD → Free #}
-          {% if price_str|trim in ["0", "00"] or price_str|trim.startswith("0 ") %}
+          {% if price_str|trim in ["0", "00"] %}
             <div class="detail-row">
               <span class="label">💰 Price</span>
               <span class="value">Free</span>
