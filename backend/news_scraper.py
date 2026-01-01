@@ -149,7 +149,7 @@ def scrape_tkt_event_page(url_hy: str, url_en: str | None, section_slug: str) ->
         resp_hy.raise_for_status()
         soup = BeautifulSoup(resp_hy.text, "html.parser")
 
-        title_el = soup.find("h1")
+        title_el = soup.select_one("h1.event-title, h1.product_title, h1")
         title_hy = _safe_text(title_el)[:200] or "Միջոցառում"
 
         # venue-ը՝ line, որտեղ կա Yerevan / Հայաստան
@@ -161,8 +161,11 @@ def scrape_tkt_event_page(url_hy: str, url_en: str | None, section_slug: str) ->
                 break
 
         # գին
-        m_price = re.search(r"(\d[\d\s]{2,})\s*(AMD|֏)", full_txt)
-        price_hy = m_price.group(1).replace(" ", "") if m_price else ""
+        m_price = re.search(r"(\d[\d\s]{1,})\s*(AMD|֏|դրամ|դր\.?)?", full_txt)
+        price_raw = m_price.group(1) if m_price else ""
+        price_hy = price_raw.replace("\xa0", " ").strip()
+        if not price_hy:
+            price_hy = ""
 
         # date/time crude
         m_dt = re.search(r"(\d{2}\.\d{2}\.\d{4})\s+(\d{2}:\d{2})", full_txt)
@@ -183,7 +186,7 @@ def scrape_tkt_event_page(url_hy: str, url_en: str | None, section_slug: str) ->
                 resp_en = requests.get(url_en, timeout=15, headers=HEADERS)
                 resp_en.raise_for_status()
                 soup_en = BeautifulSoup(resp_en.text, "html.parser")
-                title_en_el = soup_en.find("h1")
+                title_en_el = soup_en.select_one("h1.event-title, h1.product_title, h1")
                 t_en = _safe_text(title_en_el)
                 if t_en:
                     title_en = t_en[:200]
