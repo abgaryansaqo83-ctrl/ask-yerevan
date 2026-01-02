@@ -153,4 +153,38 @@
   .label, .value { text-align: left; }
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const heroImg = document.getElementById('detail-hero-img');
+  const modal = document.getElementById('image-modal');
+  const modalClose = document.getElementById('image-modal-close');
+
+  if (!heroImg || !modal) return;
+
+  heroImg.addEventListener('click', function () {
+    modal.classList.add('open');
+  });
+
+  // փակել X-ով
+  modalClose.addEventListener('click', function () {
+    modal.classList.remove('open');
+  });
+
+  // փակել modal-ի մութ ֆոնի վրա click անելիս
+  modal.addEventListener('click', function (e) {
+    if (e.target === modal) {
+      modal.classList.remove('open');
+    }
+  });
+
+  // փակել Escape-ով
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      modal.classList.remove('open');
+    }
+  });
+});
+</script>
+
 {% endblock %}
