@@ -13,39 +13,90 @@ from backend.database import save_news
 from backend.utils.logger import logger
 
 
+# =============================================================================
+# CATEGORY LOGIC
+# =============================================================================
+
 def map_tomsarkgh_category(title: str, description: str | None = None) -> str:
     """
-    Map Tomsarkgh event to AskYerevan category:
-    - culture: theater, cinema, dance, concerts
-    - holiday_events: New Year / Christmas / holiday
+    Keyword-based guess for Tomsarkgh events:
+    - holiday_events: Նոր տարի / Christmas / տոնածառ և այլն
+    - culture: theatre, cinema, opera, ballet, dance, etc.
+    - city: some explicitly city‑related things
     - events: everything else
     """
     t = (title or "").lower()
     d = (description or "").lower()
     text = f"{t} {d}"
 
-    # Տարվա տոներ
+    # --- Holiday / seasonal ---
     holiday_keywords = [
-        "new year", "christmas", "xmas",
+        "new year", "new-year", "new year’s", "new years",
+        "christmas", "xmas",
         "նոր տարի", "ամանոր", "տոնածառ", "սուրբ ծնունդ",
+        "christmas market", "christmas fair",
     ]
     if any(k in text for k in holiday_keywords):
         return "holiday_events"
 
-    # Մշակույթ
+    # --- Culture (art) ---
     culture_keywords = [
-        "theatre", "theater", "թատրոն",
-        "performance", "opera", "ballet", "պար", "dance",
-        "cinema", "film", "movie", "կինո",
-        "concert", "համերգ", "symphony", "ensemble",
+        # theatre / performance
+        "theatre", "theater", "թատրոն", "performance",
+        "play", "dramatic", "drama",
+        # opera / ballet / dance
+        "opera", "օպերա", "ballet", "բալետ",
+        "dance show", "dance performance", "պարային",
+        # cinema / films
+        "cinema", "film", "movie", "screening", "premiere", "կինո",
+        # music / concerts of artistic type
+        "symphony", "orchestra", "ensemble", "quartet", "choir",
+        "classical music", "chamber music",
     ]
     if any(k in text for k in culture_keywords):
         return "culture"
 
-    # Լռությամբ՝ միջոցառումներ
-    return "events"
-    
+    # --- Explicitly city-related ---
+    city_keywords = [
+        "city day", "քաղաքի տոն",
+        "city tour", "քաղաքային զբոսանք",
+        "քաղաքապետարան", "city hall",
+    ]
+    if any(k in text for k in city_keywords):
+        return "city"
 
+    # Default guess
+    return "events"
+
+
+def final_category_from_source(
+    base_category: str, title: str, description: str | None
+) -> str:
+    """
+    Combine EventType‑ից եկած base_category + keyword‑based guessed category.
+
+    Ցանկությունդ էր՝
+    - 41 / seasonal → holiday_events
+    - 1,6,12,21 → culture միայն արվեստի համար
+    - 7 → city
+    - 16,31,54,10,2 և մնացածը → events (generic միջոցառումներ)
+    """
+    guessed = map_tomsarkgh_category(title, description)
+
+    # 1) Seasonal միշտ holiday_events
+    if base_category == "holiday_events" or guessed == "holiday_events":
+        return "holiday_events"
+
+    # 2) Մաքուր արվեստի EventType-եր՝ միշտ culture
+    if base_category == "culture":
+        return "culture"
+
+    # 3) Քաղաքային
+    if base_category == "city":
+        return "city"
+
+    # 4) Մնացածը՝ events (կրկես, stand-up, club, pop, concerts, uncategorized)
+    return "events"
 
 
 # =============================================================================
@@ -62,20 +113,22 @@ HEADERS = {
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 }
 
-# Tomsarkgh EventType IDs → AskYerevan categories
+# Tomsarkgh EventType IDs → base AskYerevan categories
+# Հստակ դասավորությունդ.
 TOMSARKGH_CATEGORIES = {
     16: "events",         # Կրկես
     54: "events",         # Stand‑up
     31: "events",         # Ակումբ/փաբ
-    21: "events",         # Պար
-    6:  "events",         # Կինո
-    41: "holiday_events", # Տարվա տոներ (start point)
+    10: "events",         # Պոպ
+    2:  "events",         # Կոնցերտ
+    41: "holiday_events", # Տարվա տոներ (seasonal only)
     1:  "culture",        # Թատրոն
+    6:  "culture",        # Կինո
     12: "culture",        # Օպերա‑բալետ
-    2:  "culture",        # Կոնցերտ
-    10: "culture",        # Պոպ
+    21: "culture",        # Պար
     7:  "city",           # Քաղաքային
 }
+
 
 # =============================================================================
 # HELPERS
@@ -223,7 +276,11 @@ def _parse_event_description(soup: BeautifulSoup) -> str:
     return text[:4000]
 
 
-def scrape_tomsarkgh_event(url: str, category: str) -> bool:
+def scrape_tomsarkgh_event(
+    url: str,
+    base_category: str,
+    event_type: Optional[int] = None,
+) -> bool:
     """Scrape single event page (HY + optional EN) and save to DB."""
     try:
         logger.info(f"🎫 Scraping event: {url}")
@@ -272,9 +329,8 @@ def scrape_tomsarkgh_event(url: str, category: str) -> bool:
         except Exception:
             logger.debug(f"EN version unavailable for {url}")
 
-        # 🔽 category argument-ը գալիս է TOMSARKGH_CATEGORIES-ից,
-        # բայց վերջնականը ճշգրտում ենք ըստ վերնագրի/տեքստի.
-        final_category = map_tomsarkgh_category(title_hy, content_hy)
+        # ---------- CATEGORY FINAL ----------
+        final_category = final_category_from_source(base_category, title_hy, content_hy)
 
         # ---------- SAVE ----------
         save_news(
@@ -301,6 +357,7 @@ def scrape_tomsarkgh_event(url: str, category: str) -> bool:
         logger.error(f"❌ Event error: {url} — {e}")
         return False
 
+
 # =============================================================================
 # MAIN TOMSARKGH SCRAPER — FULL FLOW
 # =============================================================================
@@ -310,8 +367,8 @@ def scrape_tomsarkgh_events() -> int:
     logger.info("▶️ Starting Tomsarkgh scraper (event pages)")
     total_saved = 0
 
-    for event_type, category in TOMSARKGH_CATEGORIES.items():
-        logger.info(f"📂 Category={category}, type={event_type}")
+    for event_type, base_category in TOMSARKGH_CATEGORIES.items():
+        logger.info(f"📂 Category={base_category}, type={event_type}")
         links = fetch_tomsarkgh_events(event_type)
 
         if not links:
@@ -320,11 +377,11 @@ def scrape_tomsarkgh_events() -> int:
 
         saved_for_type = 0
         for url in links:
-            if scrape_tomsarkgh_event(url, category):
+            if scrape_tomsarkgh_event(url, base_category, event_type=event_type):
                 saved_for_type += 1
 
         logger.info(
-            f"✅ {category} (type={event_type}): {saved_for_type}/{len(links)} saved"
+            f"✅ {base_category} (type={event_type}): {saved_for_type}/{len(links)} saved"
         )
         total_saved += saved_for_type
 
@@ -340,7 +397,7 @@ def run_all_scrapers() -> int:
     """Run complete news scraping cycle (Tomsarkgh + PanARMENIAN)."""
     logger.info("🚀 === NEWS SCRAPER START ===")
 
-    total = 0  # ← initialize
+    total = 0
 
     # 1) Tomsarkgh
     try:
@@ -349,11 +406,9 @@ def run_all_scrapers() -> int:
     except Exception as e:
         logger.error(f"Tomsarkgh scraper failed: {e}")
 
-
     logger.info(f"🏁 === NEWS SCRAPER DONE: {total} items ===")
     return total
 
 
 if __name__ == "__main__":
     run_all_scrapers()
-
