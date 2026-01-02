@@ -5,7 +5,9 @@
 <article class="detail-container">
   {% if news.image_url %}
     <div class="detail-hero">
-      <img src="{{ news.image_url }}" alt="{{ news.title_hy }}" class="detail-hero-img">
+      <img src="{{ news.image_url }}" alt="{{ news.title_hy }}"
+           class="detail-hero-img"
+           id="detail-hero-img">
     </div>
   {% endif %}
 
