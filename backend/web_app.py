@@ -143,6 +143,13 @@ async def news_detail_hy(request: Request, news_id: int):
     news_item = get_news_by_id(news_id)
     if not news_item:
         return RedirectResponse(url="/hy/news")
+
+    # category-ն վերցնենք item-ից
+    category = news_item.get("category") if isinstance(news_item, dict) else getattr(news_item, "category", None)
+    back_url = "/hy/news"
+    if category:
+        back_url = f"/hy/news?category={category}"
+
     return templates.TemplateResponse(
         "news_detail_hy.html",
         {
@@ -150,6 +157,7 @@ async def news_detail_hy(request: Request, news_id: int):
             "lang": "hy",
             "is_winter_theme": is_winter_theme_enabled(),
             "news": news_item,
+            "back_url": back_url,
         },
     )
 
@@ -159,6 +167,12 @@ async def news_detail_en(request: Request, news_id: int):
     news_item = get_news_by_id(news_id)
     if not news_item:
         return RedirectResponse(url="/en/news")
+
+    category = news_item.get("category") if isinstance(news_item, dict) else getattr(news_item, "category", None)
+    back_url = "/en/news"
+    if category:
+        back_url = f"/en/news?category={category}"
+
     return templates.TemplateResponse(
         "news_detail_en.html",
         {
@@ -166,6 +180,7 @@ async def news_detail_en(request: Request, news_id: int):
             "lang": "en",
             "is_winter_theme": is_winter_theme_enabled(),
             "news": news_item,
+            "back_url": back_url,
         },
     )
 
