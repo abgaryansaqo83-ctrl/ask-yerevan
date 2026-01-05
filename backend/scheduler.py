@@ -16,7 +16,6 @@ from .jobs import (
     send_morning_broadcast,
     send_holiday_events,
     send_next_day_events,
-    send_traffic_report,
 )
 from .utils.logger import setup_logger
 from config.settings import settings
