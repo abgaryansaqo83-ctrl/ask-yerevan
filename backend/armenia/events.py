@@ -42,14 +42,21 @@ CATEGORY_LABELS_HY: dict[EventCategory, str] = {
 
 async def get_events_by_category(
     category: str,
-    limit: int = 3,
-) -> str:
+    limit: int = 2,
+):
     """
-    /menu կոճակների համար event-ներ է բերում.
-    1) Նախ փորձում է գտնել AskYerevan news աղյուսակից (DB-first)
-    2) Եթե DB-ում ոչինչ չկա, fallback է անում LIVE Tomsarkgh scraper-ին
+    /menu կոճակների համար event-ներ է բերում որպես structured list.
+    Վերադարձնում է list[dict] որտեղ ամեն dict ունի.
+      {
+        "title": ...,
+        "venue": ...,
+        "datetime": ...,
+        "price": ...,
+        "image_url": ...,
+        "more_url": ...,
+        "source": "db" | "live",
+      }
     """
-    # Մարդկային label-ներ header-ի համար
     label_map = {
         "film": "Կինո",
         "theatre": "Թատրոն",
@@ -59,7 +66,6 @@ async def get_events_by_category(
     }
     label = label_map.get(category, "Իրադարձություններ")
 
-    # ---------- 1) Փորձ DB-ից (news աղյուսակ) ----------
     today = datetime.date.today().isoformat()
 
     def _build_db_filter(category_key: str) -> dict:
@@ -122,6 +128,9 @@ async def get_events_by_category(
 
     filtered = [r for r in future_rows if _row_matches_keywords(r)]
 
+    results: list[dict] = []
+
+    # ===== 1) DB-FIRST =====
     if filtered:
         def _sort_key(row: dict):
             d = row.get("eventdate") or ""
@@ -133,19 +142,6 @@ async def get_events_by_category(
         k = min(limit, len(filtered))
         chosen = random.sample(filtered, k=k)
 
-        header = f"🎭 {label} — {k} տարբերակ (AskYerevan կայքից)\n\n"
-
-        lines: list[str] = []
-        for row in chosen:
-            title = row.get("title_hy") or "Անվերնագիր միջոցառում"
-            venue = row.get("venue_hy") or "Վայր նշված չէ"
-            date_str = row.get("eventdate") or ""
-            time_str = row.get("eventtime") or ""
-            nice_time = f"{date_str} {time_str}".strip()
-            price = row.get("price_hy") or "գինը նշված չէ"
-
-            lines.append(_format_event_line(title, venue, nice_time, price))
-
         more_link_map = {
             "film": "/hy/news?category=culture",
             "theatre": "/hy/news?category=culture",
@@ -154,13 +150,32 @@ async def get_events_by_category(
             "events": "/hy/news?category=events",
         }
         more_url = more_link_map.get(category, "/hy/news")
-        lines.append(
-            f"🔗 Ավելին AskYerevan կայքում՝ https://ask-yerevan.onrender.com{more_url}"
-        )
 
-        return header + "\n".join(lines)
+        for row in chosen:
+            title = row.get("title_hy") or "Անվերնագիր միջոցառում"
+            venue = row.get("venue_hy") or "Վայր նշված չէ"
+            date_str = row.get("eventdate") or ""
+            time_str = row.get("eventtime") or ""
+            nice_time = f"{date_str} {time_str}".strip()
+            price = row.get("price_hy") or "գինը նշված չէ"
+            image_url = row.get("image_url")
 
-    # ---------- 2) Fallback → LIVE Tomsarkgh ----------
+            results.append(
+                {
+                    "title": title,
+                    "venue": venue,
+                    "datetime": nice_time,
+                    "price": price,
+                    "image_url": image_url,
+                    "more_url": f"https://ask-yerevan.onrender.com{more_url}",
+                    "source": "db",
+                    "label": label,
+                }
+            )
+
+        return results
+
+    # ===== 2) LIVE FALLBACK =====
     live_category_map = {
         "film": "cinema",
         "theatre": "theatre",
@@ -170,12 +185,11 @@ async def get_events_by_category(
     }
     kind = live_category_map.get(category)
     if kind is None:
-        return f"😕 Այս պահին {label.lower()} ուղղությամբ միջոցառումներ չեն գտնվել։"
+        return []
 
     events = fetch_live_events_for_category(kind, limit=20)
-
     if not events:
-        return f"😕 Այս պահին {label.lower()} ուղղությամբ միջոցառումներ չեն գտնվել։"
+        return []
 
     today_date = datetime.date.today()
     future_events: list[dict] = []
@@ -187,19 +201,11 @@ async def get_events_by_category(
         if d >= today_date:
             future_events.append(ev)
 
-    if future_events:
-        source_list = future_events
-        day_label = "մոտակա օրերից"
-    else:
-        source_list = events
-        day_label = "վերջին միջոցառումներից"
+    source_list = future_events or events
 
     k = min(limit, len(source_list))
     chosen = random.sample(source_list, k=k)
 
-    header = f"🎭 {label} — {k} տարբերակ ({day_label}, LIVE)\n\n"
-
-    lines = []
     for ev in chosen:
         title = ev.get("title") or "Անվերնագիր միջոցառում"
         venue = ev.get("place") or "Վայր նշված չէ"
@@ -208,10 +214,18 @@ async def get_events_by_category(
         nice_time = f"{date_str} {time_str}".strip()
         price = ev.get("price") or "գինը նշված չէ"
 
-        lines.append(_format_event_line(title, venue, nice_time, price))
+        results.append(
+            {
+                "title": title,
+                "venue": venue,
+                "datetime": nice_time,
+                "price": price,
+                "image_url": None,
+                "more_url": "https://ask-yerevan.onrender.com/hy/news",
+                "source": "live",
+                "label": label,
+            }
+        )
 
-    lines.append(
-        "🔗 Ավելին AskYerevan կայքում՝ https://ask-yerevan.onrender.com/hy/news"
-    )
+    return results
 
-    return header + "\n".join(lines)
