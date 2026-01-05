@@ -39,7 +39,7 @@ from backend.database import (
     count_similar_listings,
     init_db,
 )
-from backend.armenia.events import get_events_by_category
+from backend.armenia.events import get_events_by_category, _format_event_line
 
 init_db()
 
@@ -231,9 +231,12 @@ async def cmd_menu(message: Message):
 
 @dp.callback_query(F.data.startswith("menu:"))
 async def handle_menu_callback(callback: CallbackQuery):
-    kind = callback.data.split(":", 1)[1]
-    await callback.answer()
+    try:
+        await callback.answer()
+    except Exception:
+        pass  # եթե արդեն ուշ է, Telegram-ը կարող է գցել error, բայց դա crit չէ
 
+    kind = callback.data.split(":", 1)[1]
     events = await get_events_by_category(kind, limit=2)
 
     if not events:
