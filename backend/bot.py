@@ -63,6 +63,19 @@ bot = Bot(
 )
 dp = Dispatcher()
 
+def build_main_keyboard() -> ReplyKeyboardMarkup:
+    return ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text="🌆 Քաղաքում ինչ կա՞")],
+            [KeyboardButton(text="🎟 Միջոցառումների մենյու")],
+            [KeyboardButton(text="💬 Հարց ադմինին")],
+            [KeyboardButton(text="🌐 Մեր վեբ կայքը")],
+        ],
+        resize_keyboard=True,
+        one_time_keyboard=False,
+        input_field_placeholder="Ընտրի՛ր կոճակ կամ գրի՛ քո հարցը…",
+    )
+
 # ========== FSM STATES ==========
 
 class LanguageForm(StatesGroup):
@@ -124,16 +137,18 @@ async def handle_language_choice(message: Message, state: FSMContext):
 async def cmd_start(message: Message, state: FSMContext):
     lang = detect_lang(message)
 
-    await message.answer(get_text("start", lang))
-
-    text = (
-        "Բարև, ես AskYerevan բոտն եմ 🙌\n"
-        "Խոսում ենք Երևանի մասին՝ հետաքրքիր վայրեր և այլն։\n\n"
-        "Հիմա գրի՛ քո հարցը՝ հատկապես եթե փնտրում ես ռեստորան, սրճարան, փաբ, "
-        "հավես տեղ ընկերներով նստելու, թատրոն, կինոթատրոն կամ որևէ վայր Հայաստանում, "
-        "ես էլ կփորձեմ գտնել ու օգնել ինչով կարող եմ։"
+    await message.answer(
+        get_text("start", lang),
+        reply_markup=build_main_keyboard(),
     )
-    await message.answer(text)
+
+    await message.answer(
+        "🌆 «Քաղաքում ինչ կա՞» — գրի՛ քո հարցը Երևանի մասին, հարցականով 🙂\n"
+        "🎟 «Միջոցառումների մենյու» — ընտրի՛ր, թե ինչ տեսակ event ես ուզում տեսնել․\n"
+        "💬 «Հարց ադմինին» — գրի՛ հարցդ կամ առաջարկդ, և հաղորդագրությունը կուղարկվի ադմինին՝ "
+        "առանց խմբում հրապարակվելու։\n"
+        "🌐 «Մեր վեբ կայքը» — բացի AskYerevan կայքը։"
+    )
 
     await state.set_state(UserQuestion.waiting_for_question)
 
@@ -166,12 +181,26 @@ async def process_admin_message(message: Message, state: FSMContext):
         f"🆔 User ID: {user.id}\n"
         f"💬 From chat: {message.chat.id}\n\n"
     )
+
     await bot.send_message(
         admin_chat_id,
         header + (message.text or "⬜️ (առանց տեքստի)"),
     )
-    await message.answer("Շնորհակալություն, ձեր հաղորդագրությունը ուղարկվեց ադմինին ✅")
+
+    # Խմբից ջնջում ենք հարցը, որ չմնա publishված
+    try:
+        if message.chat.type in ("group", "supergroup"):
+            await message.delete()
+    except Exception:
+        pass
+
+    await message.answer(
+        "Շնորհակալություն, ձեր հաղորդագրությունը ուղարկվեց ադմինին ✅\n"
+        "Այն չի հրապարակվել խմբում։"
+    )
+
     await state.clear()
+
 
 # ========== /menu command ==========
 
@@ -404,7 +433,7 @@ async def handle_user_question(message: Message, state: FSMContext):
 
     if "?" not in text and "՞" not in text:
         await message.answer(
-            "Եթե ուզում ես, որ անհատական քեզ օգնի բոտը, գրիր հարցդ հարցականով 🙂"
+            "Գրի՛ քո հարցը Երևանի մասին, հարցականով 🙂"
         )
         return
 
@@ -712,7 +741,7 @@ async def cmd_sqlquery(message: Message):
             rows = cur.fetchall()
             
             if not rows:
-                await message.answer("📊 Արդյունք՝ դատարկ (0 տող)")
+                await message.answer("📊 Արդյունքը՝ դատարկ է (0 տող)")
                 conn.close()
                 return
             
@@ -744,6 +773,42 @@ async def main_router(message: Message):
         f"thread_id={getattr(message, 'message_thread_id', None)}, "
         f"text={message.text!r}"
     )
+
+    text_raw = (message.text or "").strip()
+    text = text_raw.lower()
+
+    # 1) Ի՞նչ կա քաղաքում  → AI բոտ
+    if text_raw == "🌆 Քաղաքում ինչ կա՞":
+        await message.answer(
+            "Գրի՛ քո հարցը Երևանի մասին, հարցականով 🙂"
+            "Օրինակ՝ «Ճաշելու ի՞նչ հարմար սրճարան Ավանի մոտ», "
+            "կամ «Ի՞նչ հետաքրքիր համերգներ կան այսօր»։"
+        )
+        await message.answer("Պարզապես գրի՛ հարցդ այստեղ՝ որպես սովորական մեսիջ։")
+        await UserQuestion.waiting_for_question.set()
+        return
+
+    # 2) Միջոցառումների մենյու  → inline մենյու (կինո, թատրոն, փաբ…)
+    if text_raw == "🎟 Միջոցառումների մենյու":
+        await message.answer("Ընտրի՛ր, ի՞նչ տեսակ event ես ուզում տեսնել․")
+        await cmd_menu(message)
+        return
+
+    # 3) Հարց ադմինին  → /admin flow
+    if text_raw == "💬 Հարց ադմինին":
+        await message.answer(
+            "Գրի՛ քո հարցը կամ առաջարկը, և այն կուղարկվի ադմինին անձնական նամակով, "
+            "առանց խմբում հրապարակվելու։"
+        )
+        await AdminForm.waiting_for_message.set()
+        return
+
+    # 4) Մեր վեբ կայքը  → ուղիղ լինկ
+    if text_raw == "🌐 Մեր վեբ կայքը":
+        await message.answer(
+            f"🌐 Մեր վեբ կայքը՝ {BOT_SITE_URL}"
+        )
+        return
 
     if message.text and message.text.startswith("/"):
         return
