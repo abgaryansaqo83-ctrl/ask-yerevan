@@ -223,7 +223,7 @@ async def cmd_menu(message: Message):
     )
 
     await message.answer(
-        " ",
+        "🎟 Միջոցառումների մենյու",
         reply_markup=keyboard,
     )
 
@@ -767,7 +767,7 @@ async def cmd_sqlquery(message: Message):
 # ========== FALLBACK MESSAGE HANDLER ==========
 
 @dp.message()
-async def main_router(message: Message):
+async def main_router(message: Message, state: FSMContext):
     logger.info(
         f"msg chat_id={message.chat.id}, "
         f"thread_id={getattr(message, 'message_thread_id', None)}, "
@@ -784,8 +784,7 @@ async def main_router(message: Message):
             "Օրինակ՝ «Ճաշելու ի՞նչ հարմար սրճարան կա Ավանին մոտ», "
             "կամ «Ի՞նչ հետաքրքիր համերգներ կան այսօր»։"
         )
-        await message.answer("Պարզապես գրի հարցդ այստեղ՝ որպես սովորական մեսիջ։")
-        await UserQuestion.waiting_for_question.set()
+        await state.set_state(UserQuestion.waiting_for_question)
         return
 
     # 2) Միջոցառումների մենյու  → inline մենյու (կինո, թատրոն, փաբ…)
@@ -800,7 +799,7 @@ async def main_router(message: Message):
             "Գրի՛ քո հարցը կամ առաջարկը, և այն կուղարկվի ադմինին անձնական նամակով, "
             "առանց խմբում հրապարակվելու։"
         )
-        await AdminForm.waiting_for_message.set()
+        await state.set_state(AdminForm.waiting_for_message)
         return
 
     # 4) Մեր վեբ կայքը  → ուղիղ լինկ
