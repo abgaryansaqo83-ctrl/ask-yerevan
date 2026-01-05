@@ -40,6 +40,7 @@ from backend.database import (
     init_db,
 )
 from backend.armenia.events import get_events_by_category, _format_event_line
+from transliterate import translit
 
 init_db()
 
@@ -429,20 +430,47 @@ async def on_chat_member_update(event: ChatMemberUpdated, state: FSMContext):
 
 # ========== /start-ից հետո AI հարց ==========
 
+from transliterate import translit  # մի անգամ ավելացնել imports-ում
+
+def looks_like_armenian_translit(text: str) -> bool:
+    t = text.lower()
+    # Եթե արդեն հայատառ կա, ոչինչ չենք անում
+    if any("ա" <= ch <= "ֆ" for ch in t):
+        return False
+    # Armenian translit-ի ամենահաճախ հանդիպող patterns
+    keywords = [
+        "barev", "barew", "barev dzez",
+        "inch", "inchka", "inch ka", "inchka e",
+        "yerevan", "erevan", "ervan",
+        "jan", "aj", "shnorh", "shnorakal", "merci", "vay", "lav em",
+        "srt", "sirum", "friends", "toxi", "qayl", "utelu", "xanut"
+    ]
+    return any(k in t for k in keywords)
+
+
 @dp.message(UserQuestion.waiting_for_question)
 async def handle_user_question(message: Message, state: FSMContext):
-    text = (message.text or "").strip()
+    raw = (message.text or "").strip()
     lang = detect_lang(message)
 
-    if "?" not in text and "՞" not in text:
-        await message.answer(
-            "Գրի՛ քո հարցը Երևանի մասին, հարցականով 🙂"
-        )
+    if "?" not in raw and "՞" not in raw:
+        await message.answer("Գրի՛ քո հարցը Հայաստանի կամ Երևանի մասին, բայց հարցականով 🙂")
         return
+
+    text = raw
+
+    # Եթե լատինատառ Armenian է, փորձենք հայատառ դարձնել և ասել, որ սա hy է
+    if looks_like_armenian_translit(raw):
+        try:
+            text = translit(raw, 'hy')  # "barev inch ka" → "բարեւ ինչ կա"
+            lang = "hy"
+        except Exception:
+            pass  # եթե translit-ը տապալի, թողնում ենք raw
 
     reply = await generate_reply(text, lang=lang)
     await message.answer(reply)
     await state.clear()
+
 
 # ========== Սովորական տեքստեր (fallback router) + /publish ==========
 
