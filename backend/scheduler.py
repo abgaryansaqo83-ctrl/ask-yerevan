@@ -39,14 +39,6 @@ def create_scheduler() -> AsyncIOScheduler:
         replace_existing=True,
     )
 
-    # 08:30 — Խցանումներ (երկուշաբթի–ուրբաթ)
-    scheduler.add_job(
-        send_traffic_report,
-        CronTrigger(day_of_week="mon-fri", hour=8, minute=30, timezone=TIMEZONE),
-        id="traffic_report",
-        replace_existing=True,
-    )
-
     # ================ ԵՐԿՈՒՇԱԲԹԻ ===================
 
     # 08:30 — տարվա տոներ
