@@ -184,11 +184,11 @@ async def cmd_menu(message: Message):
                 InlineKeyboardButton(text="🎭 Թատրոն", callback_data="menu:theatre"),
             ],
             [
-                InlineKeyboardButton(text="🎼 Օպերա", callback_data="menu:opera"),
-                InlineKeyboardButton(text="🍻 Փաբ / Փարթի", callback_data="menu:party"),
+                InlineKeyboardButton(text="🍻 Փաբ / ռեստորան", callback_data="menu:pub"),
+                InlineKeyboardButton(text="🎤 Stand‑up", callback_data="menu:standup"),
             ],
             [
-                InlineKeyboardButton(text="🎉 Event‑ներ", callback_data="menu:festival"),
+                InlineKeyboardButton(text="🎉 Միջոցառումներ", callback_data="menu:events"),
             ],
         ]
     )
