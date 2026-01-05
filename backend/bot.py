@@ -205,8 +205,35 @@ async def handle_menu_callback(callback: CallbackQuery):
     kind = callback.data.split(":", 1)[1]
     await callback.answer()
 
-    text = await get_events_by_category(kind)
-    await callback.message.answer(text)
+    events = await get_events_by_category(kind, limit=2)
+
+    if not events:
+        await callback.message.answer("😕 Այս պահին համապատասխան միջոցառումներ չեն գտնվել։")
+        return
+
+    for ev in events:
+        caption = _format_event_line(
+            ev["title"],
+            ev["venue"],
+            ev["datetime"],
+            ev["price"],
+        ) + f"\n\n🔗 Ավելին՝ {ev['more_url']}"
+
+        image_url = ev.get("image_url")
+
+        # Եթե ունենք նկար DB-ից, ուղարկում ենք որպես photo, հակառակ դեպքում՝ մաքուր տեքստ
+        if image_url:
+            try:
+                await callback.message.answer_photo(
+                    photo=image_url,
+                    caption=caption,
+                )
+            except Exception:
+                # եթե նկարը չբեռնվի, fallback text-only
+                await callback.message.answer(caption)
+        else:
+            await callback.message.answer(caption)
+
 
 # ========== /site command ==========
 
