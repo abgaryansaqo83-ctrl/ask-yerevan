@@ -40,24 +40,6 @@ async def send_morning_broadcast():
     finally:
         await bot.session.close()
 
-
-async def send_traffic_report():
-    """
-    Երկուշաբթի–ուրբաթ 08:30՝ ճանապարհների խցանման հաղորդագրություն։
-    """
-    bot = _get_bot()
-    chat_id = _get_group_chat_id()
-
-    try:
-        text = await get_traffic_status(settings.GOOGLE_DIRECTIONS_KEY)
-        await bot.send_message(chat_id, text)
-        logger.info("🚗 Traffic report sent to group")
-    except Exception as e:
-        logger.error(f"❌ Traffic report failed: {e}")
-    finally:
-        await bot.session.close()
-
-
 # ================ 2. Երկուշաբթի՝ տարվա տոները (08:30) ================
 
 async def send_holiday_events():
