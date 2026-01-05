@@ -81,7 +81,7 @@ def _scrape_one_tomsarkgh_event(url: str) -> Dict[str, Any] | None:
             price_text = candidates[0]
 
         if not price_text:
-        price_text = "գինը նշված չէ"
+            price_text = "գինը նշված չէ"
 
         return {
             "title": title,
