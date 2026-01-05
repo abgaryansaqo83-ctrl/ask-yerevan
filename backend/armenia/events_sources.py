@@ -80,8 +80,17 @@ def _scrape_one_tomsarkgh_event(url: str) -> Dict[str, Any] | None:
             # վերցնում ենք ամենաառաջինը
             price_text = candidates[0]
 
-    if not price_text:
+        if not price_text:
         price_text = "գինը նշված չէ"
+
+    return {
+        "title": title,
+        "date": date_part,
+        "time": time_part,
+        "place": place,
+        "price": price_text,
+        "url": url,
+    }
 
     return {
         "price": price_text,
