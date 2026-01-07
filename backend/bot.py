@@ -54,7 +54,7 @@ def detect_lang(message: Message) -> str:
         return "en"
     return "hy"
 
-
+USER_LOCATIONS: dict[int, str] = {}  # user_id -> "lat,lon"
 BOT_SITE_URL = "https://ask-yerevan.onrender.com/hy"
 OWNER_ID = int(os.getenv("OWNER_ID", "0"))
 
@@ -71,6 +71,7 @@ def build_main_keyboard() -> ReplyKeyboardMarkup:
             [KeyboardButton(text="🎟 Միջոցառումների մենյու")],
             [KeyboardButton(text="💬 Հարց ադմինին")],
             [KeyboardButton(text="🌐 Մեր վեբ կայքը")],
+            [KeyboardButton(text="📍 Ուղարկել դիրքս", request_location=True)],
         ],
         resize_keyboard=True,
         one_time_keyboard=False,
@@ -472,6 +473,21 @@ async def handle_user_question(message: Message, state: FSMContext):
     await state.clear()
 
 
+@dp.message(F.location)
+async def handle_location(message: Message):
+    """Պահում ենք user-ի վերջին դիրքը recommendations-ի համար."""
+    loc = message.location
+    if not loc:
+        return
+
+    user_id = message.from_user.id
+    USER_LOCATIONS[user_id] = f"{loc.latitude},{loc.longitude}"
+
+    await message.answer(
+        "Ձեր դիրքը պահպանվեց ✅\n"
+        "Հիմա երբ հարցնես, օրինակ՝ «որտե՞ղ գնանք սրճարան», կփորձեմ խորհուրդ տալ ավելի մոտ վայրեր։"
+    )
+
 # ========== Սովորական տեքստեր (fallback router) + /publish ==========
 
 SPAM_POLITICS_KEYWORDS = [
@@ -837,6 +853,13 @@ async def main_router(message: Message, state: FSMContext):
     if text_raw == "🌐 Մեր վեբ կայքը":
         await message.answer(
             f"🌐 Մեր վեբ կայքը՝ {BOT_SITE_URL}"
+        )
+        return
+
+    if text_raw == "📍 Ուղարկել դիրքս":
+        await message.answer(
+            "Սեղմի՛ր նույն անունով կոճակը ստեղնաշարի վրա, Telegram-ը կառաջարկի "
+            "ուղարկել դիրքդ (Share location)."
         )
         return
 
