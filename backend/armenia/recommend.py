@@ -38,76 +38,104 @@ RECOMMEND_EMOJIS = {
 
 
 async def get_recommendations(
-    query: str, 
+    query: str,
     api_key: str = None,
-    limit: int = 2
+    limit: int = 2,
+    user_location: Optional[str] = None,  # "lat,lon"
 ) -> List[str]:
     """
     AI + Google Places recommendations.
-    1-2 տարբերակ՝ rating > 4.0, open_now, near center.
+    1-2 տարբերակ՝ rating > 4.0, open_now.
+    Նախ փորձում է user_location-ից, հետո fallback է անում Երևանի կենտրոնից ավելի լայն շառավիղով։
     """
     api_key = api_key or settings.GOOGLE_MAPS_API_KEY
-    
+
     if not api_key:
         return ["🍽️ Recommendation service temporarily unavailable 😅"]
-    
+
     category = _detect_category(query)
     if not category:
-        return ["🤔 Ճշտիր, ինչ տեսակի վայր ես փնտրում (սնունդ, սրճարան, բար, ռոք...)"]
-    
+        return [
+            "🤔 Մոտիկ վայր առաջարկելու համար գրի՛, թե ինչ տեսակի տեղ ես փնտրում "
+            "(սրճարան, ռեստորան, փաբ...)"
+        ]
+
     emoji = RECOMMEND_EMOJIS.get(category, "📍")
-    
+
     async with aiohttp.ClientSession() as session:
         try:
-            places = await _search_places(session, category, api_key)
+            places: List[dict] = []
+
+            # 1) Նախ՝ user_location-ից, եթե ունենք
+            if user_location:
+                places = await _search_places(
+                    session, category, api_key, location=user_location, radius=3000, limit=limit
+                )
+
+            # 2) Եթե չգտավ կամ user_location չունենք → fallback Երևանի կենտրոնից
+            if not places:
+                places = await _search_places(
+                    session,
+                    category,
+                    api_key,
+                    location=YEREVAN_CENTER,
+                    radius=7000,  # մի քիչ ավելի լայն շրջան
+                    limit=limit,
+                )
+
             recommendations = []
-            
             for place in places[:limit]:
                 rec_text = _format_recommendation(place, emoji)
                 recommendations.append(rec_text)
-            
-            return recommendations if recommendations else [
-                f"{emoji} Ցավակցություն, {category}-ի լավ տարբերակներ չգտնվեցին։"
-            ]
-            
+
+            return (
+                recommendations
+                if recommendations
+                else [f"{emoji} Այս պահին լավ {category}-ներ չգտնվեցին մոտակայքում։"]
+            )
+
         except Exception as e:
             logger.error(f"Recommendations failed: {e}")
-            return [f"{emoji} Ռեկոմենդացիաների սերվիսը ժամանակավոր անհասանելի ա 😅"]
+            return [f"{emoji} Ռեկոմենդացիաների սերվիսը ժամանակավոր անհասանելի է 😅"]
 
 
 async def _search_places(
-    session: aiohttp.ClientSession, 
-    category: str, 
-    api_key: str
+    session: aiohttp.ClientSession,
+    category: str,
+    api_key: str,
+    location: str,
+    radius: int = 3000,
+    limit: int = 3,
 ) -> List[dict]:
-    """Google Places Nearby Search."""
+    """Google Places Nearby Search arbitrary location-ից."""
     url = (
         f"{GOOGLE_PLACES_BASE}/nearbysearch/json?"
-        f"location={YEREVAN_CENTER}"
-        f"&radius=3000"
+        f"location={location}"
+        f"&radius={radius}"
         f"&type={category}"
-        f"&keyword=yer&open_now=true"
+        f"&open_now=true"
         f"&key={api_key}"
     )
-    
+
     async with session.get(url) as resp:
         data = await resp.json()
         places = []
-        
+
         if "results" in data:
             for place in data["results"]:
                 rating = place.get("rating", 0)
                 if rating >= 4.0:
-                    places.append({
-                        "name": place["name"],
-                        "rating": rating,
-                        "address": place.get("vicinity", ""),
-                        "price_level": place.get("price_level", 1),
-                        "types": place.get("types", []),
-                    })
-        
-        # Sort by rating desc
-        return sorted(places, key=lambda x: x["rating"], reverse=True)[:3]
+                    places.append(
+                        {
+                            "name": place["name"],
+                            "rating": rating,
+                            "address": place.get("vicinity", ""),
+                            "price_level": place.get("price_level", 1),
+                            "types": place.get("types", []),
+                        }
+                    )
+
+        return sorted(places, key=lambda x: x["rating"], reverse=True)[:limit]
 
 
 def _detect_category(query: str) -> Optional[str]:
