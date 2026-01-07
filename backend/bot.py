@@ -41,6 +41,7 @@ from backend.database import (
 )
 from backend.armenia.events import get_events_by_category, _format_event_line
 from transliterate import translit
+from backend.bot import USER_LOCATIONS
 
 init_db()
 
@@ -455,21 +456,35 @@ async def handle_user_question(message: Message, state: FSMContext):
     lang = detect_lang(message)
 
     if "?" not in raw and "՞" not in raw:
-        await message.answer("Գրի՛ քո հարցը Հայաստանի կամ Երևանի մասին, բայց հարցականով 🙂")
+        await message.answer("Գրի՛ քո հարցը Երևանի մասին, հարցականով 🙂")
         return
 
     text = raw
 
-    # Եթե լատինատառ Armenian է, փորձենք հայատառ դարձնել և ասել, որ սա hy է
-    if looks_like_armenian_translit(raw):
-        try:
-            text = translit(raw, 'hy')  # "barev inch ka" → "բարեւ ինչ կա"
-            lang = "hy"
-        except Exception:
-            pass  # եթե translit-ը տապալի, թողնում ենք raw
+    # User location, եթե ունենք
+    user_id = message.from_user.id
+    user_location = USER_LOCATIONS.get(user_id)
 
+    # 1) Փորձում ենք recommendation-ներ բերել
+    rec_parts: list[str] = []
+    try:
+        recs = await get_recommendations(raw, user_location=user_location)
+        # recs always list[str]; եթե առաջինը «🤔 ...» է, значить category չի գտել
+        if recs and not recs[0].startswith("🤔 "):
+            rec_parts.extend(recs)
+    except Exception:
+        pass
+
+    # 2) AI պատասխան
     reply = await generate_reply(text, lang=lang)
-    await message.answer(reply)
+
+    # 3) Կոմբինացված պատասխան
+    if rec_parts:
+        full = "💡 Ահա մի քանի տարբերակ.\n" + "\n\n".join(rec_parts) + "\n\n" + reply
+    else:
+        full = reply
+
+    await message.answer(full)
     await state.clear()
 
 
