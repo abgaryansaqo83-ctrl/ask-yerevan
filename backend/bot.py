@@ -40,8 +40,8 @@ from backend.database import (
     init_db,
 )
 from backend.armenia.events import get_events_by_category, _format_event_line
+from backend.armenia.recommend import get_recommendations
 from transliterate import translit
-from backend.bot import USER_LOCATIONS
 
 init_db()
 
