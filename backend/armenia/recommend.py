@@ -1,20 +1,21 @@
 # backend/armenia/recommend.py
 
 import aiohttp
-import re
 from typing import List, Optional
+
 from config.settings import settings
 from ..utils.logger import setup_logger
 
 logger = setup_logger(__name__)
 
-GOOGLE_PLACES_BASE = "https://maps.googleapis.com/maps/v1/places"
+# Classic Places API base (nearbysearch/json)
+GOOGLE_PLACES_BASE = "https://maps.googleapis.com/maps/api/place"
 YEREVAN_CENTER = "40.1811,44.5136"
 
 # Փնտրման keywords-ները հայերեն/անգլերեն
 CATEGORY_MAP = {
     "սնունդ": "restaurant",
-    "սրճարան": "cafe", 
+    "սրճարան": "cafe",
     "ռեստորան": "restaurant",
     "բար": "bar",
     "փաբ": "bar",
@@ -69,21 +70,26 @@ async def get_recommendations(
             # 1) Նախ՝ user_location-ից, եթե ունենք
             if user_location:
                 places = await _search_places(
-                    session, category, api_key, location=user_location, radius=3000, limit=limit
+                    session,
+                    category=category,
+                    api_key=api_key,
+                    location=user_location,
+                    radius=3000,
+                    limit=limit,
                 )
 
             # 2) Եթե չգտավ կամ user_location չունենք → fallback Երևանի կենտրոնից
             if not places:
                 places = await _search_places(
                     session,
-                    category,
-                    api_key,
+                    category=category,
+                    api_key=api_key,
                     location=YEREVAN_CENTER,
                     radius=7000,  # մի քիչ ավելի լայն շրջան
                     limit=limit,
                 )
 
-            recommendations = []
+            recommendations: List[str] = []
             for place in places[:limit]:
                 rec_text = _format_recommendation(place, emoji)
                 recommendations.append(rec_text)
@@ -107,7 +113,10 @@ async def _search_places(
     radius: int = 3000,
     limit: int = 3,
 ) -> List[dict]:
-    """Google Places Nearby Search arbitrary location-ից."""
+    """
+    Google Places Nearby Search arbitrary location-ից.
+    location: "lat,lon"
+    """
     url = (
         f"{GOOGLE_PLACES_BASE}/nearbysearch/json?"
         f"location={location}"
@@ -119,60 +128,66 @@ async def _search_places(
 
     async with session.get(url) as resp:
         data = await resp.json()
-        places = []
+        places: List[dict] = []
 
-        if "results" in data:
-            for place in data["results"]:
-                rating = place.get("rating", 0)
-                if rating >= 4.0:
-                    places.append(
-                        {
-                            "name": place["name"],
-                            "rating": rating,
-                            "address": place.get("vicinity", ""),
-                            "price_level": place.get("price_level", 1),
-                            "types": place.get("types", []),
-                        }
-                    )
+        results = data.get("results", [])
+        for place in results:
+            rating = place.get("rating", 0)
+            if rating >= 4.0:
+                places.append(
+                    {
+                        "name": place.get("name", "Անվանումը բացակայում է"),
+                        "rating": rating,
+                        "address": place.get("vicinity", ""),
+                        "price_level": place.get("price_level", 0),
+                        "types": place.get("types", []),
+                    }
+                )
 
         return sorted(places, key=lambda x: x["rating"], reverse=True)[:limit]
 
 
 def _detect_category(query: str) -> Optional[str]:
-    """Հայերեն/անգլերեն keywords-եր detect անում ա."""
+    """Հայերեն/անգլերեն keywords-եր detect անում ա։"""
     query_lower = query.lower()
-    
+
     for keyword, category in CATEGORY_MAP.items():
         if keyword in query_lower:
             return category
-    
+
     return None
 
 
 def _format_recommendation(place: dict, emoji: str) -> str:
-    """1 տեղի recommendation-ի ֆորմատ."""
+    """1 տեղի recommendation-ի ֆորմատ։"""
     name = place["name"]
     rating = place["rating"]
     address = place["address"]
     price_level = place["price_level"]
-    
-    # Price emoji
-    price_emojis = {0: "💸💸💸", 1: "💰💰", 2: "💰", 3: "🆓"}
+
+    # Price emoji (Google price_level 0–4)
+    price_emojis = {
+        0: "💸",          # unknown
+        1: "💰",          # էժան
+        2: "💰💰",
+        3: "💰💰💰",
+        4: "💰💰💰💰",
+    }
     price_str = price_emojis.get(price_level, "💰")
-    
+
     # Short description
-    types = place["types"]
+    types = place.get("types", [])
     desc = _get_short_desc(types)
-    
+
     return (
-        f"{emoji} {name}"
+        f"{emoji} {name}\n"
         f"⭐ {rating:.1f} | {address}\n"
         f"{price_str} {desc}"
     )
 
 
 def _get_short_desc(types: List[str]) -> str:
-    """Types-ից կարճ նկարագրություն."""
+    """Types-ից կարճ նկարագրություն։"""
     if "restaurant" in types:
         return "համեղ խոհանոց + հարմար մթնոլորտ"
     elif "cafe" in types:
@@ -181,4 +196,3 @@ def _get_short_desc(types: List[str]) -> str:
         return "լավ երեկոյան + երաժշտություն"
     else:
         return "հիանալի ընտրություն"
-
