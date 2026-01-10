@@ -1,8 +1,9 @@
 from fastapi import FastAPI, Request, Query
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from datetime import date
+from pathlib import Path  # <-- ԱՎԵԼԱՑՎԱԾ
 
 from backend.database import (
     init_db,
@@ -26,6 +27,7 @@ except Exception as e:
 
 app = FastAPI(title="AskYerevan Web")
 
+
 def is_winter_theme_enabled() -> bool:
     today = date.today()
     year = today.year
@@ -40,8 +42,25 @@ def is_winter_theme_enabled() -> bool:
         prev_end = date(year, 1, 15)
         return prev_start <= today <= prev_end
 
+
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# --- SITEMAP CONFIG -------------------------------------------------
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+SITEMAP_PATH = BASE_DIR / "sitemap.xml"
+
+
+@app.get("/sitemap.xml", response_class=Response)
+def sitemap():
+    """
+    Return static sitemap.xml from project root.
+    """
+    xml_content = SITEMAP_PATH.read_text(encoding="utf-8")
+    return Response(content=xml_content, media_type="application/xml")
+
+# --------------------------------------------------------------------
 
 # Root → redirect HY
 @app.get("/", response_class=HTMLResponse)
@@ -66,6 +85,7 @@ async def indexhy(request: Request):
             "hero_culture": hero_culture,
         },
     )
+
 
 @app.get("/en", response_class=HTMLResponse)
 async def indexen(request: Request):
@@ -97,6 +117,7 @@ async def churches_hy(request: Request):
         },
     )
 
+
 @app.get("/en/churches", response_class=HTMLResponse)
 async def churches_en(request: Request):
     return templates.TemplateResponse(
@@ -123,6 +144,7 @@ async def news_hy(request: Request, category: str = Query(None)):
         },
     )
 
+
 @app.get("/en/news", response_class=HTMLResponse)
 async def news_en(request: Request, category: str = Query(None)):
     news_list = get_all_news(limit=50, category=category)
@@ -144,8 +166,11 @@ async def news_detail_hy(request: Request, news_id: int):
     if not news_item:
         return RedirectResponse(url="/hy/news")
 
-    # category-ն վերցնենք item-ից
-    category = news_item.get("category") if isinstance(news_item, dict) else getattr(news_item, "category", None)
+    category = (
+        news_item.get("category")
+        if isinstance(news_item, dict)
+        else getattr(news_item, "category", None)
+    )
     back_url = "/hy/news"
     if category:
         back_url = f"/hy/news?category={category}"
@@ -168,7 +193,11 @@ async def news_detail_en(request: Request, news_id: int):
     if not news_item:
         return RedirectResponse(url="/en/news")
 
-    category = news_item.get("category") if isinstance(news_item, dict) else getattr(news_item, "category", None)
+    category = (
+        news_item.get("category")
+        if isinstance(news_item, dict)
+        else getattr(news_item, "category", None)
+    )
     back_url = "/en/news"
     if category:
         back_url = f"/en/news?category={category}"
@@ -196,6 +225,7 @@ async def sights_hy(request: Request):
         },
     )
 
+
 @app.get("/en/sights", response_class=HTMLResponse)
 async def sights_en(request: Request):
     return templates.TemplateResponse(
@@ -219,6 +249,7 @@ async def places_hy(request: Request):
         },
     )
 
+
 @app.get("/en/places", response_class=HTMLResponse)
 async def places_en(request: Request):
     return templates.TemplateResponse(
@@ -241,6 +272,7 @@ async def about_hy(request: Request):
             "is_winter_theme": is_winter_theme_enabled(),
         },
     )
+
 
 @app.get("/en/about", response_class=HTMLResponse)
 async def about_en(request: Request):
