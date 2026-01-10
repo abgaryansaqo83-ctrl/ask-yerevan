@@ -1,1 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
+  <!-- Home HY -->
+  <url>
+    <loc>https://askyerevan.am/hy</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Home EN -->
+  <url>
+    <loc>https://askyerevan.am/en</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Sights HY -->
+  <url>
+    <loc>https://askyerevan.am/hy/sights</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- Sights EN -->
+  <url>
+    <loc>https://askyerevan.am/en/sights</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Churches HY -->
+  <url>
+    <loc>https://askyerevan.am/hy/churches</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- Churches EN -->
+  <url>
+    <loc>https://askyerevan.am/en/churches</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Places HY (restaurants, bars, getaways) -->
+  <url>
+    <loc>https://askyerevan.am/hy/places</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- Places EN -->
+  <url>
+    <loc>https://askyerevan.am/en/places</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- News HY -->
+  <url>
+    <loc>https://askyerevan.am/hy/news</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- News EN -->
+  <url>
+    <loc>https://askyerevan.am/en/news</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- About HY -->
+  <url>
+    <loc>https://askyerevan.am/hy/about</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- About EN -->
+  <url>
+    <loc>https://askyerevan.am/en/about</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+</urlset>
