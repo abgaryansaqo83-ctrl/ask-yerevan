@@ -56,7 +56,7 @@ def detect_lang(message: Message) -> str:
     return "hy"
 
 USER_LOCATIONS: dict[int, str] = {}  # user_id -> "lat,lon"
-BOT_SITE_URL = "https://ask-yerevan.onrender.com/hy"
+BOT_SITE_URL = "https://askyerevan.am/hy"
 OWNER_ID = int(os.getenv("OWNER_ID", "0"))
 
 bot = Bot(
