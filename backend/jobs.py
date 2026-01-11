@@ -11,7 +11,7 @@ from backend.armenia.traffic import get_traffic_status
 from backend.armenia.weather import get_yerevan_weather
 from backend.armenia.recommend import get_recommendations
 
-BASE_URL = "https://askyerevan.am/hy"
+BASE_URL = "https://askyerevan.am"
 
 
 def _get_bot() -> Bot:
