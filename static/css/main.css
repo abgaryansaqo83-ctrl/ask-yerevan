@@ -224,8 +224,8 @@ main.container {
 .nav-fb-link {
   display: inline-flex;
   align-items: center;
-  color: #9fc5ff;          /* ավելի բաց կապույտ, որ տարբերվի մենյուից */
-  font-size: 0.8rem;       /* մի քիչ փոքր, քան Telegram տեքստը */
+  color: #ffffff;          /* ավելի բաց կապույտ, որ տարբերվի մենյուից */
+  font-size: 0.9rem;       /* մի քիչ փոքր, քան Telegram տեքստը */
   text-decoration: none;
 }
 
@@ -1013,6 +1013,24 @@ main p {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+.footer-right .footer-social {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.footer-tg-link,
+.footer-fb-link {
+  color: #ffe8b3;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.footer-tg-link:hover,
+.footer-fb-link:hover {
+  text-decoration: underline;
 }
 
 /* ===========================
