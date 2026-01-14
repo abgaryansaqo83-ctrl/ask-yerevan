@@ -18,7 +18,7 @@ body {
   margin: 1.2rem 1.2rem 1.2rem;
   color: #ffffff;
   overflow: hidden;
-  font-weight: 600;      /* կամ 500, եթե շատ հաստ լինի */
+  font-weight: 600;
 }
 
 /* Ֆոնային նկար + թափանցիկ շերտ */
@@ -77,12 +77,12 @@ main.container {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;              /* սա ավելացրու, որ full-width հաստատ լինի */
+  right: 0;
   z-index: 1000;
-   
+
   transition: transform 0.2s ease-out;
   height: 120px;
-  overflow: visible;  /* որ լույսերը/գլխարկը դուրս գան */
+  overflow: visible;
 }
 
 /* scroll-down → թաքցնենք header-ը վերև */
@@ -103,10 +103,9 @@ main.container {
   justify-content: space-between;
   height: 120px;
   align-items: flex-end;
-  position: relative;  /* որ z-index աշխատի */
-  z-index: 10;         /* բովանդակությունը՝ լույսից ՎԵՐև */
+  position: relative;
+  z-index: 10;
 }
-
 
 .header-left {
   display: flex;
@@ -115,9 +114,8 @@ main.container {
 }
 
 /* Logo + մարդուկ */
-
 .logo {
-  margin: 0.3rem 0 0 -2rem; /* վերև, աջ, ներքև, ձախ */
+  margin: 0.3rem 0 0 -2rem;
   display: inline-flex;
   align-items: flex-start;
   transform-origin: left bottom;
@@ -145,7 +143,6 @@ main.container {
 }
 
 /* Menu */
-
 .nav {
   display: flex;
   gap: 1.5rem;
@@ -163,8 +160,7 @@ main.container {
   color: #FFB74D;
 }
 
-/* Աջ բլոկ */
-
+/* Աջ բլոկ (վերևում հիմա social չկա, մնում է layout-ը) */
 .header-right {
   display: flex;
   flex-direction: column;
@@ -199,6 +195,7 @@ main.container {
     gap: 0rem 0.75rem;
     padding-bottom: 0;
   }
+}
 
 /* ===========================
    Home hero / dashboard
@@ -478,8 +475,6 @@ main.container {
   order: 1;
 }
 
-/* rest stays the same... */
-
 .sights-image--column {
   display: flex;
   flex-direction: column;
@@ -494,10 +489,6 @@ main.container {
   border-radius: 4px;
 }
 
-.sights-col--text h2 { /* ... */ }
-.sights-col--text h3 { /* ... */ }
-.sights-col--text p  { /* ... */ }
-
 /* Մոբայլ */
 @media (max-width: 768px) {
   .sights-row,
@@ -505,7 +496,6 @@ main.container {
     grid-template-columns: 1fr;
   }
 
-  /* որ mobile‑ում էլի լինի վերևում նկար, ներքևում տեքստ */
   .sights-col--image,
   .sights-col--text {
     order: initial;
@@ -521,7 +511,7 @@ main.container {
 }
 
 .place-section {
-  padding: 2rem;              /* ցանկության դեպքում կարող ես տալ 2rem 0 */
+  padding: 2rem;
   margin-bottom: 3rem;
 }
 
@@ -568,62 +558,64 @@ main.container {
   }
 }
 
-/* News Section */
+/* ===========================
+   News list
+   =========================== */
+
 .news-section {
-    padding: 2rem 0;
+  padding: 2rem 0;
 }
 
 .news-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
 }
 
 .news-card {
-    background: #fff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    transition: transform 0.2s;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
 }
 
 .news-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .news-card__image img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
 }
 
 .news-card__body {
-    padding: 1rem 1.2rem;
+  padding: 1rem 1.2rem;
 }
 
 .news-card__title {
-    font-size: 1.1rem;
-    margin: 0 0 0.5rem;
-    color: #333;
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem;
+  color: #333;
 }
 
 .news-card__snippet {
-    font-size: 0.9rem;
-    color: #666;
-    line-height: 1.5;
-    margin: 0 0 0.8rem;
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.5;
+  margin: 0 0 0.8rem;
 }
 
 .news-card__date {
-    font-size: 0.8rem;
-    color: #999;
+  font-size: 0.8rem;
+  color: #999;
 }
 
 /* ==================== NEWS PAGE ==================== */
 
-/* Սա արդեն օգտագործվում է news_hy.html-ում */
 .news-container {
   max-width: 1200px;
   margin: 1rem auto;
@@ -636,7 +628,6 @@ main.container {
   gap: 1.2rem;
 }
 
-/* Քարտերը՝ առանց image zoom-ի */
 .news-card {
   background: #fff;
   border-radius: 12px;
@@ -649,14 +640,13 @@ main.container {
 
 .news-card:hover {
   transform: translateY(-3px);
-  box-shadow: 04px 12px rgba(0,0,0,0.12);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 
-/* ՆԿԱՐ — ֆիքսված բարձրություն, առանց zoom */
 .news-card-image {
   position: relative;
   width: 100%;
-  height: 180px;  /* կարիք լինի՝ 150/140 կիջեցնես */
+  height: 180px;
   background: linear-gradient(135deg, #2B7A8D, #1f5a6b);
   overflow: hidden;
 }
@@ -665,15 +655,13 @@ main.container {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: none;   /* zoom transition հանված */
+  transition: none;
 }
 
-/* Հերիքի համար լրացուցիչ ապահովություն */
 .news-card:hover .news-card-image img {
   transform: none !important;
 }
 
-/* Placeholder emoji */
 .image-placeholder {
   display: flex;
   align-items: center;
@@ -684,7 +672,6 @@ main.container {
   background: rgba(255,255,255,0.2);
 }
 
-/* CATEGORY BADGE */
 .category-badge {
   position: absolute;
   top: 0.5rem;
@@ -697,7 +684,6 @@ main.container {
   font-weight: 600;
 }
 
-/* CONTENT */
 .news-card-content {
   padding: 1rem;
 }
@@ -717,14 +703,15 @@ main.container {
   font-size: 0.8rem;
 }
 
-.event-item { color: #666; }
+.event-item {
+  color: #666;
+}
 
 .event-item.price {
   color: #059669;
   font-weight: 600;
 }
 
-/* EMPTY STATE (եթե պետք է) */
 .news-empty {
   text-align: center;
   padding: 3rem 2rem;
@@ -743,7 +730,7 @@ main.container {
   color: #1a1a1a;
 }
 
-/* Mobile */
+/* Mobile news */
 @media (max-width: 768px) {
   .news-grid {
     grid-template-columns: 1fr;
@@ -770,12 +757,13 @@ main.container {
   overflow: hidden;
   background: #f5f5f5;
 }
+
 .detail-hero-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
-  cursor: zoom-in;  /* որ user-ին պարզ լինի, որ սեղմվող է */
+  cursor: zoom-in;
 }
 
 .detail-content-wrapper {
@@ -789,7 +777,6 @@ main.container {
   line-height: 1.3;
 }
 
-/* Հետ կոճակ */
 .back-wrapper {
   margin-top: 1rem;
   margin-bottom: 0.75rem;
@@ -810,12 +797,11 @@ main.container {
   background: #1f5a6b;
 }
 
-/* Image modal for news detail */
 .image-modal {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.85);
-  display: none;              /* hidden by default */
+  display: none;
   align-items: center;
   justify-content: center;
   z-index: 2000;
@@ -842,7 +828,6 @@ main.container {
   cursor: pointer;
 }
 
-/* 4 ԳԻԾ LAYOUT */
 .event-details {
   margin-bottom: 2rem;
   border: 1px solid #e2e8f0;
@@ -911,6 +896,7 @@ main.container {
 /* ===========================
    About էջ
    =========================== */
+
 main {
   max-width: 1200px;
   margin: 2rem auto 3rem;
@@ -945,24 +931,7 @@ main p {
   justify-content: space-between;
   align-items: center;
 }
-.footer-right .footer-social {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  justify-content: flex-end;
-}
 
-.footer-tg-link,
-.footer-fb-link {
-  color: #ffe8b3;
-  text-decoration: none;
-  font-size: 0.9rem;
-}
-
-.footer-tg-link:hover,
-.footer-fb-link:hover {
-  text-decoration: underline;
-}
 .footer-right .footer-social {
   display: flex;
   gap: 0.9rem;
@@ -989,14 +958,14 @@ main p {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: #26A5E4;          /* Telegram default */
+  background: #26A5E4;
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 
 .footer-icon-svg--fb {
-  background: #1877f2;          /* Facebook blue */
+  background: #1877f2;
 }
 
 .footer-tg-svg,
@@ -1009,11 +978,6 @@ main p {
 .footer-label {
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
-
-/* ===========================
-   9. Utilities / Helpers
-   =========================== */
-/* Այստեղ կարող ես ավելացնել .text-center, .mt-*, .hidden
 
 /* ===========================
    10. Place/Sight/Church Meta Info
@@ -1055,11 +1019,10 @@ main p {
   color: #2d7a2d;
 }
 
-/* Mobile */
+/* Mobile meta */
 @media (max-width: 768px) {
   .place-meta {
     font-size: 0.9rem;
     gap: 0.75rem;
   }
 }
-
