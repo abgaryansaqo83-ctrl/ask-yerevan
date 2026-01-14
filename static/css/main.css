@@ -173,70 +173,6 @@ main.container {
   margin-bottom: 0.9rem;
 }
 
-.nav-tg-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  color: #eaf4ff;
-  font-size: 0.9rem;
-  text-decoration: none;
-  align-self: flex-end;
-  margin-bottom: 0.1rem;
-}
-
-.nav-tg-link:hover {
-  text-decoration: underline;
-}
-
-.tg-icon-svg {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #26A5E4;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 0.3rem;
-}
-
-.tg-svg {
-  width: 13px;
-  height: 13px;
-  fill: #ffffff;
-}
-
-.tg-text-script {
-  font-family: "Caveat", "Segoe Script", system-ui, sans-serif;
-}
-.tg-text {
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-}
-
-/* Նոր social բլոկ Telegram + Facebook */
-
-.header-right .header-social {
-  display: flex;
-  flex-direction: column;   /* Telegram վերևում, Facebook՝ ներքևում */
-  align-items: flex-end;
-  gap: 0.15rem;
-}
-
-.nav-fb-link {
-  display: inline-flex;
-  align-items: center;
-  color: #ffffff;          /* ավելի բաց կապույտ, որ տարբերվի մենյուից */
-  font-size: 0.9rem;       /* մի քիչ փոքր, քան Telegram տեքստը */
-  text-decoration: none;
-}
-
-.nav-fb-link:hover {
-  text-decoration: underline;
-}
-
-.fb-text {
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-}
-
 /* Մոբայլ header layout */
 @media (max-width: 768px) {
   .site-header {
@@ -263,11 +199,6 @@ main.container {
     gap: 0rem 0.75rem;
     padding-bottom: 0;
   }
-
-  .header-right .header-social {
-    align-items: flex-start;
-  }
-}
 
 /* ===========================
    Home hero / dashboard
@@ -1031,6 +962,52 @@ main p {
 .footer-tg-link:hover,
 .footer-fb-link:hover {
   text-decoration: underline;
+}
+.footer-right .footer-social {
+  display: flex;
+  gap: 0.9rem;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.footer-tg-link,
+.footer-fb-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #ffe8b3;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.footer-tg-link:hover,
+.footer-fb-link:hover {
+  text-decoration: underline;
+}
+
+.footer-icon-svg {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #26A5E4;          /* Telegram default */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer-icon-svg--fb {
+  background: #1877f2;          /* Facebook blue */
+}
+
+.footer-tg-svg,
+.footer-fb-svg {
+  width: 13px;
+  height: 13px;
+  fill: #ffffff;
+}
+
+.footer-label {
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 /* ===========================
