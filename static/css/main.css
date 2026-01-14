@@ -212,10 +212,33 @@ main.container {
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
+/* Նոր social բլոկ Telegram + Facebook */
+
+.header-right .header-social {
+  display: flex;
+  flex-direction: column;   /* միասին՝ մեկը մյուսի տակ */
+  align-items: flex-end;
+  gap: 0.2rem;
+}
+
+.nav-fb-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #eaf4ff;
+  font-size: 0.9rem;
+  text-decoration: none;
+  align-self: flex-end;
+}
+
+.nav-fb-link:hover {
+  text-decoration: underline;
+}
+
 /* Մոբայլ header layout */
 @media (max-width: 768px) {
   .site-header {
-    height: 290px;          /* մի քիչ բարձր, որ logo + menu + lights տեղավորվեն */
+    height: 290px;
   }
 
   .header-inner {
@@ -237,6 +260,10 @@ main.container {
     flex-wrap: wrap;
     gap: 0rem 0.75rem;
     padding-bottom: 0;
+  }
+
+  .header-right .header-social {
+    align-items: flex-start;
   }
 }
 
