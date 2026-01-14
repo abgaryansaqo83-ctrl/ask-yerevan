@@ -118,42 +118,51 @@
       {% endif %}
     </div>
 
-    <footer class="site-footer">
-  <div class="container footer-inner">
-    <div class="footer-left">
-      {% if lang == 'en' %}
-        <p>© "AskYerevan" · Telegram group · ALL YEREVAN IN ONE ADDRESS</p>
-      {% else %}
-        <p>© "AskYerevan" · Telegram խումբ · ԵՐևԱՆԸ ՄԵԿ ՀԱՍՑԵՅՈՒՄ</p>
-      {% endif %}
-    </div>
-
     <div class="footer-right">
-      <div class="footer-social">
-        <a href="https://t.me/AskYerevan"
-           class="footer-tg-link"
-           target="_blank"
-           rel="noopener">
-          {% if lang == 'en' %}
-            Our Telegram group
-          {% else %}
-            Մեր Telegram խումբը
-          {% endif %}
-        </a>
+  <div class="footer-social">
+    <a href="https://t.me/AskYerevan"
+       class="footer-tg-link"
+       target="_blank"
+       rel="noopener">
+      <span class="footer-icon-svg" aria-hidden="true">
+        <svg viewBox="0 0 24 24" class="footer-tg-svg">
+          <path
+            d="M9.04 15.71 8.9 19.85a.78.78 0 0 0 .62-.3l2.48-2.67 4.96 3.64c.91.5 1.55.24 1.79-.84l3.24-15.19h0c.29-1.33-.48-1.86-1.36-1.54L2.38 9.29C1.09 9.79 1.1 10.53 2.14 10.86լ4.3 1.34 9.99-6.31c.47-.29.9-.13.55.18z"
+            fill="currentColor"
+          />
+        </svg>
+      </span>
+      <span class="footer-label">
+        {% if lang == 'en' %}
+          Telegram group
+        {% else %}
+          Telegram խումբ
+        {% endif %}
+      </span>
+    </a>
 
-        <a href="https://www.facebook.com/profile.php?id=61586573941993"
-           class="footer-fb-link"
-           target="_blank"
-           rel="noopener">
-          {% if lang == 'en' %}
-            Our Facebook page
-          {% else %}
-            Մեր Facebook էջը
-          {% endif %}
-        </a>
-      </div>
-    </div>
+    <a href="https://www.facebook.com/profile.php?id=61586573941993"
+       class="footer-fb-link"
+       target="_blank"
+       rel="noopener">
+      <span class="footer-icon-svg footer-icon-svg--fb" aria-hidden="true">
+        <svg viewBox="0 0 24 24" class="footer-fb-svg">
+          <path
+            d="M13.5 9H15V6.5h-1.5A3.5 3.5 0 0 0 10 10v2H8v2.5h2v5h2.5v-5H15V12h-2.5v-2a1.5 1.5 0 0 1 1.5-1z"
+            fill="currentColor"
+          />
+        </svg>
+      </span>
+      <span class="footer-label">
+        {% if lang == 'en' %}
+          Facebook page
+        {% else %}
+          Facebook էջ
+        {% endif %}
+      </span>
+    </a>
   </div>
+</div>
 </footer>
 
 <!-- Header scroll behavior -->
