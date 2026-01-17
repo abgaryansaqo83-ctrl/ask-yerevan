@@ -954,7 +954,7 @@ main p {
   text-decoration: underline;
 }
 
-/* Կլոր ֆոն, ինչպես նախկինում էր */
+/* Telegram default circle */
 .footer-icon-svg {
   width: 22px;
   height: 22px;
@@ -965,16 +965,22 @@ main p {
   justify-content: center;
 }
 
-/* Facebook-ի կապույտ */
+/* Facebook circle override */
 .footer-icon-svg--fb {
   background: #1877f2;
 }
 
-/* SVG-ն ներսում՝ փոքր, որ աչք չծակի */
+/* SVG size inside circle */
 .footer-icon-svg svg {
   width: 13px;
   height: 13px;
   display: block;
+}
+
+/* Icons color (Telegram arrow + Facebook F) */
+.footer-tg-svg,
+.footer-fb-svg {
+  fill: #ffffff;
 }
 
 .footer-label {
