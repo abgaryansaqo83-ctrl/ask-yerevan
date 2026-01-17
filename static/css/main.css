@@ -954,6 +954,7 @@ main p {
   text-decoration: underline;
 }
 
+/* Կլոր ֆոն, ինչպես նախկինում էր */
 .footer-icon-svg {
   width: 22px;
   height: 22px;
@@ -964,15 +965,16 @@ main p {
   justify-content: center;
 }
 
+/* Facebook-ի կապույտ */
 .footer-icon-svg--fb {
   background: #1877f2;
 }
 
-.footer-tg-svg,
-.footer-fb-svg {
+/* SVG-ն ներսում՝ փոքր, որ աչք չծակի */
+.footer-icon-svg svg {
   width: 13px;
   height: 13px;
-  fill: #ffffff;
+  display: block;
 }
 
 .footer-label {
