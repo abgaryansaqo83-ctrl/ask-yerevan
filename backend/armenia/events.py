@@ -167,7 +167,7 @@ async def get_events_by_category(
                     "datetime": nice_time,
                     "price": price,
                     "image_url": image_url,
-                    "more_url": f"https://ask-yerevan.onrender.com{more_url}",
+                    "more_url": f"https://askyerevan.am{more_url}",
                     "source": "db",
                     "label": label,
                 }
@@ -221,7 +221,7 @@ async def get_events_by_category(
                 "datetime": nice_time,
                 "price": price,
                 "image_url": None,
-                "more_url": "https://ask-yerevan.onrender.com/hy/news",
+                "more_url": "https://askyerevan.am/hy/news",
                 "source": "live",
                 "label": label,
             }
