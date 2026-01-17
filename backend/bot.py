@@ -762,7 +762,7 @@ async def process_addnews_category(callback: CallbackQuery, state: FSMContext):
     await callback.message.answer(
         f"✅ Նորությունը հրապարակվեց `{category}` բաժնում.\n"
         f"ID: {news_id}\n\n"
-        f"Տես վեբ կայքում՝ https://ask-yerevan.onrender.com/hy/news",
+        f"Տես վեբ կայքում՝ https://askyerevan.am/hy/news",
         parse_mode="Markdown",
     )
 
