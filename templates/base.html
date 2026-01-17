@@ -3,22 +3,24 @@
 <head>
   <meta charset="UTF-8">
 
-  {# Տիտուլ՝ տարբեր լեզուների համար #}
+  <!-- Title + per-language default -->
   <title>
-    {% if lang == 'en' %}
-      {% block title %}AskYerevan – Yerevan & Armenia: sights, events, places{% endblock %}
-    {% else %}
-      {% block title %}AskYerevan – Երևան, Հայաստան, ուր գնալ այսօր{% endblock %}
-    {% endif %}
+    {% block title %}
+      {% if lang == 'en' %}
+        AskYerevan – Armenia, Yerevan, places to feel the city
+      {% else %}
+        AskYerevan – Հայաստան, Երևան, քաղաքը զգալու վայրեր
+      {% endif %}
+    {% endblock %}
   </title>
 
-  {# Գլխավոր meta description – homepage-ի համար կաշխատի լռելյայն #}
+  <!-- Meta description – search-ի համար կարճ, ոչ կրկնվող -->
   {% if lang == 'en' %}
     <meta name="description"
-          content="AskYerevan is a website and Telegram community about Yerevan and Armenia: sights, churches, events, cafés, bars, restaurants and daily tips on where to go today.">
+          content="AskYerevan is a friendly guide to Armenia and Yerevan: churches, landmarks, walks, cosy cafés, bars, events and places where the city really feels alive.">
   {% else %}
     <meta name="description"
-          content="AskYerevan-ը վեբ կայք և Telegram համայնք է Երևանի ու Հայաստանի մասին․ տեսարժան վայրեր, եկեղեցիներ, միջոցառումներ, սրճարաններ, բարեր, ռեստորաններ և ամենօրյա օգտակար ինֆո՝ ուր գնալ այսօր։">
+          content="AskYerevan-ը ջերմ ուղեցույց է Հայաստանի ու Երևանի համար․ եկեղեցիներ, տեսարժան վայրեր, զբոսանքներ, սրճարաններ, բարեր, միջոցառումներ և այն վայրերը, որտեղ քաղաքը զգացվում է։">
   {% endif %}
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -47,12 +49,12 @@
     gtag('js', new Date());
     gtag('config', 'G-3V9QT7191G');
   </script>
-    
+  
   <style>
     /* Lightbox overlay fullscreen */
     .lightbox-overlay {
       position: fixed;
-      inset: 0; /* top:0; right:0; bottom:0; left:0; */
+      inset: 0;
       background: rgba(0, 0, 0, 0.8);
       z-index: 9999;
       display: flex;
@@ -84,7 +86,6 @@
       cursor: zoom-in;
     }
 
-    /* Optional: body no-scroll when lightbox open */
     body.lightbox-open {
       overflow: hidden;
     }
@@ -129,14 +130,13 @@
       {% endif %}
     </div>
 
-      <div class="lang-switch">
-        {% set path = request.url.path %}
-        {% if lang == 'en' %}
-          <a href="{{ path.replace('/en', '/hy') }}">Հայ</a> | <strong>EN</strong>
-        {% else %}
-          <strong>Հայ</strong> | <a href="{{ path.replace('/hy', '/en') }}">EN</a>
-        {% endif %}
-      </div>
+    <div class="lang-switch">
+      {% set path = request.url.path %}
+      {% if lang == 'en' %}
+        <a href="{{ path.replace('/en', '/hy') }}">Հայ</a> | <strong>EN</strong>
+      {% else %}
+        <strong>Հայ</strong> | <a href="{{ path.replace('/hy', '/en') }}">EN</a>
+      {% endif %}
     </div>
   </div>
 </header>
@@ -156,50 +156,51 @@
     </div>
 
     <div class="footer-right">
-  <div class="footer-social">
-    <a href="https://t.me/AskYerevan"
-       class="footer-tg-link"
-       target="_blank"
-       rel="noopener">
-      <span class="footer-icon-svg" aria-hidden="true">
-        <svg viewBox="0 0 24 24" class="footer-tg-svg">
-          <path
-            d="M9.04 15.71 8.9 19.85a.78.78 0 0 0 .62-.3l2.48-2.67 4.96 3.64c.91.5 1.55.24 1.79-.84l3.24-15.19h0c.29-1.33-.48-1.86-1.36-1.54L2.38 9.29C1.09 9.79 1.1 10.53 2.14 10.86լ4.3 1.34 9.99-6.31c.47-.29.9-.13.55.18z"
-            fill="currentColor"
-          />
-        </svg>
-      </span>
-      <span class="footer-label">
-        {% if lang == 'en' %}
-          Telegram group
-        {% else %}
-          Telegram խումբ
-        {% endif %}
-      </span>
-    </a>
+      <div class="footer-social">
+        <a href="https://t.me/AskYerevan"
+           class="footer-tg-link"
+           target="_blank"
+           rel="noopener">
+          <span class="footer-icon-svg" aria-hidden="true">
+            <svg viewBox="0 0 24 24" class="footer-tg-svg">
+              <path
+                d="M9.04 15.71 8.9 19.85a.78.78 0 0 0 .62-.3l2.48-2.67 4.96 3.64c.91.5 1.55.24 1.79-.84լ3.24-15.19h0c.29-1.33-.48-1.86-1.36-1.54L2.38 9.29C1.09 9.79 1.1 10.53 2.14 10.86լ4.3 1.34 9.99-6.31c.47-.29.9-.13.55.18z"
+                fill="currentColor"
+              />
+            </svg>
+          </span>
+          <span class="footer-label">
+            {% if lang == 'en' %}
+              Telegram group
+            {% else %}
+              Telegram խումբ
+            {% endif %}
+          </span>
+        </a>
 
-    <a href="https://www.facebook.com/profile.php?id=61586573941993"
-       class="footer-fb-link"
-       target="_blank"
-       rel="noopener">
-      <span class="footer-icon-svg footer-icon-svg--fb" aria-hidden="true">
-        <svg viewBox="0 0 24 24" class="footer-fb-svg">
-          <path
-            d="M13.5 9H15V6.5h-1.5A3.5 3.5 0 0 0 10 10v2H8v2.5h2v5h2.5v-5H15V12h-2.5v-2a1.5 1.5 0 0 1 1.5-1z"
-            fill="currentColor"
-          />
-        </svg>
-      </span>
-      <span class="footer-label">
-        {% if lang == 'en' %}
-          Facebook page
-        {% else %}
-          Facebook էջ
-        {% endif %}
-      </span>
-    </a>
+        <a href="https://www.facebook.com/profile.php?id=61586573941993"
+           class="footer-fb-link"
+           target="_blank"
+           rel="noopener">
+          <span class="footer-icon-svg footer-icon-svg--fb" aria-hidden="true">
+            <svg viewBox="0 0 24 24" class="footer-fb-svg">
+              <path
+                d="M13.5 9H15V6.5h-1.5A3.5 3.5 0 0 0 10 10v2H8v2.5h2v5h2.5v-5H15V12h-2.5v-2a1.5 1.5 0 0 1 1.5-1z"
+                fill="currentColor"
+              />
+            </svg>
+          </span>
+          <span class="footer-label">
+            {% if lang == 'en' %}
+              Facebook page
+            {% else %}
+              Facebook էջ
+            {% endif %}
+          </span>
+        </a>
+      </div>
+    </div>
   </div>
-</div>
 </footer>
 
 <!-- Header scroll behavior -->
@@ -265,7 +266,6 @@
 
     images.forEach(img => {
       img.addEventListener('click', () => {
-        // երկրորդ կլիկով փակելու համար
         if (overlay) {
           closeLightbox();
           return;
