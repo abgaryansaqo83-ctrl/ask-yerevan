@@ -2,7 +2,25 @@
 <html lang="{{ lang or 'hy' }}">
 <head>
   <meta charset="UTF-8">
-  <title>{% block title %}AskYerevan{% endblock %}</title>
+
+  {# Տիտուլ՝ տարբեր լեզուների համար #}
+  <title>
+    {% if lang == 'en' %}
+      {% block title %}AskYerevan – Yerevan & Armenia: sights, events, places{% endblock %}
+    {% else %}
+      {% block title %}AskYerevan – Երևան, Հայաստան, ուր գնալ այսօր{% endblock %}
+    {% endif %}
+  </title>
+
+  {# Գլխավոր meta description – homepage-ի համար կաշխատի լռելյայն #}
+  {% if lang == 'en' %}
+    <meta name="description"
+          content="AskYerevan is a website and Telegram community about Yerevan and Armenia: sights, churches, events, cafés, bars, restaurants and daily tips on where to go today.">
+  {% else %}
+    <meta name="description"
+          content="AskYerevan-ը վեբ կայք և Telegram համայնք է Երևանի ու Հայաստանի մասին․ տեսարժան վայրեր, եկեղեցիներ, միջոցառումներ, սրճարաններ, բարեր, ռեստորաններ և ամենօրյա օգտակար ինֆո՝ ուր գնալ այսօր։">
+  {% endif %}
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/png" href="/static/img/favicon.png">
   <link rel="stylesheet" href="/static/css/main.css">
@@ -11,16 +29,25 @@
   <link rel="stylesheet" href="/static/css/winter.css">
   {% endif %}
 
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-3V9QT7191G"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <!-- WebSite structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "AskYerevan",
+    "url": "https://askyerevan.am"
+  }
+  </script>
 
-  gtag('config', 'G-3V9QT7191G');
-</script>
-  
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3V9QT7191G"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3V9QT7191G');
+  </script>
+    
   <style>
     /* Lightbox overlay fullscreen */
     .lightbox-overlay {
