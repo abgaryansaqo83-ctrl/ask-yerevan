@@ -6,114 +6,116 @@
   <div class="container">
     <div class="home-hero__grid">
 
-    <!-- LEFT — 4 cards in a single column -->
-    <div class="home-hero__left">
+      <!-- LEFT: 4 cards -->
+      <div class="home-hero__left">
 
-      <!-- Churches -->
-      <article class="home-card">
-        <div class="home-card__inner">
-          <div class="home-card__thumb">
-            <img src="/static/img/churches/noravank-new.jpg"
-                 alt="Latest post · Churches">
+        <!-- Churches -->
+        <article class="home-card">
+          <div class="home-card__inner">
+            <div class="home-card__thumb">
+              <img src="/static/img/churches/noravank-new.jpg"
+                   alt="Latest updates – churches">
+            </div>
+            <div class="home-card__body">
+              <h3 class="home-card__title">Churches</h3>
+              <p class="home-card__snippet">
+                From the earliest Christian temples to cliff‑side monasteries:
+                explore Armenia’s churches, from Etchmiadzin’s gates to mountain retreats.
+              </p>
+              <a href="/en/churches" class="home-card__link">More...</a>
+            </div>
           </div>
-          <div class="home-card__body">
-            <h3 class="home-card__title">Churches</h3>
-            <p class="home-card__snippet">
-              From early Christian temples to cave monasteries:
-              discover the churches of Armenia starting from Etchmiadzin and Hripsime...
-            </p>
-            <a href="/en/churches" class="home-card__link">More...</a>
-          </div>
-        </div>
-      </article>
+        </article>
 
-      <!-- Sights -->
-      <article class="home-card">
-        <div class="home-card__inner">
-          <div class="home-card__thumb">
-            <img src="/static/img//sights/garni-new.jpg"
-                 alt="Latest post · Sights">
+        <!-- Sights -->
+        <article class="home-card">
+          <div class="home-card__inner">
+            <div class="home-card__thumb">
+              <img src="/static/img/sights/garni-new.jpg"
+                   alt="Latest updates – sights">
+            </div>
+            <div class="home-card__body">
+              <h3 class="home-card__title">Sights</h3>
+              <p class="home-card__snippet">
+                Garni temple, Lake Sevan, Dilijan forests and mountain roads:
+                journeys in Armenia that are worth experiencing at least once.
+              </p>
+              <a href="/en/sights" class="home-card__link">More...</a>
+            </div>
           </div>
-          <div class="home-card__body">
-            <h3 class="home-card__title">Sights</h3>
-            <p class="home-card__snippet">
-              Garni Temple, Lake Sevan, Dilijan forests and mountain roads:
-              routes that are worth seeing at least once...
-            </p>
-            <a href="/en/sights" class="home-card__link">More...</a>
-          </div>
-        </div>
-      </article>
+        </article>
 
-      <!-- News -->
-      <article class="home-card">
-        <div class="home-card__inner">
-          <div class="home-card__thumb">
-            <img src="{{ hero_events.image_url if hero_events else '/static/img/default-news.jpg' }}" alt="Նորություններ">
+        <!-- News -->
+        <article class="home-card">
+          <div class="home-card__inner">
+            <div class="home-card__thumb">
+              <img src="{{ hero_events.image_url if hero_events else '/static/img/default-news.jpg' }}" alt="News">
+            </div>
+            <div class="home-card__body">
+              <h3 class="home-card__title">News</h3>
+              <p class="home-card__snippet">
+                Festivals, holidays, new museums and city initiatives
+                in Yerevan and across Armenia.
+              </p>
+              <a href="/en/news" class="home-card__link">More...</a>
+            </div>
           </div>
-          <div class="home-card__body">
-            <h3 class="home-card__title">News</h3>
-            <p class="home-card__snippet">
-              International festivals, holidays, newly opened museums
-              and civic initiatives in Yerevan...
-            </p>
-            <a href="/en/news" class="home-card__link">More...</a>
-          </div>
-        </div>
-      </article>
+        </article>
 
-      <!-- Entertainment -->
-      <article class="home-card">
-        <div class="home-card__inner">
-          <div class="home-card__thumb">
-            <img src="/static/img/places/garage-club-crowd.jpg"
-                 alt="Latest post · Entertainment places">
+        <!-- Entertainment -->
+        <article class="home-card">
+          <div class="home-card__inner">
+            <div class="home-card__thumb">
+              <img src="/static/img/places/garage-club-crowd.jpg"
+                   alt="Latest updates – entertainment">
+            </div>
+            <div class="home-card__body">
+              <h3 class="home-card__title">Entertainment</h3>
+              <p class="home-card__snippet">
+                Cafés, bars, clubs and cosy places for relaxed evenings
+                in different neighbourhoods of Yerevan.
+              </p>
+              <a href="/en/places" class="home-card__link">More...</a>
+            </div>
           </div>
-          <div class="home-card__body">
-            <h3 class="home-card__title">Entertainment</h3>
-            <p class="home-card__snippet">
-              Cafés, bars, clubs and cozy spots for relaxed evenings
-              in different districts of Yerevan...
-            </p>
-            <a href="/en/places" class="home-card__link">More...</a>
-          </div>
+        </article>
+
+      </div>
+
+      <!-- RIGHT: Armenia, seen through warm eyes -->
+      <aside class="home-hero__right">
+        <header class="home-hero__header">
+          <h2>Armenia, seen through warm eyes</h2>
+          <p>
+            Armenia may look small on the map, but it is huge in memories:
+            stone‑lined streets, sun‑soaked courtyards, villages hidden in the mountains,
+            and a city that changes colour every morning.
+          </p>
+          <p>
+            In Yerevan you can walk just a few minutes from old balconies and courtyards
+            to bright cafés, warm bakeries and street musicians. Every street has its own story:
+            sometimes ancient, sometimes new – but always alive.
+          </p>
+          <p>
+            In AskYerevan you’ll find the places where this feeling lives: churches and temples,
+            lakes and gorges, small neighbourhood cafés and streets glowing late into the night.
+            Whether you want to fall in love with Yerevan again or discover Armenia for the first time,
+            this is a good place to start.
+          </p>
+        </header>
+
+        <div class="home-hero__history">
+          <h3>Short timeline</h3>
+          <ul class="home-hero__timeline">
+            <li><strong>301 AD</strong> · Armenia becomes the first country to adopt Christianity as a state religion.</li>
+            <li><strong>405 AD</strong> · Mesrop Mashtots creates the Armenian alphabet.</li>
+            <li><strong>7th century</strong> · The churches of Hripsime and Gayane are built.</li>
+            <li><strong>20th century</strong> · Yerevan grows into a modern capital, layered with old and new.</li>
+          </ul>
         </div>
-      </article>
+      </aside>
 
     </div>
-
-    <!-- RIGHT — title + short description + history -->
-    <aside class="home-hero__right">
-     <header class="home-hero__header">
-       <h2>Armenia in one place</h2>
-       <p>
-         Armenia is a small country, but it has a history of millennia:
-         here are everything from Yeghegis to the Ararat plain, from the Urartian
-         fortress of Erebuni to modern Yerevan, founded in 782 BC.
-       </p>
-       <p>
-         In 301 AD Armenia is the first to officially adopt Christianity,
-         and in the 7th century the churches of Hripsime and Gayane are built,
-         shaping the image of early Armenian church architecture.
-       </p>
-       <p>
-         Today Yerevan brings together old neighbourhoods, Soviet‑era buildings
-         and new cafés and cultural spaces, creating a city where history,
-         everyday life and leisure meet.
-       </p>
-      </header>
-
-      <div class="home-hero__history">
-        <h3>Short timeline</h3>
-        <ul class="home-hero__timeline">
-          <li><strong>301 AD</strong> · Armenia becomes the first country to officially adopt Christianity.</li>
-          <li><strong>405 AD</strong> · Mesrop Mashtots creates the Armenian alphabet.</li>
-          <li><strong>7th century AD</strong> · The churches of Hripsime and Gayane are built.</li>
-          <li><strong>20th century AD</strong> · Yerevan becomes a modern capital with both old and new layers.</li>
-        </ul>
-      </div>
-    </aside>
-
   </div>
 </section>
 {% endblock %}
