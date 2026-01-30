@@ -1,1 +1,22 @@
-
+services:
+  - type: worker
+    name: askyerevan-bot
+    env: python
+    region: frankfurt
+    plan: starter
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python backend/run_bot.py"
+    autoDeploy: true
+    envVars:
+      - key: BOT_TOKEN
+        sync: false
+      - key: OWNER_ID
+        sync: false
+      - key: GROUP_CHAT_ID
+        sync: false
+      - key: ADMIN_CHAT_ID
+        sync: false
+      - key: PERPLEXITY_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
