@@ -4,7 +4,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
-from config.settings import settings
+from backend.config.settings import settings
 
 # Import all routers
 from .handlers.start import router as start_router
