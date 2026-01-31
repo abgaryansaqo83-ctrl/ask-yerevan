@@ -3,7 +3,7 @@
 #   LISTINGS DETECTION (SELL / RENT / SEARCH / JOB)
 # ============================================
 
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.types import Message
 
 from backend.utils.listings import detect_listing_category
@@ -16,7 +16,7 @@ router = Router()
 # --------------------------------------------
 # Detect classified listings in user messages
 # --------------------------------------------
-@router.message()
+@router.message(F.text)
 async def detect_listings_handler(message: Message):
     """
     Detects if a message looks like a classified listing:
@@ -39,7 +39,7 @@ async def detect_listings_handler(message: Message):
         logger.info(
             f"Listing detected: user={message.from_user.id}, category={category}, text={text}"
         )
-        # You can extend this logic later:
+        # Future logic:
         # - save to DB
         # - notify admin
         # - auto-tag messages
