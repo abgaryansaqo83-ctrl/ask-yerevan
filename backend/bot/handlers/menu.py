@@ -24,9 +24,13 @@ router = Router()
 @router.message(F.text == "🎟 Միջոցառումների մենյու")
 async def open_events_menu(message: Message):
     """
-    When user presses the ReplyKeyboard button,
-    we simply call the /menu logic.
+    ReplyKeyboard button → open menu
+    Group chat → no keyboard, no inline menu
     """
+    if message.chat.type != "private":
+        await message.answer("Խնդրում եմ բացեք մենյուն անձնական հաղորդագրությամբ 👉 @AskYerevanBot")
+        return
+
     await cmd_menu(message)
 
 
@@ -92,7 +96,6 @@ async def handle_menu_callback(callback: CallbackQuery):
 
         image_url = ev.get("image_url")
 
-        # If DB has an image URL → send photo
         if image_url:
             try:
                 await callback.message.answer_photo(photo=image_url, caption=caption)
