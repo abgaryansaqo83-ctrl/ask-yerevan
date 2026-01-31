@@ -16,9 +16,6 @@ from backend.bot.handlers.utils import detect_lang
 router = Router()
 
 
-# --------------------------------------------
-# /start command
-# --------------------------------------------
 @router.message(CommandStart(ignore_mention=True))
 async def cmd_start(message: Message, state: FSMContext):
     lang = detect_lang(message)
@@ -36,30 +33,22 @@ async def cmd_start(message: Message, state: FSMContext):
 
     await message.answer(
         "🌆 «Քաղաքում ինչ կա՞» — գրի՛ քո հարցը Երևանի մասին, հարցականով 🙂\n"
-        "🎟 «Միջոցառումների մենյու» — ընտրի՛ր, թե ինչ տեսակ event ես ուզում տեսնել․\n"
-        "💬 «Հարց ադմինին» — գրի՛ հարցդ կամ առաջարկդ, և հաղորդագրությունը կուղարկվի ադմինին՝ "
-        "առանց խմբում հրապարակվելու։\n"
-        "🌐 «Մեր վեբ կայքը» — բացի AskYerevan կայքը։"
+        "🎟 «Միջոցառումների մենյու» — ընտրի՛ր event տեսակը\n"
+        "💬 «Հարց ադմինին» — ուղարկվում է ադմինին, չի հրապարակվում խմբում\n"
+        "🌐 «Մեր վեբ կայքը» — բացում է AskYerevan կայքը"
     )
 
     await state.set_state(UserQuestion.waiting_for_question)
 
 
-# --------------------------------------------
-# 🌆 Քաղաքում ինչ կա՞  (MAIN MENU BUTTON)
-# --------------------------------------------
 @router.message(F.text == "🌆 Քաղաքում ինչ կա՞")
 async def handle_city_button(message: Message, state: FSMContext):
     if message.chat.type != "private":
-        return  # ignore in group
-
+        return
     await message.answer("Գրի՛ քո հարցը Երևանի մասին, հարցականով 🙂")
     await state.set_state(UserQuestion.waiting_for_question)
 
 
-# --------------------------------------------
-# 🌐 Մեր վեբ կայքը
-# --------------------------------------------
 @router.message(F.text == "🌐 Մեր վեբ կայքը")
 async def handle_website_button(message: Message):
     await message.answer("🌐 AskYerevan կայքը՝ https://askyerevan.am")
