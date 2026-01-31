@@ -4,7 +4,7 @@ import datetime
 
 from aiogram import Bot
 
-from config.settings import settings
+from backend.config.settings import settings
 from backend.utils.logger import logger
 from backend.database import get_events_for_date
 from backend.armenia.traffic import get_traffic_status
