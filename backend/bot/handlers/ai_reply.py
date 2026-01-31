@@ -11,8 +11,7 @@ from backend.ai.response import generate_reply
 from backend.armenia.recommend import get_recommendations
 from backend.utils.logger import logger
 
-from ..states.question import UserQuestion
-
+from backend.bot.states.user_question import UserQuestion
 
 router = Router()
 
