@@ -1,6 +1,5 @@
 import asyncio
-
-from backend.bot.main import bot
+from backend.bot.main import create_bot
 
 async def main():
     bot, dp = create_bot()
@@ -8,4 +7,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-
