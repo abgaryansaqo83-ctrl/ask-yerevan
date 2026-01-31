@@ -1,7 +1,8 @@
 # backend/bot/handlers/start.py
 # ============================================
-#   START COMMAND / LANGUAGE DETECTION
+#   START COMMAND / MAIN MENU BUTTON HANDLERS
 # ============================================
+
 from aiogram import Router, F
 from aiogram.filters import CommandStart
 from aiogram.types import Message
@@ -9,12 +10,15 @@ from aiogram.fsm.context import FSMContext
 
 from backend.bot.keyboards.main_menu import build_main_keyboard
 from backend.bot.states.user_question import UserQuestion
-from backend.utils.logger import logger
 from backend.languages import get_text
-from backend.bot.handlers.utils import detect_lang  # սա կստեղծեմ հաջորդ քայլում
+from backend.bot.handlers.utils import detect_lang
 
 router = Router()
 
+
+# --------------------------------------------
+# /start command
+# --------------------------------------------
 @router.message(CommandStart(ignore_mention=True))
 async def cmd_start(message: Message, state: FSMContext):
     lang = detect_lang(message)
@@ -32,4 +36,26 @@ async def cmd_start(message: Message, state: FSMContext):
         "🌐 «Մեր վեբ կայքը» — բացի AskYerevan կայքը։"
     )
 
+    # User enters question mode
     await state.set_state(UserQuestion.waiting_for_question)
+
+
+# --------------------------------------------
+# 🌆 Քաղաքում ինչ կա՞  (MAIN MENU BUTTON)
+# --------------------------------------------
+@router.message(F.text == "🌆 Քաղաքում ինչ կա՞")
+async def handle_city_button(message: Message, state: FSMContext):
+    """
+    This button does NOT answer anything.
+    It simply reminds the user to write a question with a question mark.
+    """
+    await message.answer("Գրի՛ քո հարցը Երևանի մասին, հարցականով 🙂")
+    await state.set_state(UserQuestion.waiting_for_question)
+
+
+# --------------------------------------------
+# 🌐 Մեր վեբ կայքը
+# --------------------------------------------
+@router.message(F.text == "🌐 Մեր վեբ կայքը")
+async def handle_website_button(message: Message):
+    await message.answer("🌐 AskYerevan կայքը՝ https://askyerevan.am")
