@@ -5,7 +5,6 @@
 
 from aiogram.fsm.state import StatesGroup, State
 
-
 class AddNewsForm(StatesGroup):
     waiting_for_title_hy = State()
     waiting_for_title_en = State()
