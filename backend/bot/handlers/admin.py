@@ -1,21 +1,30 @@
 # backend/bot/handlers/admin.py
 # ============================================
-#   /admin — SEND MESSAGE TO ADMIN (PRIVATE)
+#   /admin + "💬 Հարց ադմինին" BUTTON HANDLER
 # ============================================
 
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
 from backend.config.settings import settings
-from backend.utils.logger import logger
 from backend.languages import get_text
-
-from ..states.admin import AdminForm
-
+from backend.bot.states.admin import AdminForm
 
 router = Router()
+
+
+# --------------------------------------------
+# 🌟 MAIN MENU BUTTON: "💬 Հարց ադմինին"
+# --------------------------------------------
+@router.message(F.text == "💬 Հարց ադմինին")
+async def admin_button(message: Message, state: FSMContext):
+    """
+    When user presses the ReplyKeyboard button,
+    we simply call the /admin logic.
+    """
+    await cmd_admin(message, state)
 
 
 # --------------------------------------------
