@@ -23,6 +23,12 @@ router = Router()
 async def cmd_start(message: Message, state: FSMContext):
     lang = detect_lang(message)
 
+    # GROUP CHAT → no keyboard, no FSM
+    if message.chat.type != "private":
+        await message.answer(get_text("start", lang))
+        return
+
+    # PRIVATE CHAT → full menu + FSM
     await message.answer(
         get_text("start", lang),
         reply_markup=build_main_keyboard(),
@@ -36,7 +42,6 @@ async def cmd_start(message: Message, state: FSMContext):
         "🌐 «Մեր վեբ կայքը» — բացի AskYerevan կայքը։"
     )
 
-    # User enters question mode
     await state.set_state(UserQuestion.waiting_for_question)
 
 
@@ -45,10 +50,9 @@ async def cmd_start(message: Message, state: FSMContext):
 # --------------------------------------------
 @router.message(F.text == "🌆 Քաղաքում ինչ կա՞")
 async def handle_city_button(message: Message, state: FSMContext):
-    """
-    This button does NOT answer anything.
-    It simply reminds the user to write a question with a question mark.
-    """
+    if message.chat.type != "private":
+        return  # ignore in group
+
     await message.answer("Գրի՛ քո հարցը Երևանի մասին, հարցականով 🙂")
     await state.set_state(UserQuestion.waiting_for_question)
 
