@@ -8,7 +8,7 @@ from aiogram.filters import Command
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
-from config.settings import settings
+from backend.config.settings import settings
 from backend.utils.logger import logger
 from backend.languages import get_text
 
