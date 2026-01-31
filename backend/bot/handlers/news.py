@@ -17,8 +17,7 @@ from aiogram.fsm.context import FSMContext
 from backend.database import save_news
 from backend.utils.logger import logger
 
-from ..states.news import AddNewsForm
-
+from backend.bot.states.addnews import AddNewsForm
 
 router = Router()
 
