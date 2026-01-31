@@ -5,13 +5,29 @@
 
 from aiogram import Router, F
 from aiogram.filters import Command
-from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from aiogram.types import (
+    Message,
+    InlineKeyboardMarkup,
+    InlineKeyboardButton,
+    CallbackQuery,
+)
 
 from backend.armenia.events import get_events_by_category, _format_event_line
 from backend.utils.logger import logger
 
-
 router = Router()
+
+
+# --------------------------------------------
+# 🌟 MAIN MENU BUTTON: "🎟 Միջոցառումների մենյու"
+# --------------------------------------------
+@router.message(F.text == "🎟 Միջոցառումների մենյու")
+async def open_events_menu(message: Message):
+    """
+    When user presses the ReplyKeyboard button,
+    we simply call the /menu logic.
+    """
+    await cmd_menu(message)
 
 
 # --------------------------------------------
