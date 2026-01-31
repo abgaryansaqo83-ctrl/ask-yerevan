@@ -15,7 +15,6 @@ from .handlers.ai_reply import router as ai_reply_router
 from .handlers.news import router as news_router
 from .handlers.publish import router as publish_router
 from .handlers.captcha import router as captcha_router
-from .handlers.location import router as location_router
 from .handlers.listings import router as listings_router
 
 
@@ -44,7 +43,6 @@ def create_bot():
     dp.include_router(news_router)
     dp.include_router(publish_router)
     dp.include_router(captcha_router)
-    dp.include_router(location_router)
 
     # 6) LISTINGS — ՎԵՐՋԻՆԸ
     dp.include_router(listings_router)
