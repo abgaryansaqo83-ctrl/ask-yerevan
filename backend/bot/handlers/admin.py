@@ -15,27 +15,16 @@ from backend.bot.states.admin import AdminForm
 router = Router()
 
 
-# --------------------------------------------
-# 🌟 MAIN MENU BUTTON: "💬 Հարց ադմինին"
-# --------------------------------------------
 @router.message(F.text == "💬 Հարց ադմինին")
 async def admin_button(message: Message, state: FSMContext):
-    # Group → redirect to private
     if message.chat.type != "private":
-        await message.answer("Խնդրում եմ գրեք ինձ անձնական հաղորդագրությամբ 👉 @AskYerevanBot")
         return
-
     await cmd_admin(message, state)
 
 
-# --------------------------------------------
-# /admin command — start admin message flow
-# --------------------------------------------
 @router.message(Command("admin"))
 async def cmd_admin(message: Message, state: FSMContext):
-    # Group → redirect to private
     if message.chat.type != "private":
-        await message.answer("Խնդրում եմ գրեք ինձ անձնական հաղորդագրությամբ 👉 @AskYerevanBot")
         return
 
     lang = (message.from_user.language_code or "hy").lower()
@@ -54,9 +43,6 @@ async def cmd_admin(message: Message, state: FSMContext):
     )
 
 
-# --------------------------------------------
-# ❗ DELETE admin messages written in group
-# --------------------------------------------
 @router.message(AdminForm.waiting_for_message, F.chat.type.in_({"group", "supergroup"}))
 async def delete_admin_message_in_group(message: Message):
     try:
@@ -65,9 +51,6 @@ async def delete_admin_message_in_group(message: Message):
         pass
 
 
-# --------------------------------------------
-# FSM: user sends message → forward to admin
-# --------------------------------------------
 @router.message(AdminForm.waiting_for_message)
 async def process_admin_message(message: Message, state: FSMContext):
     admin_chat_id = settings.ADMIN_CHAT_ID
@@ -83,7 +66,6 @@ async def process_admin_message(message: Message, state: FSMContext):
         f"💬 From chat: {message.chat.id}\n\n"
     )
 
-    # Forward to admin
     await message.bot.send_message(
         admin_chat_id,
         header + (message.text or "⬜️ (առանց տեքստի)"),
