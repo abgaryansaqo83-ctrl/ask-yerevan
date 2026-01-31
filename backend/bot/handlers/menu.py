@@ -18,30 +18,15 @@ from backend.utils.logger import logger
 router = Router()
 
 
-# --------------------------------------------
-# 🌟 MAIN MENU BUTTON: "🎟 Միջոցառումների մենյու"
-# --------------------------------------------
 @router.message(F.text == "🎟 Միջոցառումների մենյու")
 async def open_events_menu(message: Message):
-    """
-    ReplyKeyboard button → open menu
-    Group chat → no keyboard, no inline menu
-    """
     if message.chat.type != "private":
-        await message.answer("Խնդրում եմ բացեք մենյուն անձնական հաղորդագրությամբ 👉 @AskYerevanBot")
         return
-
     await cmd_menu(message)
 
 
-# --------------------------------------------
-# /menu command — show event categories
-# --------------------------------------------
 @router.message(Command("menu"))
 async def cmd_menu(message: Message):
-    """
-    Shows the event categories menu with inline buttons.
-    """
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [
@@ -61,18 +46,12 @@ async def cmd_menu(message: Message):
     await message.answer("🎟 Միջոցառումների մենյու", reply_markup=keyboard)
 
 
-# --------------------------------------------
-# Callback handler for menu buttons
-# --------------------------------------------
 @router.callback_query(F.data.startswith("menu:"))
 async def handle_menu_callback(callback: CallbackQuery):
-    """
-    Handles event category selection and sends 1–2 events.
-    """
     try:
         await callback.answer()
     except Exception:
-        pass  # Telegram sometimes throws "query is too old"
+        pass
 
     kind = callback.data.split(":", 1)[1]
     logger.info(f"Menu callback: {kind}")
