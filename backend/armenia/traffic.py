@@ -3,7 +3,7 @@
 import aiohttp
 import asyncio
 from typing import List, Dict, Any
-from config.settings import settings
+from backend.config.settings import settings
 from ..utils.logger import setup_logger
 
 logger = setup_logger(__name__)
