@@ -15,7 +15,7 @@ from backend.bot.states.user_question import UserQuestion
 
 router = Router()
 
-# User locations stored in memory (same as old bot.py)
+# User locations stored in memory
 USER_LOCATIONS: dict[int, str] = {}
 
 
@@ -23,13 +23,8 @@ USER_LOCATIONS: dict[int, str] = {}
 # Helper: detect Armenian translit (optional)
 # --------------------------------------------
 def looks_like_armenian_translit(text: str) -> bool:
-    """
-    Detects if the user wrote Armenian using Latin letters.
-    Used to improve AI understanding.
-    """
     t = text.lower()
 
-    # If Armenian letters already present → not translit
     if any("ա" <= ch <= "ֆ" for ch in t):
         return False
 
@@ -42,16 +37,10 @@ def looks_like_armenian_translit(text: str) -> bool:
 
 # --------------------------------------------
 # FSM: user asks a question after /start
+# PRIVATE CHAT ONLY
 # --------------------------------------------
-@router.message(UserQuestion.waiting_for_question)
+@router.message(UserQuestion.waiting_for_question, F.chat.type == "private")
 async def handle_user_question(message: Message, state: FSMContext):
-    """
-    Handles user questions:
-    - Detects if it's a real question
-    - Fetches recommendations (Google Places)
-    - Fetches AI reply (Perplexity)
-    - Combines both into one answer
-    """
     raw = (message.text or "").strip()
 
     # Must contain a question mark
@@ -102,12 +91,10 @@ async def handle_user_question(message: Message, state: FSMContext):
 
 # --------------------------------------------
 # Save user location for recommendations
+# PRIVATE CHAT ONLY
 # --------------------------------------------
-@router.message(F.location)
+@router.message(F.location, F.chat.type == "private")
 async def handle_location(message: Message):
-    """
-    Saves user's last known location for better recommendations.
-    """
     loc = message.location
     if not loc:
         return
