@@ -15,35 +15,21 @@ from backend.bot.states.user_question import UserQuestion
 
 router = Router()
 
-# User locations stored in memory
 USER_LOCATIONS: dict[int, str] = {}
 
 
-# --------------------------------------------
-# Helper: detect Armenian translit (optional)
-# --------------------------------------------
 def looks_like_armenian_translit(text: str) -> bool:
     t = text.lower()
-
     if any("ա" <= ch <= "ֆ" for ch in t):
         return False
-
-    keywords = [
-        "barev", "barew", "inch", "inchka", "yerevan", "erevan",
-        "jan", "shnorh", "lav", "sirum", "utelu", "xanut"
-    ]
+    keywords = ["barev", "inch", "yerevan", "jan", "shnorh", "lav"]
     return any(k in t for k in keywords)
 
 
-# --------------------------------------------
-# FSM: user asks a question after /start
-# PRIVATE CHAT ONLY
-# --------------------------------------------
 @router.message(UserQuestion.waiting_for_question, F.chat.type == "private")
 async def handle_user_question(message: Message, state: FSMContext):
     raw = (message.text or "").strip()
 
-    # Must contain a question mark
     if "?" not in raw and "՞" not in raw:
         await message.answer("Գրի՛ քո հարցը Երևանի մասին, հարցականով 🙂")
         return
@@ -61,10 +47,7 @@ async def handle_user_question(message: Message, state: FSMContext):
 
     logger.info(f"AI question from user={user_id}, lang={lang}, text={raw}")
 
-    # ----------------------------------------
-    # 1) Try to get recommendations
-    # ----------------------------------------
-    rec_parts: list[str] = []
+    rec_parts = []
     try:
         recs = await get_recommendations(raw, user_location=user_location)
         if recs and not recs[0].startswith("🤔 "):
@@ -72,14 +55,8 @@ async def handle_user_question(message: Message, state: FSMContext):
     except Exception as e:
         logger.error(f"Recommendation error: {e}")
 
-    # ----------------------------------------
-    # 2) AI reply (Perplexity)
-    # ----------------------------------------
     ai_text = await generate_reply(raw, lang=lang)
 
-    # ----------------------------------------
-    # 3) Combine both
-    # ----------------------------------------
     if rec_parts:
         full = "💡 Ահա մի քանի տարբերակ.\n" + "\n\n".join(rec_parts) + "\n\n" + ai_text
     else:
@@ -89,10 +66,6 @@ async def handle_user_question(message: Message, state: FSMContext):
     await state.clear()
 
 
-# --------------------------------------------
-# Save user location for recommendations
-# PRIVATE CHAT ONLY
-# --------------------------------------------
 @router.message(F.location, F.chat.type == "private")
 async def handle_location(message: Message):
     loc = message.location
