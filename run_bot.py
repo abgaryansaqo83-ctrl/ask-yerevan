@@ -1,6 +1,6 @@
 import asyncio
 
-from backend.bot.main import create_bot
+from backend.bot.main import bot
 
 async def main():
     bot, dp = create_bot()
