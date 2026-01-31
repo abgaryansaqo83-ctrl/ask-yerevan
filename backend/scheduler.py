@@ -18,7 +18,7 @@ from .jobs import (
     send_next_day_events,
 )
 from .utils.logger import setup_logger
-from config.settings import settings
+from backend.config.settings import settings
 
 logger = setup_logger(__name__)
 TIMEZONE = ZoneInfo(settings.TIMEZONE)
