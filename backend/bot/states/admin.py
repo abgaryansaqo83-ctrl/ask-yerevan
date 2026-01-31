@@ -5,6 +5,5 @@
 
 from aiogram.fsm.state import StatesGroup, State
 
-
 class AdminForm(StatesGroup):
     waiting_for_message = State()
