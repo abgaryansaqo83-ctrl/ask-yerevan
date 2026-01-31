@@ -37,8 +37,8 @@ def create_bot():
     dp.include_router(captcha_router)
     dp.include_router(menu_router)
     dp.include_router(news_router)
-    dp.include_router(listings_router)
     dp.include_router(ai_reply_router)
     dp.include_router(publish_router)
+    dp.include_router(listings_router)
 
     return bot, dp
