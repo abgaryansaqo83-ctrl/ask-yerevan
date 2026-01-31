@@ -1,15 +1,6 @@
-# backend/bot/keyboards/main_menu.py
-# ============================================
-#   MAIN MENU KEYBOARD
-# ============================================
-
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
-
 def build_main_keyboard() -> ReplyKeyboardMarkup:
-    """
-    Main menu keyboard shown after /start.
-    """
     return ReplyKeyboardMarkup(
         keyboard=[
             [KeyboardButton(text="🌆 Քաղաքում ինչ կա՞")],
