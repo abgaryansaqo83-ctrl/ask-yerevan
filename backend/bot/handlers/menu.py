@@ -18,14 +18,14 @@ from backend.utils.logger import logger
 router = Router()
 
 
-@router.message(F.text == "🎟 Միջոցառումների մենյու")
+@router.message(F.text == "🎟 Мիջոցառումների մենյու")
 async def open_events_menu(message: Message):
     if message.chat.type != "private":
         return
     await cmd_menu(message)
 
 
-@router.message(Command("menu"))
+@router.message(Command("menu", ignore_mention=True))
 async def cmd_menu(message: Message):
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
@@ -51,6 +51,7 @@ async def handle_menu_callback(callback: CallbackQuery):
     try:
         await callback.answer()
     except Exception:
+        # եթե արդեն ուշ է, սա crit չէ (նույնը հին բոտում) [file:3]
         pass
 
     kind = callback.data.split(":", 1)[1]
@@ -79,6 +80,7 @@ async def handle_menu_callback(callback: CallbackQuery):
             try:
                 await callback.message.answer_photo(photo=image_url, caption=caption)
             except Exception:
+                # fallback text-only
                 await callback.message.answer(caption)
         else:
             await callback.message.answer(caption)
