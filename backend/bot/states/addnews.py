@@ -1,9 +1,10 @@
-# backend/bot/states/news.py
+# backend/bot/states/addnews.py
 # ============================================
 #   FSM STATE — ADD NEWS (OWNER ONLY)
 # ============================================
 
 from aiogram.fsm.state import StatesGroup, State
+
 
 class AddNewsForm(StatesGroup):
     waiting_for_title_hy = State()
