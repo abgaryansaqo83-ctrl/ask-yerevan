@@ -20,9 +20,12 @@ router = Router()
 async def cmd_start(message: Message, state: FSMContext):
     lang = detect_lang(message)
 
-    # GROUP CHAT → no keyboard, no FSM
+    # GROUP CHAT → show keyboard, NO FSM
     if message.chat.type != "private":
-        await message.answer(get_text("start", lang))
+        await message.answer(
+            get_text("start", lang),
+            reply_markup=build_main_keyboard(),   # ← keyboard visible in group
+        )
         return
 
     # PRIVATE CHAT → full menu + FSM
