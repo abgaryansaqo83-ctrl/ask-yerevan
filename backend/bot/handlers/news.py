@@ -16,7 +16,6 @@ from aiogram.fsm.context import FSMContext
 
 from backend.database import save_news
 from backend.utils.logger import logger
-
 from backend.bot.states.addnews import AddNewsForm
 
 router = Router()
@@ -24,9 +23,6 @@ router = Router()
 OWNER_ID = int(os.getenv("OWNER_ID", "0"))
 
 
-# --------------------------------------------
-# /addnews — start FSM
-# --------------------------------------------
 @router.message(Command("addnews"))
 async def cmd_addnews(message: Message, state: FSMContext):
     if message.from_user.id != OWNER_ID:
@@ -41,9 +37,6 @@ async def cmd_addnews(message: Message, state: FSMContext):
     await state.set_state(AddNewsForm.waiting_for_title_hy)
 
 
-# --------------------------------------------
-# Step 1 — Title HY
-# --------------------------------------------
 @router.message(AddNewsForm.waiting_for_title_hy)
 async def process_title_hy(message: Message, state: FSMContext):
     await state.update_data(title_hy=message.text)
@@ -51,9 +44,6 @@ async def process_title_hy(message: Message, state: FSMContext):
     await state.set_state(AddNewsForm.waiting_for_title_en)
 
 
-# --------------------------------------------
-# Step 2 — Title EN
-# --------------------------------------------
 @router.message(AddNewsForm.waiting_for_title_en)
 async def process_title_en(message: Message, state: FSMContext):
     await state.update_data(title_en=message.text)
@@ -61,9 +51,6 @@ async def process_title_en(message: Message, state: FSMContext):
     await state.set_state(AddNewsForm.waiting_for_content_hy)
 
 
-# --------------------------------------------
-# Step 3 — Content HY
-# --------------------------------------------
 @router.message(AddNewsForm.waiting_for_content_hy)
 async def process_content_hy(message: Message, state: FSMContext):
     await state.update_data(content_hy=message.text)
@@ -71,9 +58,6 @@ async def process_content_hy(message: Message, state: FSMContext):
     await state.set_state(AddNewsForm.waiting_for_content_en)
 
 
-# --------------------------------------------
-# Step 4 — Content EN
-# --------------------------------------------
 @router.message(AddNewsForm.waiting_for_content_en)
 async def process_content_en(message: Message, state: FSMContext):
     await state.update_data(content_en=message.text)
@@ -87,9 +71,6 @@ async def process_content_en(message: Message, state: FSMContext):
     await state.set_state(AddNewsForm.waiting_for_image)
 
 
-# --------------------------------------------
-# Step 5 — Image (URL or photo)
-# --------------------------------------------
 @router.message(AddNewsForm.waiting_for_image)
 async def process_image(message: Message, state: FSMContext):
     data = await state.get_data()
@@ -97,15 +78,10 @@ async def process_image(message: Message, state: FSMContext):
     image_url = None
     photo_file_id = None
 
-    # /skip → no image
     if message.text == "/skip":
         image_url = None
-
-    # URL
     elif message.text and not message.photo:
         image_url = message.text.strip()
-
-    # Photo
     elif message.photo:
         photo_file_id = message.photo[-1].file_id
 
@@ -114,7 +90,6 @@ async def process_image(message: Message, state: FSMContext):
         photo_file_id=photo_file_id,
     )
 
-    # Category keyboard
     kb = InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text="🏠 ԳԼԽԱՎՈՐ", callback_data="addnews:general")],
@@ -127,16 +102,13 @@ async def process_image(message: Message, state: FSMContext):
         "6️⃣ Ընտրիր կայքի բաժինը․\n\n"
         "🏠 ԳԼԽԱՎՈՐ — հիմնական նորություններ\n"
         "🏙 ՔԱՂԱՔԱՅԻՆ — քաղաքի առօրյա, ծառայություններ, միջոցառումներ\n"
-        "⚠️ ԿԱՐԵՎՈՐ — հատուկ / շտապ ինֆո",
+        "⚠️ԿԱՐԵՎՈՐ — հատուկ / շտապ ինֆո",
         reply_markup=kb,
     )
 
     await state.set_state(AddNewsForm.waiting_for_category)
 
 
-# --------------------------------------------
-# Step 6 — Category selection → SAVE NEWS
-# --------------------------------------------
 @router.callback_query(F.data.startswith("addnews:"), AddNewsForm.waiting_for_category)
 async def process_addnews_category(callback: CallbackQuery, state: FSMContext):
     if callback.from_user.id != OWNER_ID:
@@ -144,7 +116,6 @@ async def process_addnews_category(callback: CallbackQuery, state: FSMContext):
         return
 
     category = callback.data.split(":", 1)[1]
-
     data = await state.get_data()
 
     title_hy = data["title_hy"]
@@ -154,7 +125,6 @@ async def process_addnews_category(callback: CallbackQuery, state: FSMContext):
     image_url = data.get("image_url")
     photo_file_id = data.get("photo_file_id")
 
-    # If photo was uploaded → store file_id as image_url
     if not image_url and photo_file_id:
         image_url = photo_file_id
 
@@ -167,13 +137,12 @@ async def process_addnews_category(callback: CallbackQuery, state: FSMContext):
         category=category,
     )
 
-    # Remove inline keyboard
     await callback.message.edit_reply_markup(reply_markup=None)
 
     await callback.message.answer(
         f"✅ Նորությունը հրապարակվեց `{category}` բաժնում.\n"
         f"ID: {news_id}\n\n"
-        f"Տես վեբ կայքում՝ https://askyerevan.am/hy/news",
+        "Տես վեբ կայքում՝ https://askyerevan.am/hy/news",
         parse_mode="Markdown",
     )
 
