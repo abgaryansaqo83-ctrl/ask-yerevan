@@ -30,6 +30,7 @@ from backend.utils.logger import logger
 from backend.languages import get_text
 from backend.ai.response import generate_reply
 from backend.utils.listings import detect_listing_category
+from backend.database import save_question
 from backend.database import (
     save_user,
     save_news,
@@ -836,8 +837,9 @@ async def main_router(message: Message, state: FSMContext):
         f"text={message.text!r}"
     )
 
-    text_raw = (message.text or "").strip()
-    text = text_raw.lower()
+    textraw = (message.text or "").strip()
+    text = textraw.lower()
+    thread_id = getattr(message, "message_thread_id", None)
 
     # 1) Ի՞նչ կա քաղաքում  → AI բոտ
     if text_raw == "🌆 Քաղաքում ինչ կա՞":
@@ -871,13 +873,6 @@ async def main_router(message: Message, state: FSMContext):
         )
         return
 
-    if text_raw == "📍 Ուղարկել դիրքս":
-        await message.answer(
-            "Սեղմի՛ր նույն անունով կոճակը ստեղնաշարի վրա, Telegram-ը կառաջարկի "
-            "ուղարկել դիրքդ (Share location)."
-        )
-        return
-
     if message.text and message.text.startswith("/"):
         return
 
@@ -891,6 +886,19 @@ async def main_router(message: Message, state: FSMContext):
         if any(word in text for word in ["բարև", "barev", "hi", "hello"]):
             await message.answer("Բարև՜, լսում եմ քեզ 🙂")
         return
+
+    # Եթե group/supergroup-ում է, ունի հարցական, և command չէ
+    if message.chat.type in ("group", "supergroup"):
+        if textraw and not textraw.startswith("/") and ("?" in textraw or "՞" in textraw):
+            try:
+                save_question(
+                    chat_id=message.chat.id,
+                    message_id=message.message_id,
+                    user_id=message.from_user.id,
+                    text=textraw,
+                )
+            except Exception as e:
+                logger.exception(f"save_question failed: {e}")
 
     if any(kw in text for kw in SPAM_POLITICS_KEYWORDS):
         user_id = message.from_user.id
