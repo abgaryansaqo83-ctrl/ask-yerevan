@@ -175,10 +175,6 @@ async def handle_recommendation_request(query: str, chat_id: int):
         await bot.session.close()
 
 async def notify_unanswered_questions():
-    """
-    Ամեն X րոպեում ստուգում է unanswered հարցերը (>=15 րոպե),
-    և յուրաքանչյուրի տակ AI պատասխան է գրում հենց user's ընտրած լեզվով։
-    """
     bot = _get_bot()
     try:
         rows = get_unanswered_questions_older_than(minutes=15)
@@ -187,9 +183,7 @@ async def notify_unanswered_questions():
 
         for q in rows:
             try:
-                # q["user_lang"] -> գալիս է users աղյուսակից (hy / ru / en ...)
                 lang = q.get("user_lang") or "hy"
-
                 ai_text = await generate_reply(q["text"], lang=lang)
 
                 await bot.send_message(
@@ -198,10 +192,8 @@ async def notify_unanswered_questions():
                     reply_to_message_id=q["message_id"],
                 )
                 mark_question_answered(q["id"])
-                logger.info(
-                    f"🤖 Auto‑reply sent for question id={q['id']} in lang={lang}"
-                )
             except Exception as e:
                 logger.exception(f"Auto‑reply failed for question id={q['id']}: {e}")
     finally:
         await bot.session.close()
+
