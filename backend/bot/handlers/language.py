@@ -10,15 +10,11 @@ from aiogram.fsm.context import FSMContext
 from backend.database import save_user
 from backend.utils.logger import logger
 
-from ..states.language import LanguageForm
-
+from backend.bot.states.language import LanguageForm  # absolute import, ավելի պարզ [file:3]
 
 router = Router()
 
 
-# --------------------------------------------
-# Language selection keyboard
-# --------------------------------------------
 def build_language_keyboard():
     from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
@@ -33,15 +29,8 @@ def build_language_keyboard():
     )
 
 
-# --------------------------------------------
-# Handle language selection (text-based)
-# --------------------------------------------
 @router.message(LanguageForm.waiting_for_choice)
 async def handle_language_choice(message: Message, state: FSMContext):
-    """
-    User sends a text like "English", "Русский", "Հայերեն".
-    We detect language and save it.
-    """
     text = (message.text or "").strip().lower()
 
     if "rus" in text or "рус" in text:
@@ -53,11 +42,11 @@ async def handle_language_choice(message: Message, state: FSMContext):
 
     logger.info(f"Language selected: {lang} by user={message.from_user.id}")
 
+    # հին bot.py-ում save_user(...)–ը պահում էր user_id, username, full_name, language [file:3]
     save_user(
-        chat_id=message.from_user.id,
+        user_id=message.from_user.id,
         username=message.from_user.username or "",
-        first_name=message.from_user.first_name or "",
-        last_name=message.from_user.last_name or "",
+        full_name=message.from_user.full_name or "",
         language=lang,
     )
 
