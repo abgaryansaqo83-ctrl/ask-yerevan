@@ -892,7 +892,7 @@ async def main_router(message: Message, state: FSMContext):
     # 1) Ի՞նչ կա քաղաքում → AI
     if textraw == city_btn:
         await message.answer(get_text("ask_city_hint", lang))
-        await state.set_state(UserQuestionStatesGroup.waiting_for_question)
+        await state.set_state(UserQuestion.waiting_for_question)
         return
 
     # 2) Միջոցառումների մենյու
@@ -904,7 +904,7 @@ async def main_router(message: Message, state: FSMContext):
     # 3) Հարց ադմինին
     if textraw == admin_btn:
         await message.answer(get_text("ask_admin_intro", lang))
-        await state.set_state(AdminFormStatesGroup.waiting_for_message)
+        await state.set_state(AdminForm.waiting_for_message)
         return
 
     # 4) Մեր վեբ կայքը
@@ -913,7 +913,6 @@ async def main_router(message: Message, state: FSMContext):
             get_text("website_link", lang).format(url=BOT_SITE_URL)
         )
         return
-
 
     if message.text and message.text.startswith("/"):
         return
@@ -1032,7 +1031,7 @@ async def main_router(message: Message, state: FSMContext):
         return
 
     if any(word in text for word in ["բարև", "barev", "hi", "hello"]):
-        await message.answer("Բարև՜, լսում եմ քեզ 🙂")
+        await message.answer(get_text("free_chat_hello", lang))
         return
 
     return
