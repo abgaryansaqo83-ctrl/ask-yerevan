@@ -69,18 +69,17 @@ bot = Bot(
 )
 dp = Dispatcher()
 
-def build_main_keyboard() -> ReplyKeyboardMarkup:
+def build_main_keyboard(lang: str = "hy") -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(
         keyboard=[
-            [KeyboardButton(text="🌆 Քաղաքում ինչ կա՞")],
-            [KeyboardButton(text="🎟 Միջոցառումների մենյու")],
-            [KeyboardButton(text="💬 Հարց ադմինին")],
-            [KeyboardButton(text="🌐 Մեր վեբ կայքը")],
-            # առանց request_location կոճակի
+            [KeyboardButton(text=get_text("btn_city", lang))],
+            [KeyboardButton(text=get_text("btn_events_menu", lang))],
+            [KeyboardButton(text=get_text("btn_admin_question", lang))],
+            [KeyboardButton(text=get_text("btn_website", lang))],
         ],
         resize_keyboard=True,
         one_time_keyboard=False,
-        input_field_placeholder="Ընտրի՛ր կոճակ կամ գրի՛ քո հարցը…",
+        input_field_placeholder=get_text("main_input_placeholder", lang),
     )
 
 # ========== FSM STATES ==========
@@ -168,7 +167,7 @@ async def cmd_start(message: Message, state: FSMContext):
 
     await message.answer(
         get_text("start", lang),
-        reply_markup=build_main_keyboard(),
+        reply_markup=build_main_keyboard(lang),
     )
 
     # Այս երկրորդ տեքստը լավ է էլի դնես languages.py մեջ որպես key,
