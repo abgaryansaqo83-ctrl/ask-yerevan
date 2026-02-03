@@ -43,6 +43,9 @@ from backend.database import (
 from backend.armenia.events import get_events_by_category, _format_event_line
 from backend.armenia.recommend import get_recommendations
 from transliterate import translit
+from backend.database import get_user
+from backend.languages import get_text
+
 
 init_db()
 
@@ -826,40 +829,42 @@ async def main_router(message: Message, state: FSMContext):
     text = textraw.lower()
     thread_id = getattr(message, "message_thread_id", None)
 
-    # 1) Ի՞նչ կա քաղաքում  → AI բոտ
-    if text_raw == "🌆 Քաղաքում ինչ կա՞":
-        await message.answer(
-            "Գրի՛ քո հարցը Երևանի մասին, հարցականով 🙂"
-            "Օրինակ՝ «Ճաշելու ի՞նչ հարմար սրճարան կա Ավանին մոտ», "
-        )
-        await state.set_state(UserQuestion.waiting_for_question)
+    user_row = get_user(message.from_user.id)
+    lang = (user_row["language"] if user_row and user_row.get("language") else "hy")
+
+    city_btn   = get_text("btn_city", lang)
+    events_btn = get_text("btn_events_menu", lang)
+    admin_btn  = get_text("btn_admin_question", lang)
+    site_btn   = get_text("btn_website", lang)
+
+    # 1) Ի՞նչ կա քաղաքում → AI
+    if textraw == city_btn:
+        await message.answer(get_text("ask_city_hint", lang))
+        await state.set_state(UserQuestionStatesGroup.waiting_for_question)
         return
 
-    # 2) Միջոցառումների մենյու  → inline մենյու (կինո, թատրոն, փաբ…)
-    if text_raw == "🎟 Միջոցառումների մենյու":
-        await message.answer("Ընտրիր թե ի՞նչ տեսակի event ես ուզում տեսնել․")
+    # 2) Միջոցառումների մենյու
+    if textraw == events_btn:
+        await message.answer(get_text("events_menu_intro", lang))
         await cmd_menu(message)
         return
 
-    # 3) Հարց ադմինին  → /admin flow
-    if text_raw == "💬 Հարց ադմինին":
-        await message.answer(
-            "Գրի՛ քո հարցը կամ առաջարկը, և այն կուղարկվի ադմինին անձնական նամակով, "
-            "առանց խմբում հրապարակվելու։"
-        )
-        await state.set_state(AdminForm.waiting_for_message)
+    # 3) Հարց ադմինին
+    if textraw == admin_btn:
+        await message.answer(get_text("ask_admin_intro", lang))
+        await state.set_state(AdminFormStatesGroup.waiting_for_message)
         return
 
-    # 4) Մեր վեբ կայքը  → ուղիղ լինկ
-    if text_raw == "🌐 Մեր վեբ կայքը":
+    # 4) Մեր վեբ կայքը
+    if textraw == site_btn:
         await message.answer(
-            f"🌐 Մեր վեբ կայքը՝ {BOT_SITE_URL}"
+            get_text("website_link", lang).format(url=BOT_SITE_URL)
         )
         return
+
 
     if message.text and message.text.startswith("/"):
         return
-
     if message.from_user.id == settings.ADMIN_CHAT_ID:
         return
 
@@ -868,7 +873,7 @@ async def main_router(message: Message, state: FSMContext):
 
     if thread_id == settings.FREE_CHAT_THREAD_ID:
         if any(word in text for word in ["բարև", "barev", "hi", "hello"]):
-            await message.answer("Բարև՜, լսում եմ քեզ 🙂")
+            await message.answer(get_text("free_chat_hello", lang))
         return
 
     # Եթե group/supergroup-ում է, ունի հարցական, և command չէ
