@@ -4,7 +4,6 @@ from typing import Literal
 
 LangCode = Literal["hy", "ru", "en"]
 
-
 TEXTS: dict[str, dict[LangCode, str]] = {
     "start": {
         "hy": (
@@ -16,6 +15,7 @@ TEXTS: dict[str, dict[LangCode, str]] = {
         "ru": "Привет! Я бот AskYerevan 🙌",
         "en": "Hello! I’m AskYerevan bot 🙌",
     },
+
     "admin_intro": {
         "hy": (
             "Ձեր գրած հաղորդագրությունը կուղարկվի ադմինիստրատորին "
@@ -31,9 +31,6 @@ TEXTS: dict[str, dict[LangCode, str]] = {
             "in a private chat and will not be posted in the AskYerevan group."
         ),
     },
-}
-
-TEXTS: dict[str, dict[LangCode, str]] = {
 
     "welcome_new_member": {
         "hy": (
@@ -52,6 +49,7 @@ TEXTS: dict[str, dict[LangCode, str]] = {
             "Here we talk about Yerevan and Armenia: places, events, questions and tips."
         ),
     },
+
     "goodbye_member": {
         "hy": (
             "{name}, ցավոք մեզ լքեց 😢\n"
@@ -68,6 +66,59 @@ TEXTS: dict[str, dict[LangCode, str]] = {
             "Hope life treats you well, "
             "even though it's hard to beat the fun we have in AskYerevan 🙂"
         ),
+    },
+
+    # նոր բանալիներ կոճակների համար
+    "btn_city": {
+        "hy": "🌆 Քաղաքում ինչ կա՞",
+        "ru": "🌆 Что есть в городе?",
+        "en": "🌆 What’s in the city?",
+    },
+    "btn_events_menu": {
+        "hy": "🎟 Միջոցառումների մենյու",
+        "ru": "🎟 Меню мероприятий",
+        "en": "🎟 Events menu",
+    },
+    "btn_admin_question": {
+        "hy": "💬 Հարց ադմինին",
+        "ru": "💬 Вопрос админу",
+        "en": "💬 Ask admin",
+    },
+    "btn_website": {
+        "hy": "🌐 Մեր վեբ կայքը",
+        "ru": "🌐 Наш сайт",
+        "en": "🌐 Our website",
+    },
+    "ask_city_hint": {
+        "hy": (
+            "Գրի՛ քո հարցը Երևանի մասին, հարցականով 🙂 "
+            "Օրինակ՝ «Ճաշելու ի՞նչ հարմար սրճարան կա Ավանին մոտ»։"
+        ),
+        "ru": "Напиши свой вопрос о Ереване с вопросительным знаком 🙂",
+        "en": "Write your question about Yerevan with a question mark 🙂",
+    },
+    "events_menu_intro": {
+        "hy": "Ընտրիր թե ինչ տեսակի event ես ուզում տեսնել․",
+        "ru": "Выбери, какие события хочешь увидеть:",
+        "en": "Choose what kind of events you want to see:",
+    },
+    "ask_admin_intro": {
+        "hy": (
+            "Գրի՛ քո հարցը կամ առաջարկը, և այն կուղարկվի ադմինին անձնական նամակով, "
+            "առանց խմբում հրապարակվելու։"
+        ),
+        "ru": "Напишите свой вопрос или предложение, оно уйдёт админу в личку.",
+        "en": "Write your question or suggestion, it will be sent privately to the admin.",
+    },
+    "website_link": {
+        "hy": "🌐 Մեր վեբ կայքը՝ {url}",
+        "ru": "🌐 Наш сайт: {url}",
+        "en": "🌐 Our website: {url}",
+    },
+    "free_chat_hello": {
+        "hy": "Բարև՜, լսում եմ քեզ 🙂",
+        "ru": "Привет, я тебя слушаю 🙂",
+        "en": "Hi, I’m listening 🙂",
     },
 }
 
