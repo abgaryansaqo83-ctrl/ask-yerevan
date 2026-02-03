@@ -10,6 +10,8 @@ from backend.database import get_events_for_date
 from backend.armenia.traffic import get_traffic_status
 from backend.armenia.weather import get_yerevan_weather
 from backend.armenia.recommend import get_recommendations
+from backend.database import get_unanswered_questions_older_than, mark_question_answered
+from backend.ai.response import generate_reply
 
 BASE_URL = "https://askyerevan.am"
 
@@ -158,6 +160,7 @@ async def send_next_day_events():
 
 # ================ 6. Recommendation handler (bot.py-ում) ===================
 
+
 async def handle_recommendation_request(query: str, chat_id: int):
     bot = _get_bot()
 
@@ -168,5 +171,37 @@ async def handle_recommendation_request(query: str, chat_id: int):
         logger.info(f"🍽️ Recommendations sent for query: {query}")
     except Exception as e:
         logger.error(f"❌ Recommendation failed: {e}")
+    finally:
+        await bot.session.close()
+
+async def notify_unanswered_questions():
+    """
+    Ամեն X րոպեում ստուգում է unanswered հարցերը (>=15 րոպե),
+    և յուրաքանչյուրի տակ AI պատասխան է գրում հենց user's ընտրած լեզվով։
+    """
+    bot = _get_bot()
+    try:
+        rows = get_unanswered_questions_older_than(minutes=15)
+        if not rows:
+            return
+
+        for q in rows:
+            try:
+                # q["user_lang"] -> գալիս է users աղյուսակից (hy / ru / en ...)
+                lang = q.get("user_lang") or "hy"
+
+                ai_text = await generate_reply(q["text"], lang=lang)
+
+                await bot.send_message(
+                    chat_id=q["chat_id"],
+                    text=ai_text,
+                    reply_to_message_id=q["message_id"],
+                )
+                mark_question_answered(q["id"])
+                logger.info(
+                    f"🤖 Auto‑reply sent for question id={q['id']} in lang={lang}"
+                )
+            except Exception as e:
+                logger.exception(f"Auto‑reply failed for question id={q['id']}: {e}")
     finally:
         await bot.session.close()
