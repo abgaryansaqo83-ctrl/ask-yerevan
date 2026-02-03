@@ -15,10 +15,8 @@ from backend.bot.states.admin import AdminForm
 router = Router()
 
 
-@router.message(F.text == "💬 Հարց ադմինին")
+@router.message(F.text.contains("Հարց ադմինին"))
 async def admin_button(message: Message, state: FSMContext):
-    if message.chat.type != "private":
-        return
     await cmd_admin(message, state)
 
 
