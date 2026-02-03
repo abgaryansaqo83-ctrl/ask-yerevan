@@ -25,7 +25,7 @@ from aiogram.types import (
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 
-from config.settings import settings
+from backend.config.settings import settings
 from backend.utils.logger import logger
 from backend.languages import get_text
 from backend.ai.response import generate_reply
