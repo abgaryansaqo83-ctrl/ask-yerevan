@@ -22,15 +22,15 @@ async def admin_button(message: Message, state: FSMContext):
     await cmd_admin(message, state)
 
 
-@router.message(Command("admin"))
+@router.message(Command("admin", ignore_mention=True))
 async def cmd_admin(message: Message, state: FSMContext):
     if message.chat.type != "private":
         return
 
-    lang = (message.from_user.language_code or "hy").lower()
-    if lang.startswith("ru"):
+    lang_code = (message.from_user.language_code or "hy").lower()
+    if lang_code.startswith("ru"):
         lang = "ru"
-    elif lang.startswith("en"):
+    elif lang_code.startswith("en"):
         lang = "en"
     else:
         lang = "hy"
@@ -38,12 +38,19 @@ async def cmd_admin(message: Message, state: FSMContext):
     await message.answer(get_text("admin_intro", lang))
     await state.set_state(AdminForm.waiting_for_message)
 
-    await message.answer(
+    text = (
+        "Ձեր գրած հաղորդագրությունը կուղարկվի ադմինիստրատորին "
+        "անձնական նամակով և չի հրապարակվի AskYerevan խմբում։\n\n"
         "Խնդրում եմ, հաջորդ հաղորդագրությամբ գրեք ձեր հարցը կամ առաջարկը։"
     )
+    await message.answer(text)
 
 
-@router.message(AdminForm.waiting_for_message, F.chat.type.in_({"group", "supergroup"}))
+# Եթե user-ը պատահմամբ գրում է խմբում այս state-ի տակ, ջնջում ենք
+@router.message(
+    AdminForm.waiting_for_message,
+    F.chat.type.in_({"group", "supergroup"})
+)
 async def delete_admin_message_in_group(message: Message):
     try:
         await message.delete()
@@ -72,7 +79,8 @@ async def process_admin_message(message: Message, state: FSMContext):
     )
 
     await message.answer(
-        "Շնորհակալություն, ձեր հաղորդագրությունը ուղարկվեց ադմինին։"
+        "Շնորհակալություն, ձեր հաղորդագրությունը ուղարկվեց ադմինին ✅\n"
+        "Այն չի հրապարակվել խմբում։"
     )
 
     await state.clear()
