@@ -18,10 +18,8 @@ from backend.utils.logger import logger
 router = Router()
 
 
-@router.message(F.text == "🎟 Мիջոցառումների մենյու")
+@router.message(F.text.contains("Միջոցառումների մենյու"))
 async def open_events_menu(message: Message):
-    if message.chat.type != "private":
-        return
     await cmd_menu(message)
 
 
