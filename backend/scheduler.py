@@ -16,6 +16,7 @@ from .jobs import (
     send_morning_broadcast,
     send_holiday_events,
     send_next_day_events,
+    notify_unanswered_questions,  # ← Նոր job
 )
 from .utils.logger import setup_logger
 from backend.config.settings import settings
@@ -27,6 +28,14 @@ TIMEZONE = ZoneInfo(settings.TIMEZONE)
 def create_scheduler() -> AsyncIOScheduler:
     """Scheduler-ի ստեղծում բոլոր job-ներով."""
     scheduler = AsyncIOScheduler(timezone=TIMEZONE)
+
+        # Ամեն 5 րոպեն մեկ ստուգել անպատասխան հարցերը
+    scheduler.add_job(
+        notify_unanswered_questions,
+        CronTrigger(minute="*/5", timezone=TIMEZONE),
+        id="notify_unanswered_questions",
+        replace_existing=True,
+    )
 
     # ================ ԱՄԵՆ ՕՐ ===================
 
