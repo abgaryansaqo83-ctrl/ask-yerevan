@@ -489,21 +489,6 @@ async def handle_user_question(message: Message, state: FSMContext):
     await state.clear()
 
 
-@dp.message(F.location)
-async def handle_location(message: Message):
-    """Պահում ենք user-ի վերջին դիրքը recommendations-ի համար."""
-    loc = message.location
-    if not loc:
-        return
-
-    user_id = message.from_user.id
-    USER_LOCATIONS[user_id] = f"{loc.latitude},{loc.longitude}"
-
-    await message.answer(
-        "Ձեր դիրքը պահպանվեց ✅\n"
-        "Հիմա երբ հարցնես, օրինակ՝ «որտե՞ղ գնանք սրճարան», կփորձեմ խորհուրդ տալ ավելի մոտ վայրեր։"
-    )
-
 # ========== Սովորական տեքստեր (fallback router) + /publish ==========
 
 SPAM_POLITICS_KEYWORDS = [
@@ -846,7 +831,6 @@ async def main_router(message: Message, state: FSMContext):
         await message.answer(
             "Գրի՛ քո հարցը Երևանի մասին, հարցականով 🙂"
             "Օրինակ՝ «Ճաշելու ի՞նչ հարմար սրճարան կա Ավանին մոտ», "
-            "կամ «Ի՞նչ հետաքրքիր համերգներ կան այսօր»։"
         )
         await state.set_state(UserQuestion.waiting_for_question)
         return
