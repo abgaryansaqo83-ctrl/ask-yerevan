@@ -44,10 +44,10 @@ async def cmd_start(message: Message, state: FSMContext):
 
 @router.message(F.text.contains("Քաղաքում ինչ կա"))
 async def handle_city_button(message: Message, state: FSMContext):
-    if message.chat.type != "private":
-        return
+    # Թույլ տանք նաև խմբում աշխատի
     await message.answer("Գրի՛ քո հարցը Երևանի մասին, հարցականով 🙂")
-    await state.set_state(UserQuestion.waiting_for_question)
+    if message.chat.type == "private":
+        await state.set_state(UserQuestion.waiting_for_question)
 
 
 @router.message(F.text.contains("Մեր վեբ կայքը"))
