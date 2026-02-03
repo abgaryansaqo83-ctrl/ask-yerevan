@@ -1,6 +1,6 @@
 # backend/bot/handlers/ai_reply.py
 # ============================================
-#   AI REPLY + RECOMMENDATIONS + TRANSLIT CHECK
+#   AI REPLY + RECOMMENDATIONS + LOCATION SUPPORT
 # ============================================
 
 from aiogram import Router, F
@@ -16,14 +16,6 @@ from backend.bot.states.user_question import UserQuestion
 router = Router()
 
 USER_LOCATIONS: dict[int, str] = {}
-
-
-def looks_like_armenian_translit(text: str) -> bool:
-    t = text.lower()
-    if any("ա" <= ch <= "ֆ" for ch in t):
-        return False
-    keywords = ["barev", "inch", "yerevan", "jan", "shnorh", "lav"]
-    return any(k in t for k in keywords)
 
 
 @router.message(UserQuestion.waiting_for_question, F.chat.type == "private")
@@ -66,7 +58,8 @@ async def handle_user_question(message: Message, state: FSMContext):
     await state.clear()
 
 
-@router.message(F.location, F.chat.type == "private")
+# LOCATION WORKS IN GROUPS TOO
+@router.message(F.location)
 async def handle_location(message: Message):
     loc = message.location
     if not loc:
@@ -76,7 +69,7 @@ async def handle_location(message: Message):
     USER_LOCATIONS[user_id] = f"{loc.latitude},{loc.longitude}"
 
     await message.answer(
-        "Ձեր դիրքը պահպանվեց ✅\n"
-        "Հիմա երբ հարցնես, օրինակ՝ «որտե՞ղ գնանք սրճարան», "
+        "📍 Ձեր դիրքը պահպանվեց\n"
+        "Հիմա երբ հարցնես՝ «որտե՞ղ գնանք խորոված», "
         "կփորձեմ խորհուրդ տալ ավելի մոտ վայրեր։"
     )
