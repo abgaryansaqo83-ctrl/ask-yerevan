@@ -1,9 +1,11 @@
 # backend/database.py
 
 import os
+import datetime
 from pathlib import Path
 from datetime import date, datetime, timedelta
 from typing import Optional, Dict, Any, List
+from typing import Iterable
 
 from backend.utils.logger import logger
 
@@ -662,6 +664,64 @@ def delete_old_news(days: int = 90) -> int:
     finally:
         cur.close()
         conn.close()
+
+
+# ============================================================================
+# QUESTIONS HELPERS  (unanswered group questions)
+# ============================================================================
+
+def save_question(chat_id: int, message_id: int, user_id: int, text: str) -> int:
+    """
+    Պահում ենք հարցը questions աղյուսակում, վերադարձնում ID-ն.
+    Մշակված է PostgreSQL-ի համար (DATABASE_URL չկա SQLite-ում questions table).
+    """
+    conn = get_connection()
+    cur = get_cursor(conn)
+    cur.execute(
+        """
+        INSERT INTO questions (chat_id, message_id, user_id, text)
+        VALUES (%s, %s, %s, %s)
+        RETURNING id;
+        """,
+        (chat_id, message_id, user_id, text),
+    )
+    row = cur.fetchone()
+    conn.commit()
+    conn.close()
+    return row["id"]
+
+
+def mark_question_answered(question_id: int) -> None:
+    conn = get_connection()
+    cur = get_cursor(conn)
+    cur.execute(
+        "UPDATE questions SET answered = TRUE WHERE id = %s;",
+        (question_id,),
+    )
+    conn.commit()
+    conn.close()
+
+
+def get_unanswered_questions_older_than(minutes: int) -> list[dict]:
+    """
+    Վերադարձնում է բոլոր հարցերը, որոնք դեռ answered = FALSE են
+    և ստեղծվել են minutes րոպեից վաղ։
+    """
+    conn = get_connection()
+    cur = get_cursor(conn)
+    cur.execute(
+        """
+        SELECT id, chat_id, message_id, user_id, text, created_at
+        FROM questions
+        WHERE answered = FALSE
+          AND created_at <= NOW() - INTERVAL %s MINUTE
+        ORDER BY created_at ASC;
+        """,
+        (minutes,),
+    )
+    rows = cur.fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
 
 
 # ============================================================================
