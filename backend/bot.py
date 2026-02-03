@@ -334,20 +334,24 @@ async def handle_captcha_answer(callback: CallbackQuery, state: FSMContext):
 
     now = datetime.datetime.now(datetime.timezone.utc)
 
+    # rate limit, եթե արդեն արգելված է
     if next_allowed_str:
         try:
             next_allowed = datetime.datetime.fromisoformat(next_allowed_str)
         except Exception:
             next_allowed = None
         if next_allowed and now < next_allowed:
+            # լեզուն վերցնում ենք DB-ից
+            user_row = get_user(callback.from_user.id)
+            lang = (user_row["language"] if user_row and user_row.get("language") else "hy")
+
             wait_hours = (next_allowed - now).total_seconds() // 3600 + 1
-            await callback.answer(
-                f"Հաջորդ փորձը հնարավոր կլինի մոտավորապես {int(wait_hours)} ժամից։",
-                show_alert=True,
-            )
+            msg = get_text("captcha_try_later", lang).format(hours=int(wait_hours))
+            await callback.answer(msg, show_alert=True)
             return
 
-        if choice == CAPTCHA_CORRECT:
+    # === ՃԻՇՏ ՊԱՏԱՍԽԱՆ ===
+    if choice == CAPTCHA_CORRECT:
         await state.update_data(captcha_passed=True)
 
         await bot.restrict_chat_member(
@@ -360,54 +364,49 @@ async def handle_captcha_answer(callback: CallbackQuery, state: FSMContext):
             ),
         )
 
-        # User-ի լեզուն արդեն ունենք DB-ում, պետք է կարդանք
         user_row = get_user(callback.from_user.id)
         lang = (user_row["language"] if user_row and user_row.get("language") else "hy")
 
+        success_text = get_text("captcha_success", lang)
         welcome = get_text("welcome_new_member", lang).format(
             name=callback.from_user.full_name
         )
-        combined = (
-            "✅ Շնորհակալություն, թեստը հաջող անցար, հիմա կարող ես գրել խմբում։\n\n"
-            + welcome
-        )
+        combined = success_text + "\n\n" + welcome
+
         await callback.message.edit_text(combined)
         await callback.answer()
 
-        # Այստեղ այլևս նոր լեզվի keyboard ՉԵՆՔ ուղարկում
-        # և state-ը վերադարձնում ենք initial (ոչ state)
         await state.clear()
         return
 
+    # === ՍԽԱԼ ՊԱՏԱՍԽԱՆՆԵՐ ===
     attempts += 1
+    user_row = get_user(callback.from_user.id)
+    lang = (user_row["language"] if user_row and user_row.get("language") else "hy")
+
     wait_hours = 0
     message_tail = ""
 
     if attempts == 1:
         wait_hours = 0
-        message_tail = "Սա առաջին սխալ փորձն է, կարող ես նորից ընտրել։"
+        message_tail = get_text("captcha_wrong_1", lang)
     elif attempts == 2:
         wait_hours = 8
-        message_tail = "Սա երկրորդ սխալ փորձն է, հաջորդ հնարավորությունը կլինի 8 ժամից։"
+        message_tail = get_text("captcha_wrong_2", lang)
     elif attempts == 3:
         wait_hours = 12
-        message_tail = "Արդեն երեք սխալ փորձ կա, հաջորդ հնարավորությունը կլինի 12 ժամից։"
+        message_tail = get_text("captcha_wrong_3", lang)
     elif attempts == 4:
         wait_hours = 24
-        message_tail = (
-            "Սա չորրորդ սխալ փորձն է։ Հաջորդը կլինի վերջինը և հասանելի կլինի 24 ժամից։"
-        )
+        message_tail = get_text("captcha_wrong_4", lang)
     else:
         await state.update_data(
             captcha_attempts=attempts,
             captcha_next_allowed=None,
             captcha_blacklisted=True,
         )
-        await callback.answer(
-            "Դու բազմակի անգամ սխալ ես ընտրել։ Հիմա խմբում կմնաս առանց գրելու հնարավորության, "
-            "մինչև ադմինը որոշի բացել մուտքը։",
-            show_alert=True,
-        )
+        msg = get_text("captcha_blocked", lang)
+        await callback.answer(msg, show_alert=True)
         return
 
     next_allowed = None
@@ -420,7 +419,7 @@ async def handle_captcha_answer(callback: CallbackQuery, state: FSMContext):
     )
 
     await callback.answer(
-        f"Սխալ ընտրություն է։ {message_tail}",
+        get_text("captcha_wrong_generic", lang).format(tail=message_tail),
         show_alert=True,
     )
 
