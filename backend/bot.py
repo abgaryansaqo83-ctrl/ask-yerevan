@@ -88,19 +88,17 @@ class LanguageForm(StatesGroup):
     waiting_for_choice = State()
 
 
-if textraw == admin_btn:
-    await message.answer(get_text("ask_admin_intro", lang))
-    await state.set_state(AdminForm.waiting_for_message)
-    return
+class AdminForm(StatesGroup):
+    waiting_for_message = State()
 
-if textraw == city_btn:
-    await message.answer(get_text("ask_city_hint", lang))
-    await state.set_state(UserQuestion.waiting_for_question)
-    return
+
+class UserQuestion(StatesGroup):
+    waiting_for_question = State()
 
 
 class CaptchaForm(StatesGroup):
     waiting_for_answer = State()
+
 
 class AddNewsForm(StatesGroup):
     waiting_for_title_hy = State()
