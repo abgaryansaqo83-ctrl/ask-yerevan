@@ -705,20 +705,31 @@ def mark_question_answered(question_id: int) -> None:
 def get_unanswered_questions_older_than(minutes: int) -> list[dict]:
     """
     Վերադարձնում է բոլոր հարցերը, որոնք դեռ answered = FALSE են
-    և ստեղծվել են minutes րոպեից վաղ։
+    և ստեղծվել են minutes րոպեից վաղ, + user-ի լեզուն users աղյուսակից։
     """
     conn = get_connection()
     cur = get_cursor(conn)
+
     cur.execute(
         """
-        SELECT id, chat_id, message_id, user_id, text, created_at
-        FROM questions
-        WHERE answered = FALSE
-          AND created_at <= NOW() - INTERVAL %s MINUTE
-        ORDER BY created_at ASC;
+        SELECT
+          q.id,
+          q.chat_id,
+          q.message_id,
+          q.user_id,
+          q.text,
+          q.created_at,
+          u.language AS user_lang
+        FROM questions q
+        JOIN users u
+          ON u.chat_id = q.user_id
+        WHERE q.answered = FALSE
+          AND q.created_at <= NOW() - INTERVAL %s MINUTE
+        ORDER BY q.created_at ASC;
         """,
         (minutes,),
     )
+
     rows = cur.fetchall()
     conn.close()
     return [dict(r) for r in rows]
