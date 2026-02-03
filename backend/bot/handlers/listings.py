@@ -25,11 +25,23 @@ async def listings_router(message: Message):
     if not text_raw:
         return
 
+    # 0) Թողնենք commands-ը և հիմնական կոճակները մյուս routers-ին
+    if text_raw.startswith("/"):
+        return
+
+    if text_raw in {
+        "🌆 Քաղաքում ինչ կա՞",
+        "🎟 Միջոցառումների մենյու",
+        "💬 Հարց ադմինին",
+        "🌐 Մեր վեբ կայքը",
+    }:
+        return
+
     text = text_raw.lower()
     thread_id = getattr(message, "message_thread_id", None)
     user_id = message.from_user.id
 
-    # Քաղաքական spam filter (նույնը ինչ հին main_router-ում էր) [file:3]
+    # Քաղաքական spam filter
     SPAM_POLITICS_KEYWORDS = [
         "քաղաքական", "կուսակց", "պատգամավոր", "կառավարություն", "իշխանություն",
         "ընդդիմություն", "վարչապետ", "նախագահ", "ընտրութ", "ընտրարշավ",
@@ -77,24 +89,30 @@ async def listings_router(message: Message):
             await message.delete()
             return
 
-    # Listings detection (sell/rent/search/job) [file:3]
+    # Listings detection (sell/rent/search/job)
     is_listing, category = detect_listing_category(text)
     if not is_listing:
         return
 
     # Thread checks
     if category == "sell" and thread_id != settings.SELL_THREAD_ID:
-        await message.reply("Սա վաճառքի հայտարարություն է, խնդրում եմ տեղադրեք «Վաճառք» բաժնում 🙂")
+        await message.reply(
+            "Սա վաճառքի հայտարարություն է, խնդրում եմ տեղադրեք «Վաճառք» բաժնում 🙂"
+        )
         await message.delete()
         return
 
     if category == "rent" and thread_id != settings.RENT_THREAD_ID:
-        await message.reply("Սա վարձակալության հայտարարություն է, խնդրում եմ տեղադրեք «Վարձու» բաժնում 🙂")
+        await message.reply(
+            "Սա վարձակալության հայտարարություն է, խնդրում եմ տեղադրեք «Վարձու» բաժնում 🙂"
+        )
         await message.delete()
         return
 
     if category == "search" and thread_id != settings.SEARCH_THREAD_ID:
-        await message.reply("Սա «Փնտրում եմ» հայտարարություն է, խնդրում եմ տեղադրեք «Փնտրում եմ» բաժնում 🙂")
+        await message.reply(
+            "Սա «Փնտրում եմ» հայտարարություն է, խնդրում եմ տեղադրեք «Փնտրում եմ» բաժնում 🙂"
+        )
         await message.delete()
         return
 
