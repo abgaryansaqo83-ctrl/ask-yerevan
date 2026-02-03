@@ -10,7 +10,6 @@ def build_main_keyboard() -> ReplyKeyboardMarkup:
             [KeyboardButton(text="🎟 Միջոցառումների մենյու")],
             [KeyboardButton(text="💬 Հարց ադմինին")],
             [KeyboardButton(text="🌐 Մեր վեբ կայքը")],
-            [KeyboardButton(text="📍 Ուղարկել դիրքս", request_location=True)],
         ],
         resize_keyboard=True,
         one_time_keyboard=False,
