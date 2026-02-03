@@ -12,7 +12,6 @@ from backend.bot.keyboards.main_menu import build_main_keyboard
 from backend.bot.states.user_question import UserQuestion
 from backend.languages import get_text
 from backend.bot.handlers.utils import detect_lang
-from backend.bot.config import BOT_SITE_URL  # ← եթե BOT_SITE_URL-ը հիմա config ֆայլում է [file:3]
 
 router = Router()
 
@@ -55,5 +54,4 @@ async def handle_city_button(message: Message, state: FSMContext):
 
 @router.message(F.text == "🌐 Մեր վեբ կայքը")
 async def handle_website_button(message: Message):
-    # հին bot.py-ում BOT_SITE_URL կոնստանտ էր [file:3]
-    await message.answer(f"🌐 AskYerevan վեբ էջը՝ {BOT_SITE_URL}")
+    await message.answer("🌐 AskYerevan կայքը՝ https://askyerevan.am")
