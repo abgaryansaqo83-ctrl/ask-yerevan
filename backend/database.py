@@ -201,9 +201,9 @@ def get_user(chat_id: int):
     cur = get_cursor(conn)
 
     if DATABASE_URL:
-        cur.execute("SELECT * FROM users WHERE chat_id = %s", (chat_id,))
+        cur.execute("SELECT * FROM users WHERE chat_id = %s", (str(chat_id),))
     else:
-        cur.execute("SELECT * FROM users WHERE chat_id = ?", (chat_id,))
+        cur.execute("SELECT * FROM users WHERE chat_id = ?", (str(chat_id),))
 
     row = cur.fetchone()
     conn.close()
@@ -722,7 +722,7 @@ def get_unanswered_questions_older_than(minutes: int) -> list[dict]:
           u.language AS user_lang
         FROM questions q
         JOIN users u
-          ON u.chat_id = q.user_id
+          ON u.chat_id = q.user_id::text   -- եթե DATABASE_URL/Postgres
         WHERE q.answered = FALSE
           AND q.created_at <= NOW() - INTERVAL %s MINUTE
         ORDER BY q.created_at ASC;
