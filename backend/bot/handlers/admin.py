@@ -72,8 +72,7 @@ async def process_admin_message(message: Message, state: FSMContext):
     )
 
     await message.answer(
-        "Շնորհակալություն, ձեր հաղորդագրությունը ուղարկվեց ադմինին ✅\n"
-        "Այն չի հրապարակվել խմբում։"
+        "Շնորհակալություն, ձեր հաղորդագրությունը ուղարկվեց ադմինին։"
     )
 
     await state.clear()
