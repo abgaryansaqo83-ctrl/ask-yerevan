@@ -967,7 +967,7 @@ async def main_router(message: Message, state: FSMContext):
         if count >= 3:
             await message.reply(
                 "Կանոնների բազմակի խախտման պատճառով դուք հեռացվում եք խմբից։ "
-                "Վերադառնալ կարող եք միայն ադմինի հատուկ հղումով։"
+                "Վերադառնալ կարող եք μόνο ադմինի հատուկ հղումով։"
             )
             await message.delete()
             return
