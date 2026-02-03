@@ -10,11 +10,11 @@ from aiogram.fsm.context import FSMContext
 from backend.ai.response import generate_reply
 from backend.armenia.recommend import get_recommendations
 from backend.utils.logger import logger
-
 from backend.bot.states.user_question import UserQuestion
 
 router = Router()
 
+# user_id -> "lat,lon"
 USER_LOCATIONS: dict[int, str] = {}
 
 
@@ -39,28 +39,29 @@ async def handle_user_question(message: Message, state: FSMContext):
 
     logger.info(f"AI question from user={user_id}, lang={lang}, text={raw}")
 
-    rec_parts = []
+    rec_parts: list[str] = []
     try:
         recs = await get_recommendations(raw, user_location=user_location)
+        # հին կոդում first element "🤔 ..." լինելու դեպքում recs-ը չէր օգտագործվում [file:3]
         if recs and not recs[0].startswith("🤔 "):
             rec_parts.extend(recs)
     except Exception as e:
         logger.error(f"Recommendation error: {e}")
 
-    ai_text = await generate_reply(raw, lang=lang)
+    reply = await generate_reply(raw, lang=lang)
 
     if rec_parts:
-        full = "💡 Ահա մի քանի տարբերակ.\n" + "\n\n".join(rec_parts) + "\n\n" + ai_text
+        full = "💡 Ահա մի քանի տարբերակ.\n" + "\n\n".join(rec_parts) + "\n\n" + reply
     else:
-        full = ai_text
+        full = reply
 
     await message.answer(full)
     await state.clear()
 
 
-# LOCATION WORKS IN GROUPS TOO
 @router.message(F.location)
 async def handle_location(message: Message):
+    """Պահում ենք user-ի վերջին դիրքը recommendations-ի համար։"""
     loc = message.location
     if not loc:
         return
@@ -69,7 +70,7 @@ async def handle_location(message: Message):
     USER_LOCATIONS[user_id] = f"{loc.latitude},{loc.longitude}"
 
     await message.answer(
-        "📍 Ձեր դիրքը պահպանվեց\n"
-        "Հիմա երբ հարցնես՝ «որտե՞ղ գնանք խորոված», "
+        "Ձեր դիրքը պահպանվեց ✅\n"
+        "Հիմա երբ հարցնես, օրինակ՝ «որտե՞ղ գնանք սրճարան», "
         "կփորձեմ խորհուրդ տալ ավելի մոտ վայրեր։"
     )
