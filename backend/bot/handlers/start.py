@@ -20,7 +20,6 @@ router = Router()
 async def cmd_start(message: Message, state: FSMContext):
     lang = detect_lang(message)
 
-    # GROUP CHAT → show keyboard, NO FSM
     if message.chat.type != "private":
         await message.answer(
             get_text("start", lang),
@@ -28,7 +27,6 @@ async def cmd_start(message: Message, state: FSMContext):
         )
         return
 
-    # PRIVATE CHAT → full menu + FSM
     await message.answer(
         get_text("start", lang),
         reply_markup=build_main_keyboard(),
@@ -44,7 +42,7 @@ async def cmd_start(message: Message, state: FSMContext):
     await state.set_state(UserQuestion.waiting_for_question)
 
 
-@router.message(F.text == "🌆 Քաղաքում ինչ կա՞")
+@router.message(F.text.contains("Քաղաքում ինչ կա"))
 async def handle_city_button(message: Message, state: FSMContext):
     if message.chat.type != "private":
         return
@@ -52,6 +50,6 @@ async def handle_city_button(message: Message, state: FSMContext):
     await state.set_state(UserQuestion.waiting_for_question)
 
 
-@router.message(F.text == "🌐 Մեր վեբ կայքը")
+@router.message(F.text.contains("Մեր վեբ կայքը"))
 async def handle_website_button(message: Message):
     await message.answer("🌐 AskYerevan կայքը՝ https://askyerevan.am")
