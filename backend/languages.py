@@ -120,9 +120,9 @@ TEXTS: dict[str, dict[LangCode, str]] = {
 
     # ====== Հիմնական reply keyboard կոճակներ + placeholder ======
     "btn_city": {
-        "hy": "🌆 Քաղաքում ինչ կա՞",
-        "ru": "🌆 Что есть в городе?",
-        "en": "🌆 What’s in the city?",
+        "hy": "🌆 AI BOT",
+        "ru": "🌆 AI BOT",
+        "en": "🌆 AI BOT",
     },
     "btn_events_menu": {
         "hy": "🎟 Միջոցառումների մենյու",
