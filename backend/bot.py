@@ -922,7 +922,7 @@ async def main_router(message: Message, state: FSMContext):
     text = (message.text or "").lower()
     thread_id = getattr(message, "message_thread_id", None)
 
-   if thread_id == settings.FREE_CHAT_THREAD_ID:
+    if thread_id == settings.FREE_CHAT_THREAD_ID:
         if any(word in text for word in ["բարև", "barev", "hi", "hello"]):
             await message.answer(get_text("free_chat_hello", lang))
         return
