@@ -881,7 +881,48 @@ async def main_router(message: Message, state: FSMContext):
     text = textraw.lower()
     thread_id = getattr(message, "message_thread_id", None)
 
-    # ---- Free chat greeting (ամենաառաջին պարզ բան) ----
+    # Լեզուն բերում ենք ամենասկզբում, որ ամեն տեղ հասանելի լինի
+    user_row = get_user(message.from_user.id)
+    lang = (user_row["language"] if user_row and user_row.get("language") else "hy")
+
+    city_btn   = get_text("btn_city", lang)
+    events_btn = get_text("btn_events_menu", lang)
+    admin_btn  = get_text("btn_admin_question", lang)
+    site_btn   = get_text("btn_website", lang)
+
+    # 1) Ի՞նչ կա քաղաքում → AI (կոճակ)
+    if textraw == city_btn:
+        await message.answer(get_text("ask_city_hint", lang))
+        await state.set_state(UserQuestion.waiting_for_question)
+        return
+
+    # 2) Միջոցառումների մենյու (կոճակ)
+    if textraw == events_btn:
+        await message.answer(get_text("events_menu_intro", lang))
+        await cmd_menu(message)
+        return
+
+    # 3) Հարց ադմինին (կոճակ)
+    if textraw == admin_btn:
+        await message.answer(get_text("ask_admin_intro", lang))
+        await state.set_state(AdminForm.waiting_for_message)
+        return
+
+    # 4) Մեր վեբ կայքը (կոճակ)
+    if textraw == site_btn:
+        await message.answer(
+            get_text("website_link", lang).format(url=BOT_SITE_URL)
+        )
+        return
+
+    # Հրամանները թողնենք այլ handler-ներին
+    if message.text and message.text.startswith("/"):
+        return
+    # Admin_chat-ը չենք պրոցեսում ընդհանուր router-ում
+    if message.from_user.id == settings.ADMIN_CHAT_ID:
+        return
+
+    # Free chat հատուկ thread — ողջույն
     if thread_id == settings.FREE_CHAT_THREAD_ID:
         if any(word in text for word in ["բարև", "barev", "hi", "hello"]):
             await message.answer(get_text("free_chat_hello", lang))
@@ -907,55 +948,9 @@ async def main_router(message: Message, state: FSMContext):
             reply = await generate_reply(textraw, lang=lang)
             await message.answer(reply)
             return
-        # NO → ոչինչ չենք գրում
+        # NO → ոչինչ չենք գրում, թողնում ենք մարդկանց խոսակցությունը
 
-    user_row = get_user(message.from_user.id)
-    lang = (user_row["language"] if user_row and user_row.get("language") else "hy")
-
-    city_btn   = get_text("btn_city", lang)
-    events_btn = get_text("btn_events_menu", lang)
-    admin_btn  = get_text("btn_admin_question", lang)
-    site_btn   = get_text("btn_website", lang)
-
-    # 1) Ի՞նչ կա քաղաքում → AI
-    if textraw == city_btn:
-        await message.answer(get_text("ask_city_hint", lang))
-        await state.set_state(UserQuestion.waiting_for_question)
-        return
-
-    # 2) Միջոցառումների մենյու
-    if textraw == events_btn:
-        await message.answer(get_text("events_menu_intro", lang))
-        await cmd_menu(message)
-        return
-
-    # 3) Հարց ադմինին
-    if textraw == admin_btn:
-        await message.answer(get_text("ask_admin_intro", lang))
-        await state.set_state(AdminForm.waiting_for_message)
-        return
-
-    # 4) Մեր վեբ կայքը
-    if textraw == site_btn:
-        await message.answer(
-            get_text("website_link", lang).format(url=BOT_SITE_URL)
-        )
-        return
-
-    if message.text and message.text.startswith("/"):
-        return
-    if message.from_user.id == settings.ADMIN_CHAT_ID:
-        return
-
-    text = (message.text or "").lower()
-    thread_id = getattr(message, "message_thread_id", None)
-
-    if thread_id == settings.FREE_CHAT_THREAD_ID:
-        if any(word in text for word in ["բարև", "barev", "hi", "hello"]):
-            await message.answer(get_text("free_chat_hello", lang))
-        return
-
-    # Եթե group/supergroup-ում է, ունի հարցական, և command չէ
+    # Եթե group/supergroup-ում է, ունի հարցական, և command չէ → պահում ենք questions-ում
     if message.chat.type in ("group", "supergroup"):
         if textraw and not textraw.startswith("/") and ("?" in textraw or "՞" in textraw):
             try:
@@ -968,6 +963,7 @@ async def main_router(message: Message, state: FSMContext):
             except Exception as e:
                 logger.exception(f"save_question failed: {e}")
 
+    # Քաղաքական spam filter
     if any(kw in text for kw in SPAM_POLITICS_KEYWORDS):
         user_id = message.from_user.id
         chat_id = message.chat.id
@@ -1000,6 +996,7 @@ async def main_router(message: Message, state: FSMContext):
             await message.delete()
             return
 
+    # Listings detection
     is_listing, category = detect_listing_category(text)
     if is_listing:
         if category == "sell" and thread_id != settings.SELL_THREAD_ID:
@@ -1058,6 +1055,7 @@ async def main_router(message: Message, state: FSMContext):
         )
         return
 
+    # Վերջում՝ general greeting private / սովորական chat-ի համար
     if any(word in text for word in ["բարև", "barev", "hi", "hello"]):
         await message.answer(get_text("free_chat_hello", lang))
         return
