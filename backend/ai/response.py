@@ -29,7 +29,7 @@ async def _call_perplexity(system_prompt: str, user_message: str) -> str:
             {"role": "user", "content": user_message},
         ],
         "temperature": 0.7,
-        "max_tokens": 300,
+        "max_tokens": 900,  # կամ 1200, եթե ուզում ես ավելի երկար պատմություններ
     }
 
     async with aiohttp.ClientSession() as session:
