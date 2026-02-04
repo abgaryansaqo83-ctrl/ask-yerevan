@@ -881,6 +881,34 @@ async def main_router(message: Message, state: FSMContext):
     text = textraw.lower()
     thread_id = getattr(message, "message_thread_id", None)
 
+    # ---- Free chat greeting (ամենաառաջին պարզ բան) ----
+    if thread_id == settings.FREE_CHAT_THREAD_ID:
+        if any(word in text for word in ["բարև", "barev", "hi", "hello"]):
+            await message.answer(get_text("free_chat_hello", lang))
+        return
+
+    # ---- Եթե user-ը հիշատակում է բոտին, անմիջապես աշխատացնենք AI-ին ----
+    if any(kw in text for kw in BOT_KEYWORDS):
+        # Եթե հարցական ունի → միանշանակ հարց
+        if "?" in textraw or "՞" in textraw:
+            reply = await generate_reply(textraw, lang=lang)
+            await message.answer(reply)
+            return
+
+        # Առանց հարցականի → classifier prompt
+        classify_prompt = (
+            "User-ի հաղորդագրությունն է.\n\n"
+            f"\"{textraw}\"\n\n"
+            "Սա հարց է բոտին, թե պարզապես հիշատակված է բոտի անունը? "
+            "Պատասխանի՛ր միայն մեկ բառով՝ YES եթե հարց է, NO եթե ոչ։"
+        )
+        decision = (await generate_reply(classify_prompt, lang="en")).lower()
+        if "yes" in decision:
+            reply = await generate_reply(textraw, lang=lang)
+            await message.answer(reply)
+            return
+        # NO → ոչինչ չենք գրում
+
     user_row = get_user(message.from_user.id)
     lang = (user_row["language"] if user_row and user_row.get("language") else "hy")
 
@@ -926,28 +954,6 @@ async def main_router(message: Message, state: FSMContext):
         if any(word in text for word in ["բարև", "barev", "hi", "hello"]):
             await message.answer(get_text("free_chat_hello", lang))
         return
-
-    # --- Եթե user-ը վերում է բոտի անունը, անմիջապես աշխատեցնենք AI-ին ---
-    if any(kw in text for kw in BOT_KEYWORDS):
-        # 1) Եթե հարցական ունի → միանշանակ հարց ենք համարում
-        if "?" in textraw or "՞" in textraw:
-            reply = await generate_reply(textraw, lang=lang)
-            await message.answer(reply)
-            return
-
-        # 2) Առանց հարցականի → AI-ից հարցնենք՝ սա բոտին ուղղված հարց է, թե ոչ
-        classify_prompt = (
-            "User-ի հաղորդագրությունն է.\n\n"
-            f"\"{textraw}\"\n\n"
-            "Սա հարց է բոտին, թե պարզապես հիշատակված է բոտի անունը? "
-            "Պատասխանի՛ր միայն մեկ բառով՝ YES եթե հարց է, NO եթե ոչ։"
-        )
-        decision = await generate_reply(classify_prompt, lang="en")
-        if "yes" in decision.lower():
-            reply = await generate_reply(textraw, lang=lang)
-            await message.answer(reply)
-            return
-        # Եթե NO → ոչինչ չենք գրում, թողնում ենք մարդկանց խոսակցությունը
 
     # Եթե group/supergroup-ում է, ունի հարցական, և command չէ
     if message.chat.type in ("group", "supergroup"):
