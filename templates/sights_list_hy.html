@@ -1,1 +1,116 @@
+{% extends "base.html" %}
+{% block title %}AskYerevan · Տեսարժան վայրեր Հայաստանում{% endblock %}
+
+{% block content %}
+<section class="news-hero-mini">
+  <div class="container">
+    <h1>🏛️ Տեսարժան վայրեր Հայաստանում</h1>
+  </div>
+</section>
+
+<section class="sights-container">
+  <div class="sights-grid">
+    {% for sight in sights %}
+      <a href="/hy/sights/{{ sight.id }}" class="sight-card">
+        <div class="sight-card-image">
+          {% if sight.thumb %}
+            <img src="{{ sight.thumb }}" alt="{{ sight.title_hy }}" loading="lazy">
+          {% else %}
+            <div class="image-placeholder">🏛️</div>
+          {% endif %}
+        </div>
+        <div class="sight-card-content">
+          <h3 class="sight-title">{{ sight.title_hy }}</h3>
+          {% if sight.short_hy %}
+            <p class="sight-short">
+              {{ sight.short_hy }}
+            </p>
+          {% endif %}
+          <div class="sight-meta-row">
+            {% if sight.location_hy %}
+              <span class="sight-meta-item">📍 {{ sight.location_hy }}</span>
+            {% endif %}
+            {% if sight.maps_url %}
+              <a href="{{ sight.maps_url }}"
+                 target="_blank" rel="noopener"
+                 class="sight-map-link-small">🗺️ Բացել քարտեզում</a>
+            {% endif %}
+          </div>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+<style>
+.sights-container { max-width: 1200px; margin: 1rem auto 2rem; padding: 0 1rem; }
+.sights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.2rem;
+}
+.sight-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+}
+.sight-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+.sight-card-image {
+  position: relative;
+  height: 180px;
+  background: linear-gradient(135deg, #8a5a2f, #5b3820);
+  overflow: hidden;
+}
+.sight-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.sight-card-content {
+  padding: 0.9rem 1rem 1rem;
+}
+.sight-title {
+  font-size: 1rem;
+  margin: 0 0 0.3rem;
+  font-weight: 600;
+}
+.sight-short {
+  font-size: 0.85rem;
+  margin: 0 0 0.4rem;
+  color: #555;
+}
+.sight-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.6rem;
+  align-items: center;
+  font-size: 0.78rem;
+}
+.sight-meta-item { color: #666; }
+.sight-map-link-small {
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid #d4c1a0;
+  font-size: 0.78rem;
+  text-decoration: none;
+  color: #5b3820;
+  background: rgba(255, 248, 235, 0.9);
+}
+.sight-map-link-small:hover {
+  background: #5b3820;
+  color: #fff;
+}
+@media (max-width: 768px) {
+  .sight-card-image { height: 150px; }
+}
+</style>
+{% endblock %}
 
