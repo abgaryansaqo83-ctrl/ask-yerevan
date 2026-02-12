@@ -1,1 +1,38 @@
+{# templates/churches_list_hy.html #}
+{% extends "base.html" %}
+{% block title %}AskYerevan · Եկեղեցիներ{% endblock %}
+
+{% block content %}
+<section class="news-hero-mini">
+  <div class="container">
+    <h1>⛪ Եկեղեցիներ Հայաստանում</h1>
+  </div>
+</section>
+
+<section class="sights-container">
+  <div class="sights-grid">
+    {% for ch in churches %}
+      <a href="/hy/churches/{{ ch.id }}" class="sight-card">
+        <div class="sight-card-image">
+          <img src="{{ ch.image_new or ch.image_old }}" alt="{{ ch.name_hy }}" loading="lazy">
+        </div>
+        <div class="sight-card-content">
+          <h3 class="sight-title">{{ ch.name_hy }}</h3>
+          <p class="sight-short">
+            {{ ch.century }} · {{ ch.location_hy }}
+          </p>
+          <div class="sight-meta-row">
+            {% if ch.year %}
+              <span class="sight-meta-item">📅 {{ ch.year }} թ.</span>
+            {% endif %}
+            <a href="https://maps.google.com/?q={{ ch.coordinates.lat }},{{ ch.coordinates.lon }}"
+               target="_blank" rel="noopener"
+               class="sight-map-link-small">🗺️ Բացել քարտեզում</a>
+          </div>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
 
