@@ -202,6 +202,46 @@
    </div>
 </footer>
 
+<!-- Share button logic -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const btn = document.getElementById("share-button");
+    if (!btn) return;
+
+    const shareUrl = btn.dataset.shareUrl;
+    const shareTitle = btn.dataset.shareTitle;
+
+    btn.addEventListener("click", function () {
+      if (navigator.share) {
+        navigator.share({
+          title: shareTitle,
+          text: shareTitle,
+          url: shareUrl,
+        }).catch(function (err) {
+          console.log("Share cancelled or failed:", err);
+        });
+        return;
+      }
+
+      const encodedUrl = encodeURIComponent(shareUrl);
+      const encodedText = encodeURIComponent(shareTitle);
+
+      const fb = "https://www.facebook.com/sharer/sharer.php?u=" + encodedUrl;
+      const tg = "https://t.me/share/url?url=" + encodedUrl + "&text=" + encodedText;
+      const wa = "https://wa.me/?text=" + encodedText + "%20" + encodedUrl;
+
+      const shareWindow = window.open(
+        fb,
+        "shareWindow",
+        "width=600,height=500"
+      );
+      if (!shareWindow) {
+        alert("Խնդրում ենք թույլատրել pop-up‑ները, որպեսզի կիսվելու պատուհանը բացվի։");
+      }
+    });
+  });
+</script>
+
 <!-- Header scroll behavior -->
 <script>
   (function () {
