@@ -115,7 +115,7 @@ main.container {
 
 /* Logo + մարդուկ */
 .logo {
-  margin: 0.3rem 0 0 -2rem;
+  margin: 0.3rem 0 0 2rem;
   display: inline-flex;
   align-items: flex-start;
   transform-origin: left bottom;
