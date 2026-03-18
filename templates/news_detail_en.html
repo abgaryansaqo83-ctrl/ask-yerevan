@@ -12,11 +12,24 @@
   {% endif %}
 
   <div class="detail-content-wrapper">
-    <div class="back-wrapper">
-      <a href="{{ back_url or '/en/news' }}" class="back-btn">← Back</a>
+    <div class="back-wrapper back-wrapper--with-share">
+      <a href="{{ backurl or '/hy/news' }}" class="back-btn">
+        ← Back
+      </a>
+
+      {# ՄԻԱՅՆ եթե category == 'important' #}
+      {% if news.category == 'important' %}
+        <button type="button"
+                class="back-btn back-btn--share"
+                id="share-button"
+                data-share-url="{{ request.build_absolute_uri }}"
+                data-share-title="{{ news.title_hy }}">
+          Share
+        </button>
+      {% endif %}
     </div>
 
-    <h1 class="detail-title">{{ news.title_en }}</h1>
+    <h1 class="detail-title">{{ news.title_hy }}</h1>
 
     {# Event info՝ if at least one field exists #}
     {% if news.eventdate or news.eventtime or news.venue_en or news.price_hy %}
