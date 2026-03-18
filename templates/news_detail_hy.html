@@ -12,11 +12,24 @@
   {% endif %}
 
   <div class="detail-content-wrapper">
-    <div class="back-wrapper">
-      <a href="{{ back_url or '/hy/news' }}" class="back-btn">← Հետ</a>
-    </div>
+  <div class="back-wrapper back-wrapper--with-share">
+    <a href="{{ backurl or '/hy/news' }}" class="back-btn">
+      ← Հետ
+    </a>
 
-    <h1 class="detail-title">{{ news.title_hy }}</h1>
+    {# ՄԻԱՅՆ եթե category == 'important' #}
+    {% if news.category == 'important' %}
+      <button type="button"
+              class="back-btn back-btn--share"
+              id="share-button"
+              data-share-url="{{ request.build_absolute_uri }}"
+              data-share-title="{{ news.title_hy }}">
+        Կիսվել
+      </button>
+    {% endif %}
+  </div>
+
+  <h1 class="detail-title">{{ news.title_hy }}</h1>
 
     {# Event info՝ եթե գոնե մեկ դաշտ կա #}
     {% if news.eventdate or news.eventtime or news.venue_hy or news.price_hy %}
