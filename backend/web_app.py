@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request, Query
+from backend.admin_routes import router as admin_router
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -26,6 +27,7 @@ except Exception as e:
     print(f"❌ Database initialization failed: {e}")
 
 app = FastAPI(title="AskYerevan Web")
+app.include_router(admin_router)
 
 
 def is_winter_theme_enabled() -> bool:
