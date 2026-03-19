@@ -1,1 +1,161 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AskYerevan Admin</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: #f0f4f8;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 700px;
+    }
+    .card h1 {
+      font-size: 1.6rem;
+      color: #071f33;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 0.3rem;
+      margin-top: 1rem;
+    }
+    input[type="text"],
+    input[type="password"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 0.65rem 0.9rem;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      background: #f9fafb;
+    }
+    textarea { min-height: 120px; resize: vertical; }
+    input[type="file"] {
+      margin-top: 0.3rem;
+      font-size: 0.9rem;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      margin-top: 1.5rem;
+      padding: 0.75rem;
+      background: #2B7A8D;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn:hover { background: #1f5a6b; }
+    .btn-logout {
+      display: inline-block;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      color: #999;
+      text-decoration: none;
+      text-align: center;
+      width: 100%;
+    }
+    .alert {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+    }
+    .alert-success { background: #d1fae5; color: #065f46; }
+    .alert-error { background: #fee2e2; color: #991b1b; }
+    .divider {
+      text-align: center;
+      color: #aaa;
+      font-size: 0.85rem;
+      margin: 0.5rem 0;
+    }
+  </style>
+</head>
+<body>
+
+{% if page == "login" %}
+<div class="card">
+  <h1>🔐 AskYerevan Admin</h1>
+  {% if error %}
+    <div class="alert alert-error">{{ error }}</div>
+  {% endif %}
+  <form method="post" action="/admin/login">
+    abel>Գաղտնաբառ</label>
+    <input type="password" name="password" autofocus required>
+    <button type="submit" class="btn">Մուտք</button>
+  </form>
+</div>
+
+{% elif page == "panel" %}
+<div class="card">
+  <h1>📰 Նոր հրապարակում</h1>
+
+  {% if success %}
+    <div class="alert alert-success">{{ success }}</div>
+  {% endif %}
+  {% if error %}
+    <div class="alert alert-error">{{ error }}</div>
+  {% endif %}
+
+  <form method="post" action="/admin/publish" enctype="multipart/form-data">
+
+    abel>Վերնագիր (հայ)</label>
+    <input type="text" name="title_hy" required>
+
+    abel>Վերնագիր (անգլ)</label>
+    <input type="text" name="title_en" required>
+
+    abel>Բովանդակություն (հայ)</label>
+    <textarea name="content_hy" required></textarea>
+
+    abel>Բովանդակություն (անգլ)</label>
+    <textarea name="content_en" required></textarea>
+
+    abel>կատեգորիա</label>
+    <select name="category">
+      <option value="important">⚠️ Կարևոր</option>
+      <option value="general">🌐 Գլխաոր</option>
+      <option value="city">🏛️ Քաղաքային</option>
+      <option value="culture">🎭 Մշակույթ</option>
+      <option value="events">🎉 Միջոցարումներ</option>
+    </select>
+
+    abel>նկար — upload</label>
+    <input type="file" name="image" accept="image/*">
+
+    <div class="divider">— կամ —</div>
+
+    abel>նկարի URL (եթե upload չեմ անում)</label>
+    <input type="text" name="image_url_manual" placeholder="https://... կամ /static/img/...">
+
+    <button type="submit" class="btn">✅ Հրապարակում</button>
+  </form>
+
+  <a href="/admin/logout" class="btn-logout">Ելք</a>
+</div>
+{% endif %}
+
+</body>
+</html>
 
