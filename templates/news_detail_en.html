@@ -1,4 +1,13 @@
 {% extends "base.html" %}
+
+{% block og_tags %}
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="{{ news.title_hy }}">
+  <meta property="og:description" content="{{ news.content_hy|striptags|truncate(180, True, '...') }}">
+  <meta property="og:image" content="{{ news.image_url_absolute }}">
+  <meta property="og:url" content="{{ request.url }}">
+{% endblock %}
+
 {% block title %}{{ news.title_en }} - AskYerevan{% endblock %}
 
 {% block content %}
@@ -200,10 +209,4 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
-{% block og_tags %}
-  <meta property="og:type" content="article">
-  <meta property="og:title" content="{{ news.title_hy }}">
-  <meta property="og:description" content="{{ news.content_hy|striptags|truncate(180, True, '...') }}">
-  <meta property="og:image" content="{{ news.image_url_absolute }}">
-  <meta property="og:url" content="{{ request.url }}">
 {% endblock %}
