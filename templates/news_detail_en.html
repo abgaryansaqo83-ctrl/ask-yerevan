@@ -1,20 +1,35 @@
 {% extends "base.html" %}
 
 {% block og_tags %}
+  {% if news.image_url and news.image_url.startswith('/') %}
+    {% set og_image = request.base_url | string | trim('/') + news.image_url %}
+  {% else %}
+    {% set og_image = news.image_url or '' %}
+  {% endif %}
   <meta property="og:type" content="article">
-  <meta property="og:title" content="{{ news.title_hy }}">
-  <meta property="og:description" content="{{ news.content_hy|striptags|truncate(180, True, '...') }}">
-  <meta property="og:image" content="{{ news.image_url_absolute }}">
+  <meta property="og:title" content="{{ news.title_en }}">
+  <meta property="og:description" content="{{ news.content_en|striptags|truncate(180, True, '...') }}">
+  <meta property="og:image" content="{{ og_image }}">
   <meta property="og:url" content="{{ request.url }}">
 {% endblock %}
 
 {% block title %}{{ news.title_en }} - AskYerevan{% endblock %}
 
 {% block content %}
+
+{% if news.image_url and news.image_url.startswith('/') %}
+  {% set display_image = request.base_url | string | trim('/') + news.image_url %}
+{% else %}
+  {% set display_image = news.image_url or '' %}
+{% endif %}
+
+{% set back_category = news.category or 'general' %}
+{% set back_url = '/en/news?category=' + back_category %}
+
 <article class="detail-container">
   {% if news.image_url %}
     <div class="detail-hero">
-      <img src="{{ news.image_url }}" alt="{{ news.title_hy }}"
+      <img src="{{ display_image }}" alt="{{ news.title_en }}"
            class="detail-hero-img"
            id="detail-hero-img">
     </div>
@@ -22,25 +37,23 @@
 
   <div class="detail-content-wrapper">
     <div class="back-wrapper back-wrapper--with-share">
-      <a href="{{ backurl or '/hy/news' }}" class="back-btn">
+      <a href="{{ back_url }}" class="back-btn">
         ← Back
       </a>
 
-      {# ՄԻԱՅՆ եթե category == 'important' #}
       {% if news.category == 'important' %}
         <button type="button"
                 class="back-btn back-btn--share"
                 id="share-button"
-                data-share-url="{{ request.build_absolute_uri }}"
-                data-share-title="{{ news.title_hy }}">
+                data-share-url="{{ request.url }}"
+                data-share-title="{{ news.title_en }}">
           Share
         </button>
       {% endif %}
     </div>
 
-    <h1 class="detail-title">{{ news.title_hy }}</h1>
+    <h1 class="detail-title">{{ news.title_en }}</h1>
 
-    {# Event info՝ if at least one field exists #}
     {% if news.eventdate or news.eventtime or news.venue_en or news.price_hy %}
       <div class="event-details">
         {% if news.eventdate %}
@@ -60,16 +73,12 @@
         {% if news.venue_en or news.venue_hy %}
           <div class="detail-row">
             <span class="label">📍 Venue</span>
-            <span class="value">
-              {{ news.venue_en or news.venue_hy }}
-            </span>
+            <span class="value">{{ news.venue_en or news.venue_hy }}</span>
           </div>
         {% endif %}
 
         {% if news.price_hy %}
           {% set price_str = news.price_hy|string %}
-
-          {# 0 / 00 / 0 AMD → Free #}
           {% if price_str|trim in ["0", "00"] %}
             <div class="detail-row">
               <span class="label">💰 Price</span>
@@ -95,7 +104,7 @@
 
 <div class="image-modal" id="image-modal">
   <span class="image-modal-close" id="image-modal-close">&times;</span>
-  <img src="{{ news.image_url }}" alt="{{ news.title_hy }}">
+  <img src="{{ display_image }}" alt="{{ news.title_en }}">
 </div>
 
 <style>
@@ -114,8 +123,12 @@
 .detail-content-wrapper { padding: 2rem; }
 .detail-title { font-size: 1.8rem; font-weight: 700; margin: 0 0 1.5rem; line-height: 1.3; }
 
-/* Back button */
 .back-wrapper { margin-top: 1rem; margin-bottom: 0.75rem; }
+.back-wrapper--with-share {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
 .back-btn {
   display: inline-block;
   padding: 0.45rem 1.1rem;
@@ -127,8 +140,13 @@
   font-weight: 500;
 }
 .back-btn:hover { background: #1f5a6b; }
+.back-btn--share {
+  background: #f59e0b;
+  border: none;
+  cursor: pointer;
+}
+.back-btn--share:hover { background: #d97706; }
 
-/* 4-row layout */
 .event-details {
   margin-bottom: 2rem;
   border: 1px solid #e2e8f0;
@@ -147,17 +165,8 @@
 
 .detail-row:last-child { border-bottom: none; }
 
-.label {
-  font-weight: 600;
-  color: #374151;
-  font-size: 1rem;
-}
-
-.value {
-  color: #1f2937;
-  font-size: 1.1rem;
-  font-weight: 500;
-}
+.label { font-weight: 600; color: #374151; font-size: 1rem; }
+.value { color: #1f2937; font-size: 1.1rem; font-weight: 500; }
 
 .detail-description {
   font-size: 1.05rem;
@@ -188,19 +197,16 @@ document.addEventListener('DOMContentLoaded', function () {
     modal.classList.add('open');
   });
 
-  // փակել X-ով
   modalClose.addEventListener('click', function () {
     modal.classList.remove('open');
   });
 
-  // փակել modal-ի մութ ֆոնի վրա click անելիս
   modal.addEventListener('click', function (e) {
     if (e.target === modal) {
       modal.classList.remove('open');
     }
   });
 
-  // փակել Escape-ով
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
       modal.classList.remove('open');
