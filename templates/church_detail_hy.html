@@ -1,1 +1,143 @@
+{% extends "base.html" %}
 
+{% block title %}{{ church.name_hy }} - AskYerevan{% endblock %}
+
+{% block content %}
+
+{% if church.image_main %}
+  {% set display_image = request.base_url | string | trim('/') + church.image_main %}
+{% else %}
+  {% set display_image = '' %}
+{% endif %}
+
+<article class="detail-container">
+  {% if church.image_main %}
+    <div class="detail-hero">
+      <img src="{{ display_image }}" alt="{{ church.name_hy }}"
+           class="detail-hero-img" id="detail-hero-img">
+    </div>
+  {% endif %}
+
+  <div class="detail-content-wrapper">
+    <div class="back-wrapper back-wrapper--with-share">
+      <a href="{{ back_url }}" class="back-btn">← Հետ</a>
+      <button type="button"
+              class="back-btn back-btn--share"
+              id="share-button"
+              data-share-url="{{ request.url }}"
+              data-share-title="{{ church.name_hy }}">
+        ↗️
+      </button>
+    </div>
+
+    <h1 class="detail-title">{{ church.name_hy }}</h1>
+
+    <div class="event-details">
+      {% if church.century %}
+        <div class="detail-row">
+          <span class="label">🕌 Դար</span>
+          <span class="value">{{ church.century }}</span>
+        </div>
+      {% endif %}
+      {% if church.year %}
+        <div class="detail-row">
+          <span class="label">📅 Կառուցված</span>
+          <span class="value">{{ church.year }} թ.</span>
+        </div>
+      {% endif %}
+      {% if church.location_hy %}
+        <div class="detail-row">
+          <span class="label">📍 Վայր</span>
+          <span class="value">{{ church.location_hy }}</span>
+        </div>
+      {% endif %}
+      {% if church.address_hy %}
+        <div class="detail-row">
+          <span class="label">🏠 Հասցե</span>
+          <span class="value">{{ church.address_hy }}</span>
+        </div>
+      {% endif %}
+      {% if church.unesco %}
+        <div class="detail-row">
+          <span class="label">🏛️ ЮНЕСКО</span>
+          <span class="value">Ворошmund Ժараngутян Ааmarкum</span>
+        </div>
+      {% endif %}
+      {% if church.maps_url %}
+        <div class="detail-row">
+          <span class="label">🗺️ Քարտեզ</span>
+          <span class="value">
+            <a href="{{ church.maps_url }}" target="_blank" rel="noopener"
+               style="color:#2B7A8D;">Բացել քարտեզում</a>
+          </span>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if church.image_old and church.image_new %}
+      <div class="church-gallery">
+        <img src="{{ request.base_url | string | trim('/') + church.image_old }}"
+             alt="{{ church.name_hy }} — huне"
+             class="js-lightbox-image church-gallery-img">
+        <img src="{{ request.base_url | string | trim('/') + church.image_new }}"
+             alt="{{ church.name_hy }} — hнjа"
+             class="js-lightbox-image church-gallery-img">
+      </div>
+    {% endif %}
+
+  </div>
+</article>
+
+<div class="image-modal" id="image-modal">
+  <span class="image-modal-close" id="image-modal-close">&times;</span>
+  <img src="{{ display_image }}" alt="{{ church.name_hy }}">
+</div>
+
+<style>
+.church-gallery {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+.church-gallery-img {
+  flex: 1 1 280px;
+  max-width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 10px;
+  cursor: zoom-in;
+}
+@media (max-width: 600px) {
+  .church-gallery-img { height: 160px; }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const heroImg = document.getElementById('detail-hero-img');
+  const modal = document.getElementById('image-modal');
+  const modalClose = document.getElementById('image-modal-close');
+  if (heroImg && modal) {
+    heroImg.addEventListener('click', () => modal.classList.add('open'));
+    modalClose.addEventListener('click', () => modal.classList.remove('open'));
+    modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') modal.classList.remove('open'); });
+  }
+
+  const btn = document.getElementById('share-button');
+  if (btn) {
+    btn.addEventListener('click', function () {
+      const url = btn.dataset.shareUrl;
+      const title = btn.dataset.shareTitle;
+      if (navigator.share) {
+        navigator.share({ title, url }).catch(() => {});
+      } else {
+        window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url), '_blank', 'width=600,height=500');
+      }
+    });
+  }
+});
+</script>
+
+{% endblock %}
