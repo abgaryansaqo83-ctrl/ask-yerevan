@@ -26,6 +26,11 @@ except Exception as e:
     logger.error(f"❌ Database initialization failed: {e}")
     print(f"❌ Database initialization failed: {e}")
 
+# ============================================================
+# CHURCHES DATA
+# ============================================================
+CHURCHES = 
+
 app = FastAPI(title="AskYerevan Web")
 app.include_router(admin_router)
 
@@ -111,11 +116,29 @@ async def indexen(request: Request):
 @app.get("/hy/churches", response_class=HTMLResponse)
 async def churches_hy(request: Request):
     return templates.TemplateResponse(
-        "churches_hy.html",
+        "churches_list_hy.html",
         {
             "request": request,
             "lang": "hy",
             "is_winter_theme": is_winter_theme_enabled(),
+            "churches": CHURCHES,
+        },
+    )
+
+
+@app.get("/hy/churches/{church_id}", response_class=HTMLResponse)
+async def church_detail_hy(request: Request, church_id: str):
+    church = next((c for c in CHURCHES if c["id"] == church_id), None)
+    if not church:
+        return RedirectResponse(url="/hy/churches")
+    return templates.TemplateResponse(
+        "churches_detail_hy.html",
+        {
+            "request": request,
+            "lang": "hy",
+            "is_winter_theme": is_winter_theme_enabled(),
+            "church": church,
+            "back_url": "/hy/churches",
         },
     )
 
@@ -123,13 +146,32 @@ async def churches_hy(request: Request):
 @app.get("/en/churches", response_class=HTMLResponse)
 async def churches_en(request: Request):
     return templates.TemplateResponse(
-        "churches_en.html",
+        "churches_list_en.html",
         {
             "request": request,
             "lang": "en",
             "is_winter_theme": is_winter_theme_enabled(),
+            "churches": CHURCHES,
         },
     )
+
+
+@app.get("/en/churches/{church_id}", response_class=HTMLResponse)
+async def church_detail_en(request: Request, church_id: str):
+    church = next((c for c in CHURCHES if c["id"] == church_id), None)
+    if not church:
+        return RedirectResponse(url="/en/churches")
+    return templates.TemplateResponse(
+        "churches_detail_en.html",
+        {
+            "request": request,
+            "lang": "en",
+            "is_winter_theme": is_winter_theme_enabled(),
+            "church": church,
+            "back_url": "/en/churches",
+        },
+    )
+
 
 # News list
 @app.get("/hy/news", response_class=HTMLResponse)
