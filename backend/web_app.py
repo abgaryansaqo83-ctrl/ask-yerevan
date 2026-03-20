@@ -29,7 +29,7 @@ except Exception as e:
 # ============================================================
 # CHURCHES DATA
 # ============================================================
-CHURCHES = 
+CHURCHES = []
 
 app = FastAPI(title="AskYerevan Web")
 app.include_router(admin_router)
