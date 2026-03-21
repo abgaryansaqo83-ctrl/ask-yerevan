@@ -25,9 +25,11 @@
             {% if ch.year %}
               <span class="sight-meta-item">📅 {{ ch.year }} թ.</span>
             {% endif %}
-            <a href="https://maps.google.com/?q={{ ch.coordinates.lat }},{{ ch.coordinates.lon }}"
-               target="_blank" rel="noopener"
-               class="sight-map-link-small">🗺️ Բացել քարտեզում</a>
+            {% if ch.maps_url %}
+              <a href="{{ ch.maps_url }}"
+                 target="_blank" rel="noopener"
+                 class="sight-map-link-small">🗺️ Բացել քարտեզում</a>
+            {% endif %}
           </div>
         </div>
       </a>
@@ -35,4 +37,3 @@
   </div>
 </section>
 {% endblock %}
-
