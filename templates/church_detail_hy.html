@@ -1,4 +1,3 @@
-{# templates/church_detail_hy.html #}
 {% extends "base.html" %}
 
 {% block title %}{{ church.name_hy }} - AskYerevan{% endblock %}
@@ -33,7 +32,6 @@
 
     <h1 class="detail-title">{{ church.name_hy }}</h1>
 
-    <!-- Հիմնական ինֆո -->
     <div class="event-details">
       {% if church.century %}
         <div class="detail-row">
@@ -62,7 +60,7 @@
       {% if church.unesco %}
         <div class="detail-row">
           <span class="label">🏛️ ՅՈՒՆԵՍԿՕ</span>
-          <span class="value">Համաշխարհային Ժառանգության Հուշարձան</span>
+          <span class="value">Համաշխարհային ժառանգության հուշարձան</span>
         </div>
       {% endif %}
       {% if church.maps_url %}
@@ -76,68 +74,26 @@
       {% endif %}
     </div>
 
-    <!-- Նկարագրություն -->
-    {% if church.description_hy %}
-      <div class="church-description">
-        {{ church.description_hy | safe }}
-      </div>
-    {% endif %}
-
-    <!-- Gallery -->
-    {% if church.images %}
+    {% if church.image_old and church.image_new %}
       <div class="church-gallery">
-        {% for img in church.images %}
-          <img src="{{ img }}"
-               alt="{{ church.name_hy }}"
-               class="js-lightbox-image church-gallery-img">
-        {% endfor %}
-      </div>
-    {% elif church.image_old or church.image_new %}
-      <div class="church-gallery">
-        {% if church.image_old %}
-          <img src="{{ church.image_old }}"
-               alt="{{ church.name_hy }}"
-               class="js-lightbox-image church-gallery-img">
-        {% endif %}
-        {% if church.image_new and church.image_new != church.image_old %}
-          <img src="{{ church.image_new }}"
-               alt="{{ church.name_hy }}"
-               class="js-lightbox-image church-gallery-img">
-        {% endif %}
+        <img src="{{ request.base_url | string | trim('/') + church.image_old }}"
+             alt="{{ church.name_hy }} — հին տեսք"
+             class="js-lightbox-image church-gallery-img">
+        <img src="{{ request.base_url | string | trim('/') + church.image_new }}"
+             alt="{{ church.name_hy }} — այսօր"
+             class="js-lightbox-image church-gallery-img">
       </div>
     {% endif %}
 
   </div>
 </article>
 
-<!-- Lightbox modal -->
 <div class="image-modal" id="image-modal">
   <span class="image-modal-close" id="image-modal-close">&times;</span>
   <img src="{{ display_image }}" alt="{{ church.name_hy }}">
 </div>
 
 <style>
-.church-description {
-  margin: 1.5rem 0;
-  font-size: 1rem;
-  line-height: 1.75;
-  color: #333;
-}
-.church-description h3 {
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin: 1.25rem 0 0.4rem;
-  color: #071f33;
-}
-.church-description p {
-  margin: 0 0 0.75rem;
-}
-.church-description ul {
-  margin: 0.5rem 0 0.75rem 1.5rem;
-}
-.church-description li {
-  margin-bottom: 0.3rem;
-}
 .church-gallery {
   display: flex;
   gap: 1rem;
@@ -159,40 +115,16 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+  const heroImg = document.getElementById('detail-hero-img');
   const modal = document.getElementById('image-modal');
   const modalClose = document.getElementById('image-modal-close');
-
-  // Hero image click
-  const heroImg = document.getElementById('detail-hero-img');
   if (heroImg && modal) {
-    heroImg.addEventListener('click', () => {
-      modal.querySelector('img').src = heroImg.src;
-      modal.classList.add('open');
-    });
-  }
-
-  // Gallery images click
-  document.querySelectorAll('.js-lightbox-image').forEach(img => {
-    img.addEventListener('click', () => {
-      modal.querySelector('img').src = img.src;
-      modal.classList.add('open');
-    });
-  });
-
-  // Close modal
-  if (modalClose) {
+    heroImg.addEventListener('click', () => modal.classList.add('open'));
     modalClose.addEventListener('click', () => modal.classList.remove('open'));
+    modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') modal.classList.remove('open'); });
   }
-  if (modal) {
-    modal.addEventListener('click', e => {
-      if (e.target === modal) modal.classList.remove('open');
-    });
-  }
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') modal.classList.remove('open');
-  });
 
-  // Share button
   const btn = document.getElementById('share-button');
   if (btn) {
     btn.addEventListener('click', function () {
