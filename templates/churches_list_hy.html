@@ -52,25 +52,75 @@ document.addEventListener('DOMContentLoaded', function () {
   const btns = document.querySelectorAll('.churches-filter-btn');
   const cards = document.querySelectorAll('#churches-grid .sight-card');
   const empty = document.getElementById('churches-empty');
+  const STORAGE_KEY = 'churches_list_state';
 
+  // Վերականգնել վիճակը localStorage-ից
+  let saved = null;
+  try {
+    saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+  } catch (e) {
+    saved = null;
+  }
+
+  let currentFilter = 'all';
+
+  function applyFilter(filter) {
+    currentFilter = filter;
+    let visible = 0;
+
+    cards.forEach(card => {
+      const period = card.dataset.period;
+      const show = filter === 'all' || period === filter;
+      card.style.display = show ? 'block' : 'none';
+      if (show) visible++;
+    });
+
+    empty.style.display = visible === 0 ? 'block' : 'none';
+  }
+
+  // Եթե պահված filter կա՝ կիրառել
+  if (saved && saved.filter) {
+    currentFilter = saved.filter;
+  }
+
+  // Set active class on correct button
+  btns.forEach(b => {
+    b.classList.toggle('active', b.dataset.filter === currentFilter);
+  });
+  applyFilter(currentFilter);
+
+  // Քնեն հետո scroll վերականգնում (filter-ից հետո)
+  if (saved && typeof saved.scrollY === 'number') {
+    window.scrollTo(0, saved.scrollY);
+  }
+
+  // Filter կոճակները
   btns.forEach(btn => {
     btn.addEventListener('click', function () {
       btns.forEach(b => b.classList.remove('active'));
       this.classList.add('active');
 
       const filter = this.dataset.filter;
-      let visible = 0;
+      applyFilter(filter);
 
-      cards.forEach(card => {
-        const period = card.dataset.period;
-        const show = filter === 'all' || period === filter;
-        card.style.display = show ? 'block' : 'none';
-        if (show) visible++;
-      });
-
-      empty.style.display = visible === 0 ? 'block' : 'none';
+      // Պահել filter-ը առանց scroll-ի
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ filter: filter, scrollY: window.scrollY })
+      );
     });
+  });
+
+  // Քարտի վրա click անելիս state պահել (filter + scroll)
+  cards.forEach(card => {
+    card.addEventListener('click', function () {
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ filter: currentFilter, scrollY: window.scrollY })
+      );
+    }, { capture: true });
   });
 });
 </script>
+
 {% endblock %}
