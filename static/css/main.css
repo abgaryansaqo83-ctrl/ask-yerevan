@@ -420,6 +420,61 @@ main.container {
   display: none;
 }
 
+/* Churches filter buttons (new card grid) */
+.churches-subnav {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin: 1.5rem 0 1rem;
+}
+
+.churches-filter-btn {
+  padding: 0.45rem 1.1rem;
+  border: 2px solid #2B7A8D;
+  background: transparent;
+  color: #2B7A8D;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.churches-filter-btn:hover {
+  background: #2B7A8D;
+  color: #fff;
+}
+
+.churches-filter-btn.active {
+  background: #2B7A8D;
+  color: #fff;
+}
+
+.churches-empty {
+  text-align: center;
+  padding: 3rem;
+  color: #888;
+  font-size: 1.1rem;
+}
+
+/* UNESCO badge position fix */
+.sight-card-image {
+  position: relative;
+}
+
+.sight-unesco-badge {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  background: rgba(63, 95, 174, 0.9);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 8px;
+  margin-top: 0;
+}
+
 @media (max-width: 768px) {
   .sights-divider {
     margin: 1.25rem 0 2rem;
@@ -515,18 +570,6 @@ main.container {
 
 .sight-map-link-small:hover {
   text-decoration: underline;
-}
-
-/* UNESCO badge */
-.sight-unesco-badge {
-  display: inline-block;
-  font-size: 0.75rem;
-  background: #f0f4ff;
-  color: #3f5fae;
-  border-radius: 8px;
-  padding: 0.2rem 0.5rem;
-  margin-top: 0.4rem;
-  font-weight: 600;
 }
 
 /* Mini hero for list pages */
