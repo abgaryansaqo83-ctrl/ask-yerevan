@@ -213,7 +213,7 @@ async def church_detail_hy(request: Request, church_id: str):
     if not church:
         return RedirectResponse(url="/hy/churches")
     return templates.TemplateResponse(
-        "churches_detail_hy.html",
+        "churche_detail_hy.html",
         {
             "request": request,
             "lang": "hy",
@@ -243,7 +243,7 @@ async def church_detail_en(request: Request, church_id: str):
     if not church:
         return RedirectResponse(url="/en/churches")
     return templates.TemplateResponse(
-        "churches_detail_en.html",
+        "churche_detail_en.html",
         {
             "request": request,
             "lang": "en",
