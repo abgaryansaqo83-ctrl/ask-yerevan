@@ -34,17 +34,6 @@
           </div>
           <div class="sight-card-content">
             <h3 class="sight-title">{{ ch.name_hy }}</h3>
-            <p class="sight-short">{{ ch.century }} · {{ ch.location_hy }}</p>
-            <div class="sight-meta-row">
-              {% if ch.year %}
-                <span class="sight-meta-item">📅 {{ ch.year }} թ.</span>
-              {% endif %}
-              {% if ch.maps_url %}
-                <a href="{{ ch.maps_url }}" target="_blank" rel="noopener"
-                   class="sight-map-link-small"
-                   onclick="event.stopPropagation()">🗺️ Բացել քարտեզում</a>
-              {% endif %}
-            </div>
           </div>
         </a>
       {% endfor %}
