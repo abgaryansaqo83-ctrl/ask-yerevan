@@ -1,3 +1,4 @@
+{# templates/church_detail_hy.html #}
 {% extends "base.html" %}
 
 {% block title %}{{ church.name_hy }} - AskYerevan{% endblock %}
@@ -19,19 +20,34 @@
   {% endif %}
 
   <div class="detail-content-wrapper">
+
+    <!-- Վերադարձ / Կիսվել / Քարտեզ -->
     <div class="back-wrapper back-wrapper--with-share">
-      <a href="{{ back_url }}" class="back-btn">← Հետ</a>
+      <div class="detail-actions-left">
+        <a href="{{ back_url }}" class="back-btn">
+          ← Հետ
+        </a>
+        {% if church.maps_url %}
+          <a href="{{ church.maps_url }}"
+             target="_blank" rel="noopener"
+             class="back-btn back-btn--map">
+            🌐 Բացել քարտեզում
+          </a>
+        {% endif %}
+      </div>
       <button type="button"
               class="back-btn back-btn--share"
               id="share-button"
+              title="Կիսվել"
               data-share-url="{{ request.url }}"
               data-share-title="{{ church.name_hy }}">
-        ↗️
+        ⤴️
       </button>
     </div>
 
     <h1 class="detail-title">{{ church.name_hy }}</h1>
 
+    <!-- Հիմնական ինֆո -->
     <div class="event-details">
       {% if church.century %}
         <div class="detail-row">
@@ -63,37 +79,106 @@
           <span class="value">Համաշխարհային ժառանգության հուշարձան</span>
         </div>
       {% endif %}
-      {% if church.maps_url %}
-        <div class="detail-row">
-          <span class="label">🗺️ Քարտեզ</span>
-          <span class="value">
-            <a href="{{ church.maps_url }}" target="_blank" rel="noopener"
-               style="color:#2B7A8D;">Բացել քարտեզում</a>
-          </span>
-        </div>
-      {% endif %}
     </div>
 
-    {% if church.image_old and church.image_new %}
+    <!-- Մանրամասն նկարագրություն -->
+    {% if church.description_hy %}
+      <div class="church-description">
+        {{ church.description_hy | safe }}
+      </div>
+    {% endif %}
+
+    <!-- Նկարների գալերեա -->
+    {% if church.images %}
       <div class="church-gallery">
-        <img src="{{ request.base_url | string | trim('/') + church.image_old }}"
-             alt="{{ church.name_hy }} — հին տեսք"
-             class="js-lightbox-image church-gallery-img">
-        <img src="{{ request.base_url | string | trim('/') + church.image_new }}"
-             alt="{{ church.name_hy }} — այսօր"
-             class="js-lightbox-image church-gallery-img">
+        {% for img in church.images %}
+          <img src="{{ img }}"
+               alt="{{ church.name_hy }}"
+               class="js-lightbox-image church-gallery-img">
+        {% endfor %}
+      </div>
+    {% elif church.image_old or church.image_new %}
+      <div class="church-gallery">
+        {% if church.image_old %}
+          <img src="{{ church.image_old }}"
+               alt="{{ church.name_hy }} — հին տեսք"
+               class="js-lightbox-image church-gallery-img">
+        {% endif %}
+        {% if church.image_new and church.image_new != church.image_old %}
+          <img src="{{ church.image_new }}"
+               alt="{{ church.name_hy }} — այսօր"
+               class="js-lightbox-image church-gallery-img">
+        {% endif %}
       </div>
     {% endif %}
 
   </div>
 </article>
 
+<!-- Lightbox modal -->
 <div class="image-modal" id="image-modal">
   <span class="image-modal-close" id="image-modal-close">&times;</span>
   <img src="{{ display_image }}" alt="{{ church.name_hy }}">
 </div>
 
 <style>
+.detail-actions-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Հետ / քարտեզ / share կոճակներ */
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  border: none;
+  background: #2B7A8D;
+  color: #fff;
+  font-size: 0.9rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.back-btn--share {
+  background: #f59e0b;
+}
+
+.back-btn--map {
+  background: #0f766e;
+}
+
+.back-btn:hover {
+  opacity: 0.95;
+}
+
+/* Նկարագրության բլոկ */
+.church-description {
+  margin: 1.5rem 0;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: #333;
+}
+.church-description h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 1.25rem 0 0.4rem;
+  color: #071f33;
+}
+.church-description p {
+  margin: 0 0 0.75rem;
+}
+.church-description ul {
+  margin: 0.5rem 0 0.75rem 1.5rem;
+}
+.church-description li {
+  margin-bottom: 0.3rem;
+}
+
+/* Գալերեա */
 .church-gallery {
   display: flex;
   gap: 1rem;
@@ -115,16 +200,40 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  const heroImg = document.getElementById('detail-hero-img');
   const modal = document.getElementById('image-modal');
   const modalClose = document.getElementById('image-modal-close');
+
+  // Hero image click
+  const heroImg = document.getElementById('detail-hero-img');
   if (heroImg && modal) {
-    heroImg.addEventListener('click', () => modal.classList.add('open'));
-    modalClose.addEventListener('click', () => modal.classList.remove('open'));
-    modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') modal.classList.remove('open'); });
+    heroImg.addEventListener('click', () => {
+      modal.querySelector('img').src = heroImg.src;
+      modal.classList.add('open');
+    });
   }
 
+  // Gallery images click
+  document.querySelectorAll('.js-lightbox-image').forEach(img => {
+    img.addEventListener('click', () => {
+      modal.querySelector('img').src = img.src;
+      modal.classList.add('open');
+    });
+  });
+
+  // Close modal
+  if (modalClose) {
+    modalClose.addEventListener('click', () => modal.classList.remove('open'));
+  }
+  if (modal) {
+    modal.addEventListener('click', e => {
+      if (e.target === modal) modal.classList.remove('open');
+    });
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') modal.classList.remove('open');
+  });
+
+  // Share button
   const btn = document.getElementById('share-button');
   if (btn) {
     btn.addEventListener('click', function () {
