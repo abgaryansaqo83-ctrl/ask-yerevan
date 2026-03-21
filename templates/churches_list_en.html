@@ -12,11 +12,11 @@
 <section class="sights-container">
   <div class="container">
 
-    <!-- Filter subnav -->
+    <!-- Subnav -->
     <div class="churches-subnav">
       <button class="churches-filter-btn active" data-filter="all">🏛️ All</button>
-      <button class="churches-filter-btn" data-filter="old">🪨 Historic Churches</button>
-      <button class="churches-filter-btn" data-filter="new">✨ Modern Churches</button>
+      <button class="churches-filter-btn" data-filter="old">🪨 Old churches</button>
+      <button class="churches-filter-btn" data-filter="new">✨ New churches</button>
     </div>
 
     <!-- Card grid -->
@@ -34,17 +34,6 @@
           </div>
           <div class="sight-card-content">
             <h3 class="sight-title">{{ ch.name_en }}</h3>
-            <p class="sight-short">{{ ch.century }} · {{ ch.location_en }}</p>
-            <div class="sight-meta-row">
-              {% if ch.year %}
-                <span class="sight-meta-item">📅 {{ ch.year }} AD</span>
-              {% endif %}
-              {% if ch.maps_url %}
-                <a href="{{ ch.maps_url }}" target="_blank" rel="noopener"
-                   class="sight-map-link-small"
-                   onclick="event.stopPropagation()">🗺️ Map</a>
-              {% endif %}
-            </div>
           </div>
         </a>
       {% endfor %}
