@@ -428,6 +428,134 @@ main.container {
 }
 
 /* ===========================
+   Churches / Sights Card Grid
+   =========================== */
+
+.sights-container {
+  max-width: 1200px;
+  margin: 1rem auto;
+  padding: 0 1rem;
+}
+
+.sights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.sight-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.sight-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+}
+
+.sight-card-image {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #2B7A8D, #1f5a6b);
+}
+
+.sight-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.sight-card-content {
+  padding: 1rem 1.2rem;
+}
+
+.sight-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0 0 0.4rem;
+  color: #1a1a1a;
+  line-height: 1.3;
+}
+
+.sight-short {
+  font-size: 0.88rem;
+  color: #666;
+  margin: 0 0 0.7rem;
+  line-height: 1.4;
+}
+
+.sight-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.sight-meta-item {
+  font-size: 0.82rem;
+  color: #888;
+}
+
+.sight-map-link-small {
+  font-size: 0.82rem;
+  color: #2B7A8D;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.sight-map-link-small:hover {
+  text-decoration: underline;
+}
+
+/* UNESCO badge */
+.sight-unesco-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  background: #f0f4ff;
+  color: #3f5fae;
+  border-radius: 8px;
+  padding: 0.2rem 0.5rem;
+  margin-top: 0.4rem;
+  font-weight: 600;
+}
+
+/* Mini hero for list pages */
+.news-hero-mini {
+  background: linear-gradient(135deg, #071f33, #2B7A8D);
+  color: #fff;
+  padding: 1.5rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 0 0 12px 12px;
+}
+
+.news-hero-mini h1 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+/* Mobile card grid */
+@media (max-width: 768px) {
+  .sights-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .sight-card-image {
+    height: 160px;
+  }
+}
+
+/* ===========================
    Sights page
    =========================== */
 
