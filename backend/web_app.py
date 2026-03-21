@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request, Query
 from backend.admin_routes import router as admin_router
-from backend.data.churches import CHURCHES
+from backend.churches_data import CHURCHES
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
