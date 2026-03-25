@@ -1,5 +1,6 @@
 # backend/sights_data.py
 
+# -*- coding: utf-8 -*-
 from typing import List, Dict, Any
 
 SIGHTS = [
