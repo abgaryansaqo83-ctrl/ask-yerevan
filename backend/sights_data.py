@@ -258,21 +258,26 @@ SIGHTS = [
         ],
         "short_hy": "Հայաստանի երկրորդ քաղաքը՝ 19-րդ դարի քարե ճարտարապետությամբ ու կենդանի մշակութային միջավայրով",
         "short_en": "Armenia's second city — 19th‑century stone architecture, vibrant art scene and a strong cultural heartbeat",
+        # gyumri-old-town
         "description_hy": """
-<h3>Քաղաք</h3>
-<p>Գյումրին Հայաստանի երկրորդ ամենամեծ քաղաքն է, որտեղ հինը գրեթե բառացիորեն քայլում է կողքիդ․ Կումայրիի պատմական թաղամասում կան հարյուրավոր 19-րդ դարի շենքեր՝ կառուցված սև և կարմիր տուֆ քարով։ Քաղաքը դեռ կրում է 1988 թ. երկրաշարժի հետքերը, բայց հենց այդ խառնուրդն է՝ ցավի ու ուժի, որ նրան տալիս է իր առանձնահատուկ բնավորությունը։</p>
-<p>Վարդանանց հրապարակը, Աբովյան փողոցը, հին բակերն ու փոքրիկ սրճարանները ստեղծում են այն մթնոլորտը, որի համար Գյումրին շատերի սիրելի քաղաքն է․ այստեղ զգացվում է և՛ հումորը, և՛ հյուրընկալությունը, և՛ կենդանի բակային կյանքը։</p>
+<h3>Քաղաքը</h3>
+<p>Գյումրին Հայաստանի երկրորդ մեծ քաղաքն է՝ հայտնի 19-րդ դարի կարմիր ու սև տուֆե շենքերով Քումայրի պատմական թաղամասում։ Քաղաքը դեռ կրում է 1988 թ. երկրաշարժի հետքերը, ինչն ավելացնում է նրա ուժի ու բնավորության զգացողությունը։</p>
+<p>Վարդանանց հրապարակի, Աբովյան ու Ռիժկովի փողոցների շուրջ զբոսնելիս կտեսնես ոլոռնուած պատշգամբներ, հին արհեստանոցային ցուցանակներ ու կենդանի թաղամասային կյանք։</p>
+<p>Բակ մտիր ու կտեսնես կախված լվացք, խաղացող երեխաներ, հարևաններ, որ խոսում են պատշգամբներից. Գյումրու հայտնի հումորն ու ջերմությունն ապրում են հենց այս անկյուններում։</p>
+<p>Եթե սիրում ես քաղաքներ, որ մի փոքր անկատար են, մի փոքր հնամաշ, բայց հոգով լի, Գյումրու հին թաղամասն անփոխարինելի կանգառ է։ Այն տեղ է, ուր կծրագրես կիսօրյա այց ու կմնաս գիշերակաց, որ երեկոյան կրկին զբոսնես փողոցներով։</p>
 <h3>Ինչ անել</h3>
-<p>Քայլել հին քաղաքում, այցելել Գյումրու պատմության թանգարանը, Ձիթողցյանի տուն-թանգարանը, Ասլամազյան քույրերի պատկերասրահը, նստել տեղական ռեստորաններում, փորձել գյումրեցի խոհանոցը և երեկոյան լսել կենդանի ժողովրդական երաժշտություն։</p>
+<p>Հին թաղամաս ոտքով, Գյումրու պատմության թանգարան, Ձիթողցյան թանգարան, Ասլամազյան քույրերի պատկերասրահ, ավանդական ճաշատեսակներ, երաժշտական երեկոներ։</p>
 <h3>Ինչպես հասնել</h3>
-<p>Երևանից մոտ 126 կմ։ Գնացք՝ Սասունցի Դավիթ կայարանից, ավտոբուսներ և միկրոավտոբուսներ՝ Կիլիկիայի ավտոկայանից, կամ մեքենայով՝ M1 մայրուղիով դեպի հյուսիս։ Ճանապարհին բացվում են Արագածի և Շիրակի դաշտի տեսարաններ։</p>
+<p>Երևանից մոտ 126 կմ։ Գնացք Սասունցի Դավիթ կայարանից, ավտոբուս Կիլիկիա ավտոկայանից, կամ մեքենայով M1 մայրուղով դեպի հյուսիս։</p>
 """,
         "description_en": """
 <h3>The City</h3>
-<p>Gyumri is Armenia's second largest city, famous for its 19th‑century red and black tuff stone buildings in the historic Kumayri district. The city still bears the marks of the 1988 earthquake, which only adds to its sense of resilience and character.</p>
-<p>A walk around Vardanants Square, Abovyan Street and the surrounding courtyards reveals ornate balconies, old workshop signs and lively neighborhood life, from kids playing outside to neighbors chatting across balconies.</p>
+<p>Gyumri is Armenia's second largest city, famous for its 19th-century red and black tuff stone buildings in the historic Kumayri district. The city still bears the marks of the 1988 earthquake, which only adds to its sense of resilience and character.</p>
+<p>A walk around Vardanants Square, Abovyan Street and the surrounding courtyards reveals ornate balconies, old workshop signs and lively neighbourhood life.</p>
+<p>Step into a courtyard and you might see laundry hanging, children playing and neighbours chatting across balconies — Gyumri's famous sense of humour and warmth lives in these hidden corners just as much as on the main streets.</p>
+<p>If you like cities that are a bit imperfect, a bit weathered, but full of soul, Gyumri's old town is an essential stop. It is the kind of place where you plan a half-day visit and end up staying overnight, just to wander the streets again in the evening light.</p>
 <h3>What to Do</h3>
-<p>Explore the old town on foot, visit the Gyumri History Museum, the Dzitoghtsyan Social Life Museum and the Aslamazyan Sisters Gallery, then try hearty local dishes in traditional restaurants and look for venues with live folk or jazz music in the evening.</p>
+<p>Explore the old town on foot, visit the Gyumri History Museum, the Dzitoghtsyan Museum and the Aslamazyan Sisters Gallery, then try hearty local dishes and look for venues with live folk or jazz music in the evening.</p>
 <h3>How to Get There</h3>
 <p>About 126 km from Yerevan. Take a train from Sasuntsi David station, a bus from Kilikia bus station, or drive via the M1 highway north towards Gyumri.</p>
 """,
