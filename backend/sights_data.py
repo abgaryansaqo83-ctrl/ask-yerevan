@@ -1,5 +1,7 @@
 # backend/sights_data.py
 
+from typing import List, Dict, Any
+
 SIGHTS = [
 
     # ══════════════════════════════════════════
