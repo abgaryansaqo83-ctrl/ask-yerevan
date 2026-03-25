@@ -12,66 +12,160 @@
   {% set display_image = '' %}
 {% endif %}
 
-<div class="detail-header">
-  <a href="javascript:void(0);" onclick="window.history.back();" class="back-btn">
-    ← Back
-  </a>
+<article class="detail-container">
 
-  <h1 class="detail-title">{{ sight.title_en }}</h1>
-
-  {% if sight.location_en %}
-    <div class="detail-location">
-      📍 {{ sight.location_en }}
+  <!-- Main image -->
+  {% if display_image %}
+    <div class="detail-hero">
+      <img src="{{ display_image }}"
+           alt="{{ sight.title_en }}"
+           class="detail-hero-img"
+           id="detail-hero-img">
     </div>
   {% endif %}
 
-  <div class="detail-meta">
-    {% if sight.rating %}
-      <span class="detail-rating">⭐ {{ "%.1f"|format(sight.rating) }}</span>
-    {% endif %}
-    {% if sight.category %}
-      <span class="detail-category-tag">
-        {% if sight.category == 'yerevan' %}🏙️ Yerevan
-        {% elif sight.category == 'around-yerevan' %}🚗 Day trips from Yerevan
-        {% elif sight.category == 'regions' %}🌄 Regions
-        {% else %}🇦🇲 Armenia
+  <div class="detail-content-wrapper">
+
+    <!-- Back / Map / Share -->
+    <div class="back-wrapper back-wrapper--with-share">
+      <div class="detail-actions-left">
+        <a href="{{ back_url }}" class="back-btn">← Back</a>
+        {% if sight.maps_url %}
+          <a href="{{ sight.maps_url }}"
+             target="_blank"
+             rel="noopener"
+             class="back-btn back-btn--map">🌐 Open in Maps</a>
         {% endif %}
-      </span>
-    {% endif %}
-    {% if sight.maps_url %}
-      <a href="{{ sight.maps_url }}" target="_blank" rel="noopener noreferrer" class="detail-map-link">
-        🗺️ View on map
-      </a>
-    {% endif %}
-  </div>
-</div>
-
-{% if display_image %}
-  <div class="detail-main-image">
-    <img src="{{ display_image }}" alt="{{ sight.title_en }}" class="js-lightbox-image">
-  </div>
-{% endif %}
-
-{% if sight.images and sight.images|length > 1 %}
-  <div class="detail-gallery">
-    {% for img in sight.images[1:] %}
-      <img src="/{{ img }}" alt="{{ sight.title_en }}" class="detail-gallery-image js-lightbox-image">
-    {% endfor %}
-  </div>
-{% endif %}
-
-<div class="detail-body">
-  {% if sight.short_en %}
-    <p class="detail-lead">
-      {{ sight.short_en }}
-    </p>
-  {% endif %}
-
-  {% if sight.description_en %}
-    <div class="detail-description">
-      {{ sight.description_en | safe }}
+      </div>
+      <button type="button"
+              class="back-btn back-btn--share"
+              id="share-button"
+              title="Share"
+              data-share-url="{{ request.url }}"
+              data-share-title="{{ sight.title_en }}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+             viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
+             style="vertical-align:middle; margin-right:4px;">
+          <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+          <polyline points="16 6 12 2 8 6"/>
+          e x1="12" y1="2" x2="12" y2="15"/>
+        </svg>
+        Share
+      </button>
     </div>
-  {% endif %}
+
+    <h1 class="detail-title">{{ sight.title_en }}</h1>
+
+    <!-- Meta info -->
+    <div class="event-details">
+      {% if sight.location_en %}
+        <div class="detail-row">
+          <span class="label">📍 Location</span>
+          <span class="value">{{ sight.location_en }}</span>
+        </div>
+      {% endif %}
+      {% if sight.address_en %}
+        <div class="detail-row">
+          <span class="label">🏠 Address</span>
+          <span class="value">{{ sight.address_en }}</span>
+        </div>
+      {% endif %}
+      {% if sight.category %}
+        <div class="detail-row">
+          <span class="label">🗂️ Category</span>
+          <span class="value">
+            {% if sight.category == 'yerevan' %}🏙️ Yerevan
+            {% else %}🇦🇲 Armenia
+            {% endif %}
+          </span>
+        </div>
+      {% endif %}
+      {% if sight.unesco %}
+        <div class="detail-row">
+          <span class="label">🏛️ UNESCO</span>
+          <span class="value">World Heritage Site</span>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Main description -->
+    {% if sight.description_en %}
+      <div class="church-description">
+        {{ sight.description_en | safe }}
+      </div>
+    {% endif %}
+
+    <!-- Gallery -->
+    {% if sight.images and sight.images | length > 1 %}
+      <div class="church-gallery">
+        {% for img in sight.images[1:] %}
+          <img src="/{{ img }}"
+               alt="{{ sight.title_en }}"
+               class="js-lightbox-image church-gallery-img">
+        {% endfor %}
+      </div>
+    {% endif %}
+
+  </div>
+</article>
+
+<!-- Lightbox modal -->
+<div class="image-modal" id="image-modal">
+  <span class="image-modal-close" id="image-modal-close">&times;</span>
+  <img src="{{ display_image }}" alt="{{ sight.title_en }}">
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const modal = document.getElementById('image-modal');
+  const modalClose = document.getElementById('image-modal-close');
+
+  const heroImg = document.getElementById('detail-hero-img');
+  if (heroImg && modal) {
+    heroImg.addEventListener('click', function () {
+      modal.querySelector('img').src = heroImg.src;
+      modal.classList.add('open');
+    });
+  }
+
+  document.querySelectorAll('.js-lightbox-image').forEach(function (img) {
+    img.addEventListener('click', function () {
+      modal.querySelector('img').src = img.src;
+      modal.classList.add('open');
+    });
+  });
+
+  if (modalClose) {
+    modalClose.addEventListener('click', function () {
+      modal.classList.remove('open');
+    });
+  }
+  if (modal) {
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal) modal.classList.remove('open');
+    });
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') modal.classList.remove('open');
+  });
+
+  const btn = document.getElementById('share-button');
+  if (btn) {
+    btn.addEventListener('click', function () {
+      const url = btn.dataset.shareUrl;
+      const title = btn.dataset.shareTitle;
+      if (navigator.share) {
+        navigator.share({ title, url }).catch(() => {});
+      } else {
+        window.open(
+          'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url),
+          '_blank', 'width=600,height=500'
+        );
+      }
+    });
+  }
+});
+</script>
 
 {% endblock %}
