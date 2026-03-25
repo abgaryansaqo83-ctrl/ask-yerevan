@@ -15,17 +15,21 @@
 
     <!-- Subnav -->
     <div class="churches-subnav">
-      <button class="churches-filter-btn active" data-section="yerevan">
+      <button class="churches-filter-btn active" data-section="all">
+        🇦🇲 Բոլորը
+      </button>
+      <button class="churches-filter-btn" data-section="yerevan">
         🏛️ Երևանում
       </button>
       <button class="churches-filter-btn" data-section="armenia">
-        🏞️ Հայաստանում
+        🏙️ Հայաստանում
       </button>
     </div>
 
+
     <!-- Երևան բաժին -->
     <div id="section-yerevan" class="sights-section">
-      <div class="sights-grid" id="sights-grid-yerevan">
+      <div class="sights-grid">
         {% for s in sights if s.category == 'yerevan' %}
           <a href="/hy/sights/{{ s.id }}" class="sight-card">
             <div class="sight-card-image">
@@ -44,14 +48,11 @@
           </a>
         {% endfor %}
       </div>
-      <div class="churches-empty" id="empty-yerevan" style="display:none;">
-        <p>Այս բաժնում դեռ տեսարժան վայրեր չկան։</p>
-      </div>
     </div>
 
     <!-- Հայաստան բաժին -->
-    <div id="section-armenia" class="sights-section" style="display:none;">
-      <div class="sights-grid" id="sights-grid-armenia">
+    <div id="section-armenia" class="sights-section">
+      <div class="sights-grid">
         {% for s in sights if s.category != 'yerevan' %}
           <a href="/hy/sights/{{ s.id }}" class="sight-card">
             <div class="sight-card-image">
@@ -70,33 +71,41 @@
           </a>
         {% endfor %}
       </div>
-      <div class="churches-empty" id="empty-armenia" style="display:none;">
-        <p>Այս բաժնում դեռ տեսարժան վայրեր չկան։</p>
-      </div>
     </div>
 
+    <div class="churches-empty" id="sights-empty" style="display:none;">
+      <p>Այս բաժնում դեռ տեսարժան վայրեր չկան։</p>
+    </div>
   </div>
+  
 </section>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const btns = document.querySelectorAll('.churches-filter-btn');
-  const sections = {
-    yerevan: document.getElementById('section-yerevan'),
-    armenia: document.getElementById('section-armenia'),
-  };
+  const secYerevan = document.getElementById('section-yerevan');
+  const secArmenia = document.getElementById('section-armenia');
   const STORAGE_KEY = 'sights_list_hy_state';
 
   let saved = null;
   try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) {}
 
-  let currentSection = (saved && saved.section) ? saved.section : 'yerevan';
+  let currentSection = (saved && saved.section) ? saved.section : 'all';
 
   function applySection(section) {
     currentSection = section;
-    Object.keys(sections).forEach(key => {
-      sections[key].style.display = (key === section) ? 'block' : 'none';
-    });
+
+    if (section === 'all') {
+      secYerevan.style.display = 'block';
+      secArmenia.style.display = 'block';
+    } else if (section === 'yerevan') {
+      secYerevan.style.display = 'block';
+      secArmenia.style.display = 'none';
+    } else if (section === 'armenia') {
+      secYerevan.style.display = 'none';
+      secArmenia.style.display = 'block';
+    }
+
     btns.forEach(b => {
       b.classList.toggle('active', b.dataset.section === section);
     });
@@ -128,5 +137,6 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 </script>
+
 
 {% endblock %}
