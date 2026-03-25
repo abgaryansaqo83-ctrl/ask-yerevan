@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request, Query
 from backend.admin_routes import router as admin_router
 from backend.churches_data import CHURCHES
+from backend.sights_data import SIGHTS
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -257,23 +258,24 @@ async def news_detail_en(request: Request, news_id: int):
 @app.get("/hy/sights", response_class=HTMLResponse)
 async def sights_hy(request: Request):
     return templates.TemplateResponse(
-        "sights_hy.html",
+        "sights_list_hy.html",
         {
             "request": request,
             "lang": "hy",
             "is_winter_theme": is_winter_theme_enabled(),
+            "sights": SIGHTS,
         },
     )
-
 
 @app.get("/en/sights", response_class=HTMLResponse)
 async def sights_en(request: Request):
     return templates.TemplateResponse(
-        "sights_en.html",
+        "sights_list_en.html",
         {
             "request": request,
             "lang": "en",
             "is_winter_theme": is_winter_theme_enabled(),
+            "sights": SIGHTS,
         },
     )
 
