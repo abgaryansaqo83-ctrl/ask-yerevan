@@ -1,1 +1,77 @@
+{# templates/sights_detail_en.html #}
+{% extends "base.html" %}
+{% block title %}{{ sight.title_en }} - AskYerevan{% endblock %}
 
+{% block content %}
+
+{% if sight.images and sight.images[0] %}
+  {% set display_image = request.base_url | string | trim('/') + '/' + sight.images[0] %}
+{% elif sight.thumb %}
+  {% set display_image = request.base_url | string | trim('/') + '/' + sight.thumb %}
+{% else %}
+  {% set display_image = '' %}
+{% endif %}
+
+<div class="detail-header">
+  <a href="javascript:void(0);" onclick="window.history.back();" class="back-btn">
+    ← Back
+  </a>
+
+  <h1 class="detail-title">{{ sight.title_en }}</h1>
+
+  {% if sight.location_en %}
+    <div class="detail-location">
+      📍 {{ sight.location_en }}
+    </div>
+  {% endif %}
+
+  <div class="detail-meta">
+    {% if sight.rating %}
+      <span class="detail-rating">⭐ {{ "%.1f"|format(sight.rating) }}</span>
+    {% endif %}
+    {% if sight.category %}
+      <span class="detail-category-tag">
+        {% if sight.category == 'yerevan' %}🏙️ Yerevan
+        {% elif sight.category == 'around-yerevan' %}🚗 Day trips from Yerevan
+        {% elif sight.category == 'regions' %}🌄 Regions
+        {% else %}🇦🇲 Armenia
+        {% endif %}
+      </span>
+    {% endif %}
+    {% if sight.maps_url %}
+      <a href="{{ sight.maps_url }}" target="_blank" rel="noopener noreferrer" class="detail-map-link">
+        🗺️ View on map
+      </a>
+    {% endif %}
+  </div>
+</div>
+
+{% if display_image %}
+  <div class="detail-main-image">
+    <img src="{{ display_image }}" alt="{{ sight.title_en }}" class="js-lightbox-image">
+  </div>
+{% endif %}
+
+{% if sight.images and sight.images|length > 1 %}
+  <div class="detail-gallery">
+    {% for img in sight.images[1:] %}
+      <img src="/{{ img }}" alt="{{ sight.title_en }}" class="detail-gallery-image js-lightbox-image">
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="detail-body">
+  {% if sight.short_en %}
+    <p class="detail-lead">
+      {{ sight.short_en }}
+    </p>
+  {% endif %}
+
+  {% if sight.description_en %}
+    <div class="detail-description">
+      {{ sight.description_en | safe }}
+    </div>
+  {% endif %}
+</div>
+
+{% endblock %}
