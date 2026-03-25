@@ -267,6 +267,22 @@ async def sights_hy(request: Request):
         },
     )
 
+@app.get("/hy/sights/{sight_id}", response_class=HTMLResponse)
+async def sight_detail_hy(request: Request, sight_id: str):
+    sight = next((s for s in SIGHTS if s["id"] == sight_id), None)
+    if not sight:
+        return RedirectResponse(url="/hy/sights")
+    return templates.TemplateResponse(
+        "sights_detail_hy.html",
+        {
+            "request": request,
+            "lang": "hy",
+            "is_winter_theme": is_winter_theme_enabled(),
+            "sight": sight,
+            "back_url": "/hy/sights",
+        },
+    )
+
 @app.get("/en/sights", response_class=HTMLResponse)
 async def sights_en(request: Request):
     return templates.TemplateResponse(
@@ -276,6 +292,22 @@ async def sights_en(request: Request):
             "lang": "en",
             "is_winter_theme": is_winter_theme_enabled(),
             "sights": SIGHTS,
+        },
+    )
+
+@app.get("/en/sights/{sight_id}", response_class=HTMLResponse)
+async def sight_detail_en(request: Request, sight_id: str):
+    sight = next((s for s in SIGHTS if s["id"] == sight_id), None)
+    if not sight:
+        return RedirectResponse(url="/en/sights")
+    return templates.TemplateResponse(
+        "sights_detail_en.html",
+        {
+            "request": request,
+            "lang": "en",
+            "is_winter_theme": is_winter_theme_enabled(),
+            "sight": sight,
+            "back_url": "/en/sights",
         },
     )
 
