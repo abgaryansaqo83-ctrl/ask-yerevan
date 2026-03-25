@@ -1,1 +1,163 @@
+{# templates/sights_list_en.html #}
+{% extends "base.html" %}
+{% block title %}AskYerevan · Sights{% endblock %}
 
+{% block content %}
+
+<div class="page-header">
+  <h1 class="page-title">🏞️ Sights in Armenia</h1>
+  <p class="page-subtitle">
+    Discover nature, landmarks and places to relax across Armenia.
+  </p>
+</div>
+
+<div class="sights-filters">
+  <button class="sights-filter-btn active" data-filter="all">
+    🏛️ All
+  </button>
+  <button class="sights-filter-btn" data-filter="armenia">
+    🇦🇲 Armenia
+  </button>
+  <button class="sights-filter-btn" data-filter="yerevan">
+    🏙️ Yerevan
+  </button>
+  <button class="sights-filter-btn" data-filter="around-yerevan">
+    🚗 Day trips from Yerevan
+  </button>
+  <button class="sights-filter-btn" data-filter="regions">
+    🌄 Regions
+  </button>
+</div>
+
+<div id="sights-grid" class="sights-grid">
+  {% for s in sights %}
+    <a
+      href="/en/sights/{{ s.id }}"
+      class="sight-card"
+      data-category="{{ s.category }}"
+    >
+      <div class="sight-thumb">
+        {% if s.thumb %}
+          <img src="/{{ s.thumb }}" alt="{{ s.title_en }}">
+        {% else %}
+          <div class="sight-thumb--placeholder">
+            {{ s.title_en[:1] }}
+          </div>
+        {% endif %}
+        {% if s.rating %}
+          <div class="sight-rating">
+            ⭐ {{ "%.1f"|format(s.rating) }}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="sight-content">
+        <h2 class="sight-title">{{ s.title_en }}</h2>
+        {% if s.location_en %}
+          <div class="sight-location">
+            📍 {{ s.location_en }}
+          </div>
+        {% endif %}
+        {% if s.short_en %}
+          <p class="sight-short">
+            {{ s.short_en }}
+          </p>
+        {% endif %}
+      </div>
+
+      {% if s.maps_url %}
+        <div class="sight-actions">
+          <span class="sight-map-link">🗺️ View on map</span>
+        </div>
+      {% endif %}
+    </a>
+  {% endfor %}
+</div>
+
+<div id="sights-empty" class="sights-empty" style="display:none;">
+  There are no sights in this section yet.
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const btns = document.querySelectorAll('.sights-filter-btn');
+  const cards = document.querySelectorAll('#sights-grid .sight-card');
+  const empty = document.getElementById('sights-empty');
+  const STORAGE_KEY = 'sights_list_state_en';
+
+  let saved = null;
+  try {
+    saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+  } catch (e) {
+    saved = null;
+  }
+
+  let currentFilter = 'all';
+
+  function applyFilter(filter) {
+    currentFilter = filter;
+    let visible = 0;
+
+    cards.forEach(card => {
+      const category = card.dataset.category;
+      let show = false;
+
+      if (filter === 'all') {
+        show = true;
+      } else if (filter === 'armenia') {
+        show = category === 'armenia';
+      } else if (filter === 'yerevan') {
+        show = category === 'yerevan';
+      } else if (filter === 'around-yerevan') {
+        show = category === 'around-yerevan';
+      } else if (filter === 'regions') {
+        show = category === 'regions';
+      }
+
+      card.style.display = show ? 'block' : 'none';
+      if (show) visible++;
+    });
+
+    empty.style.display = visible === 0 ? 'block' : 'none';
+  }
+
+  if (saved && saved.filter) {
+    currentFilter = saved.filter;
+  }
+
+  btns.forEach(b => {
+    b.classList.toggle('active', b.dataset.filter === currentFilter);
+  });
+  applyFilter(currentFilter);
+
+  if (saved && typeof saved.scrollY === 'number') {
+    window.scrollTo(0, saved.scrollY);
+  }
+
+  btns.forEach(btn => {
+    btn.addEventListener('click', function () {
+      btns.forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+
+      const filter = this.dataset.filter;
+      applyFilter(filter);
+
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ filter: filter, scrollY: window.scrollY })
+      );
+    });
+  });
+
+  cards.forEach(card => {
+    card.addEventListener('click', function () {
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ filter: currentFilter, scrollY: window.scrollY })
+      );
+    }, { capture: true });
+  });
+});
+</script>
+
+{% endblock %}
