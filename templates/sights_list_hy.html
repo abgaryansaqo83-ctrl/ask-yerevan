@@ -4,131 +4,105 @@
 
 {% block content %}
 
-<div class="page-header">
-  <h1 class="page-title">🏞️ Տեսարժան վայրեր Հայաստանում</h1>
-  <p class="page-subtitle">
-    Բացահայտի Հայաստանի բնությունը, պատմական հուշարձաններն ու հանգստի անկյունները։
-  </p>
-</div>
+<section class="news-hero-mini">
+  <div class="container">
+    <h1> Տեսարժան վայրեր Հայաստանում</h1>
+  </div>
+</section>
 
-<div class="sights-filters">
-  <button class="sights-filter-btn active" data-filter="all">
-    🏛️ Բոլորը
-  </button>
-  <button class="sights-filter-btn" data-filter="armenia">
-    🇦🇲 Հայաստան
-  </button>
-  <button class="sights-filter-btn" data-filter="yerevan">
-    🏙️ Երևան
-  </button>
-  <button class="sights-filter-btn" data-filter="around-yerevan">
-    🚗 Երևանից 1 օր
-  </button>
-  <button class="sights-filter-btn" data-filter="regions">
-    🌄 Մարզեր
-  </button>
-</div>
+<section class="sights-container">
+  <div class="container">
 
-<div id="sights-grid" class="sights-grid">
-  {% for s in sights %}
-    <a
-      href="/hy/sights/{{ s.id }}"
-      class="sight-card"
-      data-category="{{ s.category }}"
-    >
-      <div class="sight-thumb">
-        {% if s.thumb %}
-          <img src="/{{ s.thumb }}" alt="{{ s.title_hy }}">
-        {% else %}
-          <div class="sight-thumb--placeholder">
-            {{ s.title_hy[:1] }}
-          </div>
-        {% endif %}
-        {% if s.rating %}
-          <div class="sight-rating">
-            ⭐ {{ "%.1f"|format(s.rating) }}
-          </div>
-        {% endif %}
+    <!-- Subnav -->
+    <div class="churches-subnav">
+      <button class="churches-filter-btn active" data-section="yerevan">
+        🏛️ Երևանում
+      </button>
+      <button class="churches-filter-btn" data-section="armenia">
+        🏞️ Հայաստանում
+      </button>
+    </div>
+
+    <!-- Երևան բաժին -->
+    <div id="section-yerevan" class="sights-section">
+      <div class="sights-grid" id="sights-grid-yerevan">
+        {% for s in sights if s.category == 'yerevan' %}
+          <a href="/hy/sights/{{ s.id }}" class="sight-card">
+            <div class="sight-card-image">
+              {% if s.thumb %}
+                <img src="/{{ s.thumb }}" alt="{{ s.title_hy }}" loading="lazy">
+              {% elif s.images and s.images[0] %}
+                <img src="/{{ s.images[0] }}" alt="{{ s.title_hy }}" loading="lazy">
+              {% endif %}
+              {% if s.unesco %}
+                <span class="sight-unesco-badge">ՅՈՒՆԵՍԿՕ</span>
+              {% endif %}
+            </div>
+            <div class="sight-card-content">
+              <h3 class="sight-title">{{ s.title_hy }}</h3>
+            </div>
+          </a>
+        {% endfor %}
       </div>
-
-      <div class="sight-content">
-        <h2 class="sight-title">{{ s.title_hy }}</h2>
-        {% if s.location_hy %}
-          <div class="sight-location">
-            📍 {{ s.location_hy }}
-          </div>
-        {% endif %}
-        {% if s.short_hy %}
-          <p class="sight-short">
-            {{ s.short_hy }}
-          </p>
-        {% endif %}
+      <div class="churches-empty" id="empty-yerevan" style="display:none;">
+        <p>Այս բաժնում դեռ տեսարժան վայրեր չկան։</p>
       </div>
+    </div>
 
-      {% if s.maps_url %}
-        <div class="sight-actions">
-          <span class="sight-map-link">🗺️ Բացել քարտեզում</span>
-        </div>
-      {% endif %}
-    </a>
-  {% endfor %}
-</div>
+    <!-- Հայաստան բաժին -->
+    <div id="section-armenia" class="sights-section" style="display:none;">
+      <div class="sights-grid" id="sights-grid-armenia">
+        {% for s in sights if s.category != 'yerevan' %}
+          <a href="/hy/sights/{{ s.id }}" class="sight-card">
+            <div class="sight-card-image">
+              {% if s.thumb %}
+                <img src="/{{ s.thumb }}" alt="{{ s.title_hy }}" loading="lazy">
+              {% elif s.images and s.images[0] %}
+                <img src="/{{ s.images[0] }}" alt="{{ s.title_hy }}" loading="lazy">
+              {% endif %}
+              {% if s.unesco %}
+                <span class="sight-unesco-badge">ՅՈՒՆԵՍԿՕ</span>
+              {% endif %}
+            </div>
+            <div class="sight-card-content">
+              <h3 class="sight-title">{{ s.title_hy }}</h3>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+      <div class="churches-empty" id="empty-armenia" style="display:none;">
+        <p>Այս բաժնում դեռ տեսարժան վայրեր չկան։</p>
+      </div>
+    </div>
 
-<div id="sights-empty" class="sights-empty" style="display:none;">
-  Այս բաժնում դեռ տեսարժան վայրեր չկան։
-</div>
+  </div>
+</section>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  const btns = document.querySelectorAll('.sights-filter-btn');
-  const cards = document.querySelectorAll('#sights-grid .sight-card');
-  const empty = document.getElementById('sights-empty');
-  const STORAGE_KEY = 'sights_list_state';
+  const btns = document.querySelectorAll('.churches-filter-btn');
+  const sections = {
+    yerevan: document.getElementById('section-yerevan'),
+    armenia: document.getElementById('section-armenia'),
+  };
+  const STORAGE_KEY = 'sights_list_hy_state';
 
   let saved = null;
-  try {
-    saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-  } catch (e) {
-    saved = null;
-  }
+  try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) {}
 
-  let currentFilter = 'all';
+  let currentSection = (saved && saved.section) ? saved.section : 'yerevan';
 
-  function applyFilter(filter) {
-    currentFilter = filter;
-    let visible = 0;
-
-    cards.forEach(card => {
-      const category = card.dataset.category;
-      let show = false;
-
-      if (filter === 'all') {
-        show = true;
-      } else if (filter === 'armenia') {
-        show = category === 'armenia';
-      } else if (filter === 'yerevan') {
-        show = category === 'yerevan';
-      } else if (filter === 'around-yerevan') {
-        show = category === 'around-yerevan';
-      } else if (filter === 'regions') {
-        show = category === 'regions';
-      }
-
-      card.style.display = show ? 'block' : 'none';
-      if (show) visible++;
+  function applySection(section) {
+    currentSection = section;
+    Object.keys(sections).forEach(key => {
+      sections[key].style.display = (key === section) ? 'block' : 'none';
     });
-
-    empty.style.display = visible === 0 ? 'block' : 'none';
+    btns.forEach(b => {
+      b.classList.toggle('active', b.dataset.section === section);
+    });
   }
 
-  if (saved && saved.filter) {
-    currentFilter = saved.filter;
-  }
-
-  btns.forEach(b => {
-    b.classList.toggle('active', b.dataset.filter === currentFilter);
-  });
-  applyFilter(currentFilter);
+  applySection(currentSection);
 
   if (saved && typeof saved.scrollY === 'number') {
     window.scrollTo(0, saved.scrollY);
@@ -136,25 +110,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
   btns.forEach(btn => {
     btn.addEventListener('click', function () {
-      btns.forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
-
-      const filter = this.dataset.filter;
-      applyFilter(filter);
-
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({ filter: filter, scrollY: window.scrollY })
-      );
+      applySection(this.dataset.section);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        section: this.dataset.section,
+        scrollY: window.scrollY
+      }));
     });
   });
 
-  cards.forEach(card => {
+  document.querySelectorAll('.sight-card').forEach(card => {
     card.addEventListener('click', function () {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({ filter: currentFilter, scrollY: window.scrollY })
-      );
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        section: currentSection,
+        scrollY: window.scrollY
+      }));
     }, { capture: true });
   });
 });
