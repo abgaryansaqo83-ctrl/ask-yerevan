@@ -53,7 +53,7 @@ SIGHTS = [
         "location_en": "Gegharkunik Province",
         "maps_url": "https://maps.app.goo.gl/kzYrTEPJPcHF6UDx5",
         "rating": 4.8,
-        "thumb": "static/img/sights/LakeSevan.jpg",
+        "thumb": "static/img/sights/Lake_Sevan.jpg",
         "images": [
             "static/img/sights/Lake_Sevan.jpg",
             "static/img/sights/Lake_Sevan1.jpg",
@@ -674,7 +674,7 @@ SIGHTS = [
         "location_en": "Ararat Province, Garni–Khosrov area",
         "maps_url": "https://maps.app.goo.gl/kKcbo4zrSbHPkLgV7",
         "rating": 4.5,
-        "thumb": "static/img/sights/khosroviantar.jpg",
+        "thumb": "static/img/sights/khosrovi_antar.jpg",
         "images": [
             "static/img/sights/khosrovi_antar.jpg",
             "static/img/sights/khosrovi_dzor.jpg",
@@ -753,7 +753,7 @@ SIGHTS = [
         "location_en": "Yerevan, Kentron, 10 Moskovyan Street",
         "maps_url": "https://maps.app.goo.gl/THTFRi4a4cW2qHKx9",
         "rating": 4.8,
-        "thumb": "static/img/sights/kaskadamrane.jpg",
+        "thumb": "static/img/sights/kaskad_amrane.jpg",
         "images": [
             "static/img/sights/kaskad_amrane.jpg",
             "static/img/sights/kaskad_gisher.jpg",
