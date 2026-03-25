@@ -793,8 +793,8 @@ SIGHTS = [
         "thumb": "static/img/sights/bmatenadaran.jpg",
         "images": [
             "static/img/sights/bmatenadaran.jpg",
-            "static/img/sights/matenadarangrqer.jpeg",
-            "static/img/sights/matenadaranners.jpg",
+            "static/img/sights/matenadaran_grqer.jpeg",
+            "static/img/sights/matenadaran_ners.jpg",
         ],
         "short_hy": "Մատենադարան – հայկական հին ձեռագրերի տուն",
         "short_en": "One of the world's greatest repositories of Armenian manuscripts — a UNESCO Memory of the World site",
