@@ -759,9 +759,9 @@ SIGHTS = [
     {
         "id": "zvartnots",
         "category": "armenia",
-        "title_hy": "Զվարթնոց տաճար",
-        "title_en": "Zvartnots Cathedral Ruins & Museum",
-        "location_hy": "Վաղարշապատ, Արմավիրի մարզ",
+        "title_hy": "Զվարթնոց տաճարի ավերակներ և թանգարան",
+        "title_en": "Zvartnots Cathedral Ruins Museum",
+        "location_hy": "Արմավիրի մարզ, Էջմիածնի շրջակայք",
         "location_en": "Armavir Province, near Vagharshapat",
         "maps_url": "https://maps.app.goo.gl/eiLm35KKrJJ4QEoG8",
         "rating": 4.6,
@@ -771,29 +771,29 @@ SIGHTS = [
             "static/img/sights/zvartnots-new.jpg",
             "static/img/sights/zvartnots.jpg",
         ],
-        "short_hy": "Զվարթնոց տաճար – ավերակներ և բացօթյա թանգարան",
-        "short_en": "A UNESCO World Heritage Site — the ruins of Armenia's greatest 7th-century cathedral",
+        "short_hy": "ՅՈՒՆԵՍԿՕ-ի Համաշխարհային ժառանգության ցանկում ընդգրկված 7-րդ դարի տաճարի ավերակներ",
+        "short_en": "A UNESCO World Heritage Site – the ruins of Armenia's greatest 7th-century cathedral",
         "description_hy": """
 <h3>Պատմություն</h3>
 <p>Զվարթնոց տաճարը կառուցվել է 641-661 թթ. կաթողիկոս Ներսես Շինողի կողմից, VII դ. Հայաստանի ամենամեծ ու ամենահամարձակ ճարտարապետական ծրագիրը։ X դ. երկրաշարժից ավերվել է, ու 2000 թ. ավելացվել ՅՈՒՆԵՍԿՕ-ի Համաշխարհային ժառանգության ցանկում։</p>
-<p>Անունը կապված է «զվարթ» բառի հետ, ինչը նշանակում է ուրախ կամ պայծառ, ու «զվարթաց» - երկնային զորքեր հասկացության հետ, ինչն անվանը տալիս է «հրեշտակների բնակարան» իմաստ։ Շրջանաձև հատակագծով, բաց սյունաշարերով ու վերևից ֆիլտրվող լույսով, տաճարը ձևավորվել էր որպես տարածք, ուր ճարտարապետությունն ու լույսը միասին են աշխատում։</p>
-<p>Տեսնելու են նրբագեղ փորագրված կապիտելներ, ֆրիզ, հնագույն խճանկարի բեկորներ, շրջանաձև հատակագիծ ու մասամբ վերականգնված սյուներ, Արարատ լեռան համայնապատկերով ֆոնին։</p>
-<p>Տեղամասի թանգարանը պահպանում է փորագրված տարրեր ու ճարտարապետական բեկորներ։ Ամենալավն է Էջմիածնի ու Հռիփսիմեի հետ նույն օրը այցելել։</p>
+<p>Անունը կապված է «զվարթ» բառի հետ, ինչը նշանակում է ուրախ կամ պայծառ, ու «զվարթաց»՝ երկնային զորքեր հասկացության հետ, ինչն անվանը տալիս է «հրեշտակների բնակարան» իմաստ։ Շրջանաձև հատակագծով, բաց սյունաշարերով ու վերևից ֆիլտրվող լույսով, տաճարը ձևավորվել էր որպես տարածք, ուր ճարտարապետությունն ու լույսը միասին են աշխատում։</p>
+<p>Նույնիսկ ավերակ վիճակում այդ սկզբնական հավակնոտությունը շատ հստակ զգացվում է։ Հիմնապատերի վերականգնված ուրվագծերը, պահպանված քանդակված քարերը ու օղակաձև հատակագիծը պատկերացում են տալիս սկզբնական ծավալների ու մեծության մասին։</p>
+<p>Տեղամասի թանգարանը պահպանում է փորագրված տարրեր ու ճարտարապետական բեկորներ։ Լավ է համադրել այցելությունը Էջմիածնի գլխավոր տաճարի ու Ս. Հռիփսիմեի հետ՝ մեկ օրվա մեջ։</p>
 <h3>Ինչ անել</h3>
-<p>Ավերակների ու սյուների ուսումնասիրություն, տեղամասի թանգարան, Արարատի ու Արագածի համայնապատկեր, Էջմիածնի հետ համատեղ ուղևորություն։</p>
+<p>Շրջել ավերակների մեջ, ուսումնասիրել սյուների ու քանդակների մանրամասները, այցելել տեղամասի թանգարան, լուսանկարել Արարատի տեսարանով ֆոնը և Զվարթնոցը համադրել Էջմիածնի ու Հռիփսիմեի հետ մեկ օրվա ուղևորության մեջ։</p>
 <h3>Ինչպես հասնել</h3>
-<p>Երևանից 20 կմ, Էջմիածնից 2 կմ։ Ավտոբուս դեպի Էջմիածին կամ մեքենայով։</p>
+<p>Երևանից մոտ 20 կմ, Էջմիածնից մոտ 2 կմ։ Կարելի է հասնել ավտոբուսով Էջմիածին ուղղությամբ կամ մեքենայով։</p>
 """,
         "description_en": """
 <h3>History</h3>
-<p>Zvartnots Cathedral was built in 641–661 AD by Catholicos Nerses III — the greatest and most ambitious architectural project of 7th-century Armenia. Destroyed by an earthquake in the 10th century, its ruins were added to the UNESCO World Heritage List in 2000.</p>
-<p>The name is linked to the word zvart, meaning joyful or bright, and to the idea of zvartats — the heavenly hosts — giving the name a sense of "dwelling place of the angels". With its circular plan, open colonnades and light filtering from above, the cathedral was designed as a space where architecture and light work together.</p>
+<p>Zvartnots Cathedral was built in 641–661 AD by Catholicos Nerses III – the greatest and most ambitious architectural project of 7th-century Armenia. Destroyed by an earthquake in the 10th century, its ruins were added to the UNESCO World Heritage List in 2000.</p>
+<p>The name is linked to the word “zvart”, meaning joyful or bright, and to the idea of “zvartats” – the heavenly hosts – giving the name a sense of “dwelling place of the angels”. With its circular plan, open colonnades and light filtering from above, the cathedral was designed as a space where architecture and light work together.</p>
 <p>Even in ruins the feeling of that original ambition is still very present. The reconstructed outlines of the foundations and the surviving carved blocks give visitors a clear sense of the original volume and grandeur.</p>
 <p>The on-site museum preserves carved elements and architectural fragments. Best combined with Etchmiadzin and Hripsime on a single day trip.</p>
 <h3>What to See</h3>
 <p>Intricate carved decorations, ancient fresco fragments, a circular floor plan, partially reconstructed columns, and panoramic views of Mount Ararat as backdrop.</p>
 <h3>How to Get There</h3>
-<p>20 km from Yerevan, 2 km from Etchmiadzin. Bus toward Etchmiadzin or by car.</p>
+<p>About 20 km from Yerevan, 2 km from Etchmiadzin. Bus toward Etchmiadzin or by car.</p>
 """,
     },
 
