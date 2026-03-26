@@ -67,6 +67,52 @@ CHURCHES = [
 պատմությունը և ներկան հանդիպում են իրար։
 </p>
 """,
+        "description_en": """
+<h3>Foundation (4th century)</h3>
+<p>
+The Mother Cathedral of Etchmiadzin took shape in the 4th century, when Armenia was among the first countries
+to adopt Christianity as a state religion. According to tradition, Saint Gregory the Illuminator has a vision
+in which Christ descends from heaven and strikes the ground with a golden hammer, indicating the place where
+the cathedral should be built.
+</p>
+<p>
+From this, the name “Etchmiadzin” emerged, which literally means
+“The Only Begotten descended”.
+</p>
+
+<h3>Rebuildings and fortifications</h3>
+<p>
+In the 5th–7th centuries, the cathedral was rebuilt and reinforced several times, and
+under Catholicos Komitas I Aghtsetsi it received its main cruciform-domed volume,
+which has been preserved to this day.
+</p>
+
+<h3>From the Middle Ages to the new era</h3>
+<p>
+In the 17th century, the bell tower was built and other buildings of the complex were added,
+and in the 19th century, educational and cultural institutions were established, thanks to which
+Etchmiadzin was strengthened as the spiritual and cultural center of the Armenian people.
+</p>
+
+<h3>Modern period</h3>
+<p>
+Since 2000, the Mother Cathedral of Etchmiadzin and the adjacent churches have been included in the
+UNESCO World Heritage List, and the cathedral continues to be the residence of the Catholicos of All Armenians
+and the main sanctuary of the Armenian Apostolic Church.
+</p>
+
+<h3>Interesting facts</h3>
+<ul>
+  <li>Etchmiadzin is considered one of the oldest functioning Christian cathedrals in the world.</li>
+  <li>The cathedral preserves important Christian relics and treasures.</li>
+  <li>For centuries, it has been an important symbol of Armenian identity, faith, and statehood.</li>
+</ul>
+
+<p>
+Etchmiadzin is not only a historical monument but also a living place where faith,
+history, and the present meet each other.
+</p>
+""",
     },
     {
         "id": "artashat-octagon",
@@ -121,10 +167,43 @@ CHURCHES = [
 Հայաստանը Արևելյան Միջերկրականի եկեղեցական ավանդույթների հետ։
 </p>
 """,
+        "description_en": """
+<h3>Location and discovery</h3>
+<p>
+The remains of the octagonal church were discovered in the area of ancient Artashat, known as Artaxata,
+which in the Hellenistic period and the early Christian centuries was one of the capitals of Armenia.
+The church was situated on a hillside and occupies an area of about 1,000 m².
+</p>
+
+<h3>Dating and significance</h3>
+<p>
+Radiocarbon analysis of the wooden remains of the structure has shown
+that the church was built in the first half of the 4th century, which makes it one of the
+earliest archaeologically documented churches in Armenia.
+</p>
+<p>
+The octagonal floor plan with cruciform extensions is characteristic of early Christian
+monuments built as memorials or in honor of a sacred place, which is why it is assumed
+that this could have been the burial site of a martyred saint.
+</p>
+
+<h3>Architectural features</h3>
+<p>
+The octagonal part of the church has a diameter of about 30 m, is built of local
+stone and lime mortar, and has a simple mortar floor and terracotta tiles inside.
+</p>
+
+<h3>Trace of early Christianity in Armenia</h3>
+<p>
+The octagonal church of Artashat is important evidence that Christian worship had already
+firmly taken root in one of Armenia’s capitals by the early 4th century and links
+Armenia to the church traditions of the Eastern Mediterranean.
+</p>
+""",
     },
     {
         "id": "hripsime",
-        "name_hy": "Սուրբ Հռիփսիմե եկեղեցి",
+        "name_hy": "Սուրբ Հռիփսիմե եկեղեցի",
         "name_en": "Saint Hripsime Church",
         "period": "old",
         "century": "VII դար",
@@ -168,6 +247,18 @@ CHURCHES = [
 Սուրբ Հռիփսիմեն ընդգրկված է ՅՈՒՆԵՍԿՕ-ի Համաշխարհային ժառանգության
 ցանկում՝ Էջմիածնի մյուս պատմական եկեղեցիների հետ միասին։
 </p>
+""",
+        "description_en": """
+Saint Hripsime Church is located in Vagharshapat, near the spiritual center of Etchmiadzin, on the site where,
+according to tradition, the holy virgin martyr Hripsime is buried.
+
+The present stone church was built in 618, during the catholicosate of Komitas I Aghtsetsi, and is considered
+an important example of the early medieval Armenian domed-centralized type.
+
+Its cruciform domed plan and clearly defined volumes had a significant influence on the later development
+of Armenian church architecture.
+
+Saint Hripsime is included in the UNESCO World Heritage List together with the other historic churches of Etchmiadzin.
 """,
     },
     {
@@ -216,6 +307,17 @@ CHURCHES = [
 «Էջմիածնի տաճարն ու եկեղեցիները և Զվարթնոցի հնավայրը» համալիրում։
 </p>
 """,
+        "description_en": """
+Saint Gayane Church is located in Vagharshapat, just south of the Mother Cathedral of Etchmiadzin, on the site where,
+according to tradition, the abbess Gayane was martyred together with Hripsime and the other virgins.
+
+The present church was built in 630, during the catholicosate of Ezra, on the site of an earlier mausoleum,
+and has almost completely preserved its original appearance.
+
+It is a three-aisled, four-pier domed basilica, which is one of the finest examples of this type of 7th‑century churches.
+
+The church is included in the UNESCO World Heritage complex “Etchmiadzin Cathedral and Churches and the Archaeological Site of Zvartnots”.
+""",
     },
     {
         "id": "khor-virap",
@@ -254,6 +356,18 @@ CHURCHES = [
 Սուրբ Աստվածածին եկեղեցին, վանական խցերն ու պարիսպները, և այսօր այն
 Հայաստանի ամենահայտնի ուխտավայրերից է Արարատի տեսարանով։
 </p>
+""",
+        "description_en": """
+Khor Virap is located near ancient Artashat, at the foot of Mount Ararat, and is linked to the well‑known tradition
+about Saint Gregory the Illuminator. According to the story, he was kept here for about 13 years in a “khor virap”,
+a deep pit, until King Tiridates III was healed and in 301 Armenia became the first Christian country.
+
+In the 4th–5th centuries, a small Christian church is already mentioned on this site, and in 642,
+during the catholicosate of Nerses III the Builder, the chapel of Saint George was constructed.
+
+The present monastic complex took shape in the 17th century, when the Church of the Holy Mother of God,
+the monastic cells, and the defensive walls were built, and today it is one of the most famous pilgrimage
+sites in Armenia, renowned for its view of Mount Ararat.
 """,
     },
     {
@@ -295,6 +409,18 @@ CHURCHES = [
 տեսարան դեպի ամբողջ լիճը։ Վանքը մասամբ վերականգնվել է 20-րդ դարում,
 և այժմ գործում է որպես հոգևոր կենտրոն ու սիրված ուխտավայր։
 </p>
+""",
+        "description_en": """
+Sevanavank stands on a high promontory on the northern shore of Lake Sevan, which until the mid‑20th century
+was a true island. The monastery was founded in 874 by Princess Mariam, daughter of Ashot Bagratuni.
+
+According to tradition, the first Christian chapel here was built already through the initiative of
+Saint Gregory the Illuminator, and in the 9th century Sevanavank became a fortress and educational center
+of the Syunik princes, with its own school and scriptorium.
+
+During the Soviet period, as a result of lowering the water level of Lake Sevan, the island turned into a peninsula,
+and today a panoramic view of the entire lake opens from the height of the monastery. The complex was partially
+restored in the 20th century and now functions as a spiritual center and a beloved pilgrimage site.
 """,
     },
     {
@@ -361,6 +487,19 @@ CHURCHES = [
 ամենահիշվող կանգառներից մեկը։
 </p>
 """,
+        "description_en": """
+Geghard Monastery is located in the upper part of the Azat River gorge, beneath high, sheer cliffs, so that part of the
+complex seems to be carved directly into the mountain. The name of the monastery is linked to the “Holy Lance” with which,
+according to tradition, Christ was pierced, and which was once kept here.
+
+Within the monastery complex there are both free‑standing churches and completely rock‑hewn halls and chapels,
+whose domes open directly into the interior of the mountain. In one of the rock chambers, if you look up,
+you see a round opening through which a beam of light falls, creating the feeling of a true cave cathedral.
+
+The oldest layers of the monastery date at least to the 4th century, while the present main church,
+the Cathedral of the Holy Mother of God, was built in the 13th century during the Zakarid period.
+At that time a strongly fortified monastic complex with walls, gates, and courtyards took shape here.
+""",
     },
     {
         "id": "noravank",
@@ -426,6 +565,50 @@ CHURCHES = [
 Նորավանքը այսօր Հայաստանի ամենահաճախ այցելվող վանքերից է․ այն
 սովորաբար մտնում է Գառնի–Գեղարդ կամ հարավային տուրերի մեջ և հիանալի
 կանգառ է Սյունիք կամ Արցախ տանող ճանապարհին։
+</p>
+""",
+        "description_en": """
+<h3>Deep inside a gorge of red cliffs</h3>
+<p>
+Noravank is hidden deep in the Amaghu gorge, between high, red rock walls,
+so that at first glance the monastery seems to be “attached” to the cliff.
+When you drive into the gorge, the road suddenly narrows, and at the end,
+on a small plateau, the monastic complex appears.
+</p>
+<p>
+The historical core of the monastery dates to the 13th century. At that time,
+the main church of Saint Karapet was built, along with the two‑storey Church
+of the Holy Mother of God with its narrow staircase, and a number of halls
+and chapels connected with the activity of the Orbelian princes.
+</p>
+
+<h3>The Orbelian mausoleum and the two‑storey church</h3>
+<p>
+The small Church of the Holy Mother of God, whose lower level is a mausoleum
+and upper level a small prayer hall, is one of the most memorable structures
+of Noravank. The narrow, open staircase leading to the upper floor is,
+on the one hand, a favorite shot for photographs, but it also reflects
+the “play” between form and symbolism in medieval Armenian architecture.
+</p>
+<p>
+The Orbelian tombstones, khachkars, and wall inscriptions tell how this
+monastery functioned not only as a spiritual center, but also as an important
+political hub in the south.
+</p>
+
+<h3>Architectural setting</h3>
+<p>
+Noravank is almost completely surrounded by cliffs, so the light and colors
+here always feel a bit theatrical. In the early morning, Noravank is darker
+and more peaceful, while at sunset the red rocks begin to glow and the whole
+complex turns golden.
+</p>
+
+<h3>Today</h3>
+<p>
+Today Noravank is one of the most frequently visited monasteries in Armenia.
+It is usually included in Garni–Geghard or southern tour itineraries and is
+an excellent stop on the way to Syunik or Artsakh.
 </p>
 """,
     },
@@ -497,6 +680,51 @@ CHURCHES = [
 ժամանակակից ճոպանուղու համադրությունը։
 </p>
 """,
+        "description_en": """
+<h3>A monastery literally on the edge of a gorge</h3>
+<p>
+Tatev Monastery is built on the edge of the deep Vorotan gorge, on a high plateau
+from which almost vertical slopes drop down. Seen from above, the monastery looks
+like a small fortress guarding the whole region.
+</p>
+<p>
+The main core of the monastery took shape in the 9th–10th centuries. Here are
+the main church of Saints Paul and Peter, the church of Saint Gregory, chapels,
+monastic cells, and gardens, all surrounded by defensive walls.
+</p>
+
+<h3>Medieval university and center of learning</h3>
+<p>
+In the Middle Ages, Tatev was famous for its university, which functioned in the
+14th–15th centuries and was considered an important scientific and literary center
+of Armenia. Renowned scholars taught here, and manuscripts were written and illuminated.
+</p>
+<p>
+Even today, inside the monastery one can see the remains of the scriptorium, courtyards,
+and cells, which recall that Tatev was a place not only of prayer, but also of study
+and writing for the entire region.
+</p>
+
+<h3>Architecture and the “swinging pillar”</h3>
+<p>
+The complex also features the famous “swinging” or rocking pillar, which according
+to tradition served as an early warning device for earthquakes or danger. It responds
+to slight movements and is an interesting example of medieval engineering thought.
+</p>
+
+<h3>“Wings of Tatev” cableway and today</h3>
+<p>
+The “Wings of Tatev” cableway, which spans the Vorotan gorge, is today one of the
+world’s longest reversible aerial tramways, connecting the village of Halidzor with
+Tatev Monastery. The journey takes about 12 minutes, during which the monastery
+gradually approaches from above, revealing the full panorama of the gorge and plateau.
+</p>
+<p>
+Tatev continues to be a pilgrimage site and one of the main symbols of Syunik.
+Visitors experience at once the combination of a medieval monastery, mountains,
+and a modern cableway.
+</p>
+""",
     },
     {
         "id": "haghpat",
@@ -562,6 +790,51 @@ CHURCHES = [
 գյուղական մթնոլորտով տարածք՝ խոտածածկ տանիքներով, քարե արահետներով
 և մշտապես մի փոքր մառախլապատ երկնքով։ Եթե սիրում ես
 Լոռու լանդշաֆտը, Հաղպատը այդ զգացողության շատ լավ «կոնցենտրատն» է։
+</p>
+""",
+        "description_en": """
+<h3>A Bagratid-era center of learning and architecture</h3>
+<p>
+Haghpat Monastery is located in Lori Province, on a height above the Debed gorge,
+with views over green slopes and deep ravines. It was founded by the Bagratids
+in the 10th century and for a long time was one of medieval Armenia’s important
+spiritual and educational centers.
+</p>
+<p>
+The main church, Surb Nshan (Holy Sign), was built between 976 and 991 by order
+of Queen Khosrovanush, and in the following centuries the complex was expanded
+with gavits (narthexes), a belfry, a scriptorium, walls covered with khachkars,
+and other buildings.
+</p>
+
+<h3>Scriptorium, gavit, and khachkars</h3>
+<p>
+Haghpat is famous for its large gavit, where not only pilgrims but also students
+and scholars used to gather. The monastery’s scriptorium for a long time served
+as a place for writing and preserving manuscripts. The area is rich in khachkars
+and inscriptions that tell about the donors and monks who lived and worked here
+over the centuries.
+</p>
+<p>
+Walking through the monastery’s rooms and corridors, you feel that this was an
+entire “village” with its courtyards, dwellings, and corners intended for daily
+life and learning, not just a single church.
+</p>
+
+<h3>UNESCO and its pairing with Sanahin</h3>
+<p>
+Haghpat and Sanahin monasteries together are included in the UNESCO World
+Heritage List as supreme architectural examples of Bagratid Armenia. The two
+monasteries are located close to each other on opposite sides of the Debed gorge,
+so they are usually visited on the same day and within the same itinerary.
+</p>
+
+<h3>Today</h3>
+<p>
+Today Haghpat is still an active monastery, but at the same time a quiet place
+with a rural atmosphere, featuring grass-covered roofs, stone paths, and an
+almost always slightly misty sky. If you love the landscapes of Lori, Haghpat
+is a very good “concentrate” of that feeling.
 </p>
 """,
     },
@@ -633,6 +906,50 @@ CHURCHES = [
 և վայելել Դեբեդի կիրճի կանաչ տեսարանները։
 </p>
 """,
+        "description_en": """
+<h3>A Bagratid-era center of scholarship and spiritual life</h3>
+<p>
+Sanahin Monastery is located in Lori Province, on a plateau above the Debed gorge,
+next to Haghpat Monastery. It was founded in the 10th century by the Bagratids
+and quickly became an important center of educational and spiritual life
+in medieval Armenia.
+</p>
+<p>
+There is a tradition about the origin of the monastery’s name: when the nearby
+Haghpat Monastery was founded, the monks of this monastery are said to have remarked
+“this one is older” (“Sa na hin”), from which the name “Sanahin” is derived.
+</p>
+
+<h3>Architecture</h3>
+<p>
+The monastic complex includes several churches, a gavit, a scriptorium, an academy,
+and a bridge. The main church, Surb Amenaprkich (Holy Savior), was built in 966,
+and later the Church of the Holy Mother of God, the large gavit, and the scriptorium
+were added, forming a complete and engaging architectural ensemble.
+</p>
+
+<h3>Academy and education</h3>
+<p>
+Sanahin housed one of the first academies of Armenia, where theology, philosophy,
+music, and the natural sciences were taught. Many Armenian writers and scholars
+studied and worked here, including the prominent Grigor Magistros.
+</p>
+
+<h3>UNESCO and its link with Haghpat</h3>
+<p>
+Sanahin and Haghpat monasteries were inscribed on the UNESCO World Heritage List
+in 1996 as supreme achievements of Bagratid Armenian architecture.
+The two monasteries stand on opposite sides of the Debed gorge and are
+usually visited on the same day.
+</p>
+
+<h3>Today</h3>
+<p>
+Today Sanahin is a quiet place with a rural atmosphere, where in summer and autumn
+you can freely wander through the courtyards, see the old khachkars,
+and enjoy the green views of the Debed gorge.
+</p>
+""",
     },
     {
         "id": "haghartsin",
@@ -689,6 +1006,40 @@ CHURCHES = [
 աշնանը, երբ շրջապատող անտառը կրակագույն է դառնում։ Վանքը
 մատչելի է Դիլիջանից մեկնող ճանապարհով և հիանալի կանգառ է
 Հյուսիս-Հարավ երթուղու ճամփորդների համար։
+</p>
+""",
+        "description_en": """
+<h3>A monastery hidden in the forest</h3>
+<p>
+Haghartsin Monastery is located in Tavush Province, a few kilometers from Dilijan,
+deep in a dense forest, and its setting alone leaves an unforgettable impression.
+The road to the monastery passes through oak and beech woods, and suddenly,
+between the trees, the domes of the stone churches appear.
+</p>
+
+<h3>History and dating</h3>
+<p>
+The earliest buildings of the monastery date to the 10th century, but the main
+structures standing today were built in the 12th–13th centuries under the patronage
+of the Zakarian princes. During this period Haghartsin had a scriptorium, a school,
+and the status of a major pilgrimage center for all of Northern Armenia.
+</p>
+
+<h3>Architecture</h3>
+<p>
+The complex includes three churches — Saint Gregory, the Holy Mother of God,
+and Saint Stephen — as well as a gavit, a monastic burial vault, and several
+auxiliary buildings. The basin-shaped stone reservoir of the burial vault,
+the khachkars, and the fine carvings on the walls all demonstrate the high
+craftsmanship of the master stonemasons.
+</p>
+
+<h3>Today</h3>
+<p>
+Haghartsin is one of the most picturesque monasteries in Armenia, especially
+in autumn when the surrounding forest turns fiery red and orange.
+The monastery is easily accessible via the road from Dilijan and is an excellent
+stop for travelers along the North–South route.
 </p>
 """,
     },
@@ -751,6 +1102,23 @@ CHURCHES = [
 վաղ առավոտյան, երբ շրջակա գյուղը դեռ քնած է։
 </p>
 """,
+        "description_en": """
+Goshavank was founded in 1191 by the great Armenian jurist, writer, and scholar Mkhitar Gosh, near the village of Gosh
+in Tavush Province, in the forested region of Dilijan. The monastery received its name from the tradition associated
+with Mkhitar Gosh himself, although it was originally called “Nor Getik”.
+
+At Goshavank, Mkhitar Gosh composed the “Datastanagirk”, the first systematic law code of Armenia, which summarized
+Armenian legal traditions and influenced Armenian law in subsequent centuries. In addition, he created many fables
+and literary works here.
+
+The monastic complex includes the main church of the Holy Mother of God, the chapel of Saint Gregory, a gavit (narthex),
+a scriptorium, and a belfry. The khachkars are among the most impressive elements of Goshavank; they are executed with
+supreme artistry and display the skill of 12th–13th‑century Armenian stonecarvers.
+
+Together with Haghartsin, Goshavank forms the main monastic pair of Tavush Province and is usually visited on the
+Dilijan–Haghartsin–Gosh route in a single day. The monastery has a calm, contemplative atmosphere, especially
+in the early morning when the surrounding village is still asleep.
+""",
     },
     {
         "id": "marmashen",
@@ -809,6 +1177,21 @@ CHURCHES = [
 մի տեղ չի կրկնվում Հայաստանում։
 </p>
 """,
+        "description_en": """
+Marmashen Monastery is located in Shirak Province, on the left bank of the Akhuryan River, about 10 kilometers from Gyumri.
+The complex is built on the edge of the river gorge, where the natural terrace creates a magnificent backdrop
+for the stone structures.
+
+Construction of the monastery began in 988, during the reign of Bagratid King Gagik I, and the complex took shape
+in the 10th–11th centuries. The main church, Saint Stephen the Protomartyr, was built in the characteristic style
+of the Bagratid architectural period, with a pronounced cruciform‑domed plan.
+
+The complex includes three churches, a mausoleum, and traces of ruined adjacent buildings. The carved stones,
+the forms of the arches, and the details of the altar and apse testify to the mature style of Bagratid architecture.
+
+Marmashen is often part of the Gyumri–Harich–Marmashen route and is recognized as one of the most beautiful monasteries
+of Shirak. The view of the Akhuryan gorge, especially during harvest season, is said to be unmatched anywhere else in Armenia.
+""",
     },
     {
         "id": "shoghakat",
@@ -863,6 +1246,22 @@ CHURCHES = [
 ուխտագնացության մթնոլորտ, ի տարբերություն Մայր Տաճարի
 բազմամարդ բակի։
 </p>
+""",
+        "description_en": """
+Shoghakat Church is located in Vagharshapat, near the spiritual complex of the Mother Cathedral of Etchmiadzin,
+on the site where, according to tradition, the companions of the virgin Hripsime were martyred in the 4th century.
+The word “Shoghakat” in Armenian means “ray dripping” or “light shining”, referring to the traditional symbolism
+of the saints’ blood and light.
+
+The construction of the present church was completed in 1694 through the efforts of Catholicos of All Armenians
+Nahapat I of Edessa, although earlier structures already existed at this site. The architecture of the church
+reflects the style of 17th‑century Armenian religious buildings.
+
+Shoghakat Church is included in the UNESCO World Heritage List as part of the “Cathedral and Churches of Etchmiadzin”
+complex, together with Saint Hripsime, Saint Gayane, and the Mother Cathedral.
+
+Shoghakat is a quiet, less visited church within the Etchmiadzin complex, which allows for a more reflective and
+personal atmosphere of pilgrimage compared to the crowded courtyard of the Mother Cathedral.
 """,
     },
     {
@@ -926,6 +1325,40 @@ CHURCHES = [
 է զգալ ուղղակի կապ 7-րդ դարի Հայաստանի հետ։
 </p>
 """,
+        "description_en": """
+<h3>Armenian architecture in the era of Arab invasions</h3>
+<p>
+The Church of Saint Gregory of Aruch was built in 666 by Prince Grigor Mamikonian
+in the village of Aruch in Aragatsotn Province. The time of its construction
+coincides with the difficult period of Arab invasions, which makes the church
+an important architectural witness to those turbulent times.
+</p>
+
+<h3>Architecture</h3>
+<p>
+The church is built on a three-aisled basilica plan and has a remarkable interior
+space. The massing and decoration of the building demonstrate the mature style
+of 7th‑century Armenian architecture, which had already developed its own
+distinct language. Next to the church, the remains of Grigor Mamikonian’s
+palace have been discovered, showing that Aruch was an important princely
+center in the 7th century.
+</p>
+
+<h3>Condition and restoration</h3>
+<p>
+Over the centuries the church was partially ruined, but the main structure
+has survived and partial restoration work has been carried out. Inside, one
+can see the high arches, the ancient stones of the walls, and architectural
+details that still bear the mark of time.
+</p>
+
+<h3>Today</h3>
+<p>
+Today the church of Aruch is part of the main travel routes of Aragatsotn Province
+and is often visited on the way to Hovhannavank or Saghmosavank. It is a quiet,
+seldom‑touristed place where you can feel a direct connection with 7th‑century Armenia.
+</p>
+""",
     },
     {
         "id": "saghmosavank",
@@ -985,6 +1418,39 @@ CHURCHES = [
 կիրճի տեսարանն ու վանքի հանգիստ մթնոլորտը
 հատկապես սիրելի են լուսանկարիչների ու
 բնությունը սիրողների համար։
+</p>
+""",
+        "description_en": """
+<h3>A monastery perched on the edge of a gorge</h3>
+<p>
+Saghmosavank is located in Aragatsotn Province, on the edge of the Kasagh River
+gorge above the village of Saghmosavan. From the monastery courtyard there is
+a view of the gorge’s sheer cliffs, one of the most impressive natural backdrops
+for a monastic complex in Armenia.
+</p>
+
+<h3>Foundation and the Zakarians</h3>
+<p>
+The monastery was founded in 1215 by the brothers Zakare and Ivane Zakarian,
+at the height of their political and military power. The main church of the
+Holy Mother of God, the gavit, the scriptorium, and several auxiliary buildings
+were constructed at this time.
+</p>
+
+<h3>Architecture</h3>
+<p>
+The sculpted decoration of the church façade, the design of the gavit’s arches,
+and the details of the scriptorium reflect the characteristic style of Armenian
+architecture in the Zakarian period. The khachkars and inscriptions on the walls
+tell the stories of the noble families and benefactors who supported the monastery.
+</p>
+
+<h3>Today</h3>
+<p>
+Together with Hovhannavank, Saghmosavank forms the main “monasteries” route
+of Aragatsotn, and the two are usually visited on the same day. The view of
+the Kasagh gorge and the monastery’s peaceful atmosphere are especially beloved
+by photographers and nature lovers.
 </p>
 """,
     },
@@ -1052,6 +1518,39 @@ CHURCHES = [
 տանող ճանապարհին։
 </p>
 """,
+        "description_en": """
+<h3>From the 4th to the 13th century</h3>
+<p>
+Hovhannavank is located in Aragatsotn Province, on the edge of the Kasagh River
+gorge in the village of Ohanavan, a few kilometers north of Saghmosavank.
+According to tradition, the spiritual history of the site goes back to the 4th century,
+when Saint Gregory the Illuminator founded a chapel here in the name of
+Saint John the Baptist.
+</p>
+
+<h3>13th-century reconstruction</h3>
+<p>
+The present monastic complex was built in 1216 by the Zakarian prince Vache Vachutyan.
+The main church of Saint Karapet and the large gavit were constructed at this time,
+and they are considered valuable examples of 13th‑century Armenian architecture.
+</p>
+
+<h3>Architecture</h3>
+<p>
+The gavit is the most impressive element of Hovhannavank, with its high arches,
+central opening for light, and walls adorned with khachkars. The sculptural decoration
+of the church’s exterior façade is also noteworthy for the characteristic details
+of the Zakarian style.
+</p>
+
+<h3>Today</h3>
+<p>
+Together with Saghmosavank, Hovhannavank is among the most visited monasteries
+of Aragatsotn. Its position on the edge of the gorge, the clean air, and the
+peaceful atmosphere make it an excellent stop on the road from Yerevan
+towards Mount Aragats or Amberd Fortress.
+</p>
+""",
     },
     {
         "id": "odzun-horomayr",
@@ -1091,6 +1590,35 @@ CHURCHES = [
 <p>Երկու վայրերը հաճախ զուգակցվում են Հաղպատ–Սանահին–Օձուն
 երթուղու ընթացքում։</p>
 """,
+        "description_en": """
+<h3>Odzun Church</h3>
+<p>
+Odzun Church is located in Lori Province, on the edge of the Dzoraget River gorge.
+It was built in the 5th–6th centuries and is a valuable example of early
+Christian Armenian architecture.
+</p>
+<p>
+In front of the church stands a rare type of stone monument dating from the
+5th–7th centuries, which is associated with the commemoration of martyrs.
+</p>
+
+<h3>Horomayr Monastery</h3>
+<p>
+Horomayr Monastery is located a few kilometers from Odzun, deep within
+the Dzoraget gorge. It was founded around the 12th century and served
+as an important pilgrimage site for the Lori region.
+</p>
+<p>
+The monastery is partially ruined, which creates a romantic atmosphere
+against the backdrop of dense vegetation and the sound of the gorge.
+</p>
+
+<h3>Today</h3>
+<p>
+Both sites are often combined within the Haghpat–Sanahin–Odzun
+travel itinerary.
+</p>
+""",
     },
     {
         "id": "gndevank",
@@ -1128,6 +1656,33 @@ CHURCHES = [
 <h3>Այսօր</h3>
 <p>Հայաստանի ամենաքիչ այցելվող, բայց ամենագեղեցիկ վանքերից
 մեկը։ Հիանալի «թաքնված գոհար» է Նորավանք–Տաթև երթուղու վրա։</p>
+""",
+        "description_en": """
+<h3>A monastery hidden in the Arpa River gorge</h3>
+<p>
+Gndevank Monastery is located in Vayots Dzor Province, in the gorge of the Arpa River,
+near the village of Gndevaz. The monastery is built on the rocky slope of the gorge,
+with the Arpa River flowing below.
+</p>
+
+<h3>Foundation (936)</h3>
+<p>
+The monastery was founded in 936 and is connected with the spiritual traditions
+of the Syunik diocese. The main church, dedicated to the Holy Mother of God,
+was built in the 10th century.
+</p>
+
+<h3>Architecture</h3>
+<p>
+It has a cross-domed plan, built of local dark stone that harmonizes beautifully
+with the natural environment of the gorge.
+</p>
+
+<h3>Today</h3>
+<p>
+Gndevank is one of the least visited yet most beautiful monasteries in Armenia,
+a wonderful “hidden gem” along the Noravank–Tatev route.
+</p>
 """,
     },
     # ══════════════════════════════
@@ -1173,6 +1728,35 @@ CHURCHES = [
 անցկացվում են կարևոր կրոնական արարողություններ
 և ազգային տոնախմբություններ։</p>
 """,
+        "description_en": """
+<h3>The cathedral of the Armenian nation's 1700th anniversary</h3>
+<p>
+The Saint Gregory the Illuminator Cathedral was built in 2001 on the occasion
+of the 1700th anniversary of the Armenian people’s adoption of Christianity.
+It is located in the center of Yerevan and is the largest church in the capital.
+</p>
+
+<h3>Architecture</h3>
+<p>
+The cathedral is built according to the canons of traditional Armenian church
+architecture, while employing modern construction technologies.
+The building can accommodate about 1,700 people, symbolizing the 1,700 years
+that have passed since the adoption of Christianity.
+</p>
+
+<h3>Significance</h3>
+<p>
+The cathedral is dedicated to Saint Gregory the Illuminator, the saint who
+preached Christianity in Armenia and in 301 laid the foundations of the
+Armenian Christian tradition.
+</p>
+
+<h3>Today</h3>
+<p>
+Today it is one of the main spiritual centers of Yerevan, where major religious
+ceremonies and national celebrations are held.
+</p>
+""",
     },
     {
         "id": "saint-anna-yerevan",
@@ -1209,6 +1793,28 @@ CHURCHES = [
 ու մկրտությունների արարողությունների համար։
 Կենտրոնական դիրքի շնորհիվ հաճախ է այցելվում
 քաղաքի բնակիչների կողմից։</p>
+""",
+        "description_en": """
+<h3>In the heart of Yerevan</h3>
+<p>
+Saint Anna Church is located in the center of Yerevan, near the intersection
+of Abovyan and Sayat-Nova streets. It is a small yet remarkable structure
+that blends beautifully with the urban environment.
+</p>
+
+<h3>Construction</h3>
+<p>
+The church was built in the 21st century in a traditional Armenian
+architectural style, using tuff stone, which is characteristic of
+Yerevan’s historic buildings.
+</p>
+
+<h3>Today</h3>
+<p>
+It serves as the spiritual center of the neighborhood and is well known
+for wedding and baptism ceremonies. Thanks to its central location,
+it is frequently visited by residents of the city.
+</p>
 """,
     },
     {
@@ -1249,6 +1855,28 @@ CHURCHES = [
 <p>Մասիս քաղաքի հոգևոր կենտրոնն է։
 Արարատի տեսարանի շնորհիվ հայտնի է
 նաև այցելուների ու լուսանկարիչների շրջանում։</p>
+""",
+        "description_en": """
+<h3>At the foot of Mount Ararat</h3>
+<p>
+Saint Thaddeus Church is located in the town of Masis, near the foot
+of Mount Ararat. From the church courtyard there is a magnificent view
+of Ararat, which makes the site particularly symbolic.
+</p>
+
+<h3>Construction</h3>
+<p>
+The church was built in the 21st century in the traditional Armenian
+architectural style. It is named in honor of the Apostle Saint Thaddeus,
+who, according to tradition, preached Christianity in Armenia in the 1st century.
+</p>
+
+<h3>Today</h3>
+<p>
+Today it serves as the spiritual center of the town of Masis.
+Thanks to the view of Ararat, it is also popular among visitors
+and photographers.
+</p>
 """,
     },
 ]
