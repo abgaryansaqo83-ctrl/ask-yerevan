@@ -1,0 +1,33 @@
+{# templates/places_list_en.html #}
+{% extends "base.html" %}
+
+{% block title %}AskYerevan · Entertainment{% endblock %}
+
+{% block content %}
+
+🎉 Entertainment
+
+🇦🇲 All
+🍽️ Restaurants  
+☕ Cafes
+🌳 Parks
+🎶 Clubs/Bars
+🌟 Other Places
+
+{% for place in places %}
+<a href="{{ url_for('place_detail_en', place_id=place.id) }}">
+  {% if place.thumb %}
+  <img src="{{ place.thumb }}" alt="{{ place.titleen }}" class="sight-thumb">
+  {% elif place.images and place.images[0] %}
+  <img src="{{ place.images[0] }}" alt="{{ place.titleen }}" class="sight-thumb">
+  {% endif %}
+  {% if place.category_label_en %}
+  <span class="category-badge">{{ place.category_label_en }}</span>
+  {% endif %}
+  {{ place.titleen }}
+</a>
+{% endfor %}
+
+No going out places yet.
+
+{% endblock %}
