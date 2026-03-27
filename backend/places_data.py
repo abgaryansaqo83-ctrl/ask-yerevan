@@ -186,7 +186,7 @@ PLACES = [
         "night where you suddenly realize this was not just a random stop, but a "
         "place you will want to come back to."
     ),
-}
+},
 {
     "id": "tsaghkadzor-ski-resort",
     "category": "armenia",
@@ -252,7 +252,7 @@ PLACES = [
         "the evening, you feel like you have managed to ski, hike and recharge all "
         "in one day, without ever being too far from Yerevan."
     ),
-}
+},
 {
     "id": "lake-sevan",
     "category": "armenia",
@@ -318,7 +318,7 @@ PLACES = [
         "recognizable images of Armenia, and standing there you immediately "
         "understand why."
     ),
-}
+},
 {
     "id": "van-ardi-winery",
     "category": "armenia",
@@ -383,7 +383,7 @@ PLACES = [
         "from Yerevan, with one of the most dramatic mountain views in the "
         "country as a bonus."
     ),
-}
+},
 {
     "id": "poloz-mukuch",
     "category": "armenia",
@@ -455,7 +455,7 @@ PLACES = [
         "hospitality in its most concentrated form, and it is exactly why "
         "people make the trip from Yerevan just to eat here."
     ),
-}
+},
 {
     "id": "dilijan-forest-cafe",
     "category": "armenia",
@@ -520,7 +520,7 @@ PLACES = [
         "book, take slow photos, or simply do nothing with the sounds of the "
         "forest in the background, this is exactly that place."
     ),
-}
+},
 {
     "id": "jermuk-spa",
     "category": "armenia",
@@ -594,7 +594,7 @@ PLACES = [
         "that no trendy spa resort can fully replicate. Sometimes the real thing "
         "is simply the real thing."
     ),
-}
+},
 {
     "id": "calumet-yerevan",
     "category": "yerevan",
@@ -658,7 +658,7 @@ PLACES = [
         "fact that once you have been, you will want to come back. "
         "The kind of place that feels like a secret even when it is full."
     ),
-}
+},
 {
     "id": "dargett-brewpub",
     "category": "yerevan",
@@ -733,7 +733,7 @@ PLACES = [
         "but on any weeknight it is equally good: quieter, easier to get a "
         "seat at the bar, and just as worth the visit."
     ),
-}
+},
 {
     "id": "simona-home-bar",
     "category": "yerevan",
@@ -806,7 +806,7 @@ PLACES = [
         "genuinely pleasant neighborhood bars in Yerevan, the kind of place "
         "that locals quietly consider their own."
     ),
-}
+},
 {
     "id": "stop-club-yerevan",
     "category": "yerevan",
@@ -884,7 +884,7 @@ PLACES = [
         "If you want to feel the city's nightlife from the inside rather than "
         "from behind a velvet rope, this is a reliable and honest place to start."
     ),
-}
+},
 {
     "id": "garage-club-gyumri",
     "category": "armenia",
@@ -965,7 +965,7 @@ PLACES = [
         "A night here feels distinctly Gyumri: loud, warm, slightly rough "
         "around the edges and completely unpretentious."
     ),
-}
+},
 {
     "id": "kami-music-club",
     "category": "yerevan",
@@ -1054,7 +1054,7 @@ PLACES = [
         "international standards without leaving Armenia, Kami is the "
         "most reliable answer to that question."
     ),
-}
+},
 {
     "id": "diamond-restaurant-yerevan",
     "category": "yerevan",
@@ -1151,7 +1151,7 @@ PLACES = [
         "If you are in Yerevan and want one meal that you will actually "
         "remember, Diamond is a confident and honest choice."
     ),
-}
+},
 {
     "id": "tsirаni-garden-restaurant",
     "category": "yerevan",
@@ -1247,7 +1247,7 @@ PLACES = [
         "beautiful outdoor setting with solid Armenian cooking, Tsirани is "
         "one of the more reliable and atmospheric answers to that search."
     ),
-}
+},
 {
     "id": "dolmama-restaurant",
     "category": "yerevan",
@@ -1346,7 +1346,7 @@ PLACES = [
         "of place that reminds you why this cuisine deserves the same "
         "serious attention as any other in the world."
     ),
-}
+},
 {
     "id": "yasaman-sevan-restaurant",
     "category": "armenia",
@@ -1445,7 +1445,7 @@ PLACES = [
         "That combination is the correct way to experience Lake Sevan, "
         "and Yasaman delivers it with consistency and without pretension."
     ),
-}
+},
 {
     "id": "sherep-restaurant",
     "category": "yerevan",
