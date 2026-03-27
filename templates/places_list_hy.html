@@ -4,33 +4,198 @@
 {% block title %}AskYerevan · Ժամանցի վայրեր{% endblock %}
 
 {% block content %}
-<div class="section-tabs">
-   Բոլորը |  Երևան |  Հայաստան
-</div>
 
-<div class="category-tabs">
-  🍽️ Ռեստորաններ | ☕ Կաֆեներ | 🌳 Այգիներ | 🎶 Կլուբներ/Բարեր | 🌟 Այլ
-</div>
+<section class="news-hero-mini">
+  <div class="container">
+    <h1>🎭 Ժամանցի վայրեր</h1>
+  </div>
+</section>
 
-<div class="places-pinterest-grid">
-  {% for place in places %}
-  <div class="pinterest-card">
-    <a href="{{ url_for('place_detail_hy', place_id=place.id) }}">
-      <div class="card-image" style="background-image: url('{{ place.thumb or place.images[0] }}');">
-        <div class="card-overlay">
-          <div class="card-like">
-            <span class="like-heart" data-place-id="{{ place.id }}">❤️</span>
-            <span class="like-number">{{ place.likes_count or 0 }}</span>
+<section class="sights-container">
+  <div class="container">
+
+    <!-- Գլխավոր ֆիլտր: Երևան / Հայաստան -->
+    <div class="churches-subnav" id="location-tabs">
+      <button class="churches-filter-btn active" data-location="all">Բոլորը</button>
+      <button class="churches-filter-btn" data-location="yerevan">🏙 Երևան</button>
+      <button class="churches-filter-btn" data-location="armenia">🌄 Հայաստան</button>
+    </div>
+
+    <!-- Ենթաֆիլտր: կատեգորիա -->
+    <div class="churches-subnav category-subnav" id="category-tabs">
+      <button class="churches-filter-btn active" data-category="all">Բոլորը</button>
+      <button class="churches-filter-btn" data-category="restaurants">🍽 Ռեստորան</button>
+      <button class="churches-filter-btn" data-category="cafes">☕ Սրճարան</button>
+      <button class="churches-filter-btn" data-category="bars">🍺 Բար/Փաբ</button>
+      <button class="churches-filter-btn" data-category="clubs">🎶 Ակումբ</button>
+      <button class="churches-filter-btn" data-category="other">🌟 Այլ</button>
+    </div>
+
+    <!-- Grid -->
+    <div class="sights-grid" id="places-grid">
+      {% for place in places %}
+      <a href="/hy/places/{{ place.id }}"
+         class="sight-card"
+         data-location="{{ place.category }}"
+         data-category="{{ place.subcategory }}">
+
+        <div class="sight-card-image">
+          {% if place.thumb %}
+            <img src="{{ place.thumb }}" alt="{{ place.title_hy }}" loading="lazy">
+          {% elif place.images and place.images[0] %}
+            <img src="{{ place.images[0] }}" alt="{{ place.title_hy }}" loading="lazy">
+          {% endif %}
+        </div>
+
+        <div class="sight-card-content">
+          <h3 class="sight-title">{{ place.title_hy }}</h3>
+          <div class="sight-card-like">
+            <span class="place-like-icon" data-id="{{ place.id }}">🤍</span>
+            <span class="place-like-count" data-id="{{ place.id }}">0</span>
           </div>
         </div>
-      </div>
-      <div class="card-title">{{ place.titlehy }}</div>
-    </a>
-  </div>
-  {% endfor %}
-</div>
 
-{% if not places %}
-Այս բաժնում դեռ ժամանցի վայրեր չկան։
-{% endif %}
+      </a>
+      {% endfor %}
+    </div>
+
+    <!-- Empty state -->
+    <div class="churches-empty" id="places-empty" style="display:none;">
+      <p>Այս բաժնում վայրեր չկան։</p>
+    </div>
+
+  </div>
+</section>
+
+<style>
+.category-subnav {
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-top: 1px solid #e5e5e5;
+  padding-top: 0.75rem;
+}
+.sight-card-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.75rem;
+}
+.sight-card-like {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+  color: #555;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.place-like-icon { font-size: 1.1rem; cursor: pointer; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  const locationBtns = document.querySelectorAll('#location-tabs .churches-filter-btn');
+  const categoryBtns = document.querySelectorAll('#category-tabs .churches-filter-btn');
+  const cards        = document.querySelectorAll('#places-grid .sight-card');
+  const empty        = document.getElementById('places-empty');
+  const STORAGEKEY   = 'placeslisthy_state';
+
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(STORAGEKEY)); } catch(e) {}
+
+  let currentLocation = (saved && saved.location) ? saved.location : 'all';
+  let currentCategory = (saved && saved.category) ? saved.category : 'all';
+
+  /* ── ֆիլտրացիա ── */
+  function applyFilters() {
+    let visible = 0;
+    cards.forEach(card => {
+      const loc = card.dataset.location;   // yerevan / armenia
+      const cat = card.dataset.category;   // restaurants / cafes / bars / clubs / other
+
+      const locOk = currentLocation === 'all' || loc === currentLocation;
+      const catOk = currentCategory === 'all' || cat === currentCategory;
+
+      const show = locOk && catOk;
+      card.style.display = show ? 'block' : 'none';
+      if (show) visible++;
+    });
+    empty.style.display = visible === 0 ? 'block' : 'none';
+  }
+
+  /* ── active class ── */
+  function setActive(btns, value, attr) {
+    btns.forEach(b => b.classList.toggle('active', b.dataset[attr] === value));
+  }
+
+  /* ── init ── */
+  setActive(locationBtns, currentLocation, 'location');
+  setActive(categoryBtns, currentCategory, 'category');
+  applyFilters();
+  if (saved && typeof saved.scrollY === 'number') window.scrollTo(0, saved.scrollY);
+
+  /* ── location click ── */
+  locationBtns.forEach(btn => {
+    btn.addEventListener('click', function () {
+      currentLocation = this.dataset.location;
+      setActive(locationBtns, currentLocation, 'location');
+      applyFilters();
+      saveState();
+    });
+  });
+
+  /* ── category click ── */
+  categoryBtns.forEach(btn => {
+    btn.addEventListener('click', function () {
+      currentCategory = this.dataset.category;
+      setActive(categoryBtns, currentCategory, 'category');
+      applyFilters();
+      saveState();
+    });
+  });
+
+  /* ── save scroll before navigate ── */
+  cards.forEach(card => {
+    card.addEventListener('click', function () { saveState(); }, true);
+  });
+
+  function saveState() {
+    localStorage.setItem(STORAGEKEY, JSON.stringify({
+      location: currentLocation,
+      category: currentCategory,
+      scrollY:  window.scrollY
+    }));
+  }
+
+  /* ── Like counts (localStorage) ── */
+  const likes = JSON.parse(localStorage.getItem('place_likes') || '{}');
+
+  document.querySelectorAll('.place-like-count').forEach(el => {
+    const id = el.dataset.id;
+    el.textContent = (likes[id] && likes[id].count) ? likes[id].count : 0;
+  });
+
+  document.querySelectorAll('.place-like-icon').forEach(icon => {
+    const id = icon.dataset.id;
+    if (likes[id] && likes[id].liked) icon.textContent = '❤️';
+
+    icon.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const data   = likes[id] || { liked: false, count: 0 };
+      data.liked   = !data.liked;
+      data.count   = data.liked ? data.count + 1 : Math.max(0, data.count - 1);
+      likes[id]    = data;
+      localStorage.setItem('place_likes', JSON.stringify(likes));
+
+      this.textContent = data.liked ? '❤️' : '🤍';
+      const countEl = document.querySelector(`.place-like-count[data-id="${id}"]`);
+      if (countEl) countEl.textContent = data.count;
+    });
+  });
+
+});
+</script>
+
 {% endblock %}
