@@ -1,0 +1,52 @@
+{# templates/places_detail_en.html #}
+{% extends "base.html" %}
+
+{% block title %}{{ place.titleen }} | AskYerevan{% endblock %}
+
+{% block content %}
+<div class="place-detail">
+  <h1>{{ place.titleen }}</h1>
+  
+  {% if place.locationen %}
+  <p class="location">{{ place.locationen }}</p>
+  {% endif %}
+  
+  {% if place.mapsurl %}
+  <a href="{{ place.mapsurl }}" target="_blank" class="maps-link">🗺️ Maps</a>
+  {% endif %}
+
+  <!-- Gallery -->
+  {% if place.images %}
+  <div class="gallery">
+    {% for img in place.images %}
+    <img src="{{ img }}" alt="{{ place.titleen }}">
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Main description -->
+  {% if place.descriptionen %}
+  <div class="description">
+    {{ place.descriptionen | safe }}
+  </div>
+  {% endif %}
+
+  <!-- Like & Comments Placeholder -->
+  <div class="interactions mt-4">
+    <div class="like-section">
+      <button class="like-btn" data-place-id="{{ place.id }}">
+        ❤️ Like ({{ likes_count or 0 }})
+      </button>
+    </div>
+    
+    <div class="comments-section">
+      <h4>Comments ({{ comments_count or 0 }})</h4>
+      <textarea placeholder="Leave a comment..." maxlength="500"></textarea>
+      <button class="comment-submit">Submit</button>
+      <div class="comments-list">
+        <!-- Comments will be loaded here via JS -->
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
