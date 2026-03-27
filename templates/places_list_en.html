@@ -4,30 +4,33 @@
 {% block title %}AskYerevan · Entertainment{% endblock %}
 
 {% block content %}
+<div class="section-tabs">
+   All |  Yerevan |  Armenia
+</div>
 
-🎉 Entertainment
+<div class="category-tabs">
+  🍽️ Restaurants | ☕ Cafes | 🌳 Parks | 🎶 Clubs/Bars | 🌟 Other
+</div>
 
-🇦🇲 All
-🍽️ Restaurants  
-☕ Cafes
-🌳 Parks
-🎶 Clubs/Bars
-🌟 Other Places
+<div class="places-pinterest-grid">
+  {% for place in places %}
+  <div class="pinterest-card">
+    <a href="{{ url_for('place_detail_en', place_id=place.id) }}">
+      <div class="card-image" style="background-image: url('{{ place.thumb or place.images[0] }}');">
+        <div class="card-overlay">
+          <div class="card-like">
+            <span class="like-heart" data-place-id="{{ place.id }}">❤️</span>
+            <span class="like-number">{{ place.likes_count or 0 }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-title">{{ place.titleen }}</div>
+    </a>
+  </div>
+  {% endfor %}
+</div>
 
-{% for place in places %}
-<a href="{{ url_for('place_detail_en', place_id=place.id) }}">
-  {% if place.thumb %}
-  <img src="{{ place.thumb }}" alt="{{ place.titleen }}" class="sight-thumb">
-  {% elif place.images and place.images[0] %}
-  <img src="{{ place.images[0] }}" alt="{{ place.titleen }}" class="sight-thumb">
-  {% endif %}
-  {% if place.category_label_en %}
-  <span class="category-badge">{{ place.category_label_en }}</span>
-  {% endif %}
-  {{ place.titleen }}
-</a>
-{% endfor %}
-
-No going out places yet.
-
+{% if not places %}
+No entertainment places yet.
+{% endif %}
 {% endblock %}
