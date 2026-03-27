@@ -1,84 +1,376 @@
+{# templates/places_detail_hy.html #}
 {% extends "base.html" %}
 
-{% block title %}{{ place.titlehy }} | AskYerevan{% endblock %}
+{% block title %}{{ place.title_hy }} | AskYerevan{% endblock %}
 
 {% block content %}
-<div class="detail-container">
-  <!-- Back + Actions -->
-  <div class="detail-header">
-    <a href="{{ url_for('places_list_hy') }}" class="back-btn">← Հետ</a>
-    <div class="detail-actions">
-      {% if place.mapsurl %}
-      <a href="{{ place.mapsurl }}" target="_blank" class="maps-btn">🗺️</a>
-      {% endif %}
-      <button class="comment-btn">💬 {{ comments_count or 0 }}</button>
-    </div>
-  </div>
 
-  <!-- Rating stars -->
-  <div class="rating-section">
-    <div class="stars">
-      ★★★☆☆ <!-- Dynamic via JS -->
-    </div>
-  </div>
+{% if place.images and place.images[0] %}
+  {% set displayimage = request.base_url ~ place.images[0] %}
+{% elif place.thumb %}
+  {% set displayimage = request.base_url ~ place.thumb %}
+{% else %}
+  {% set displayimage = "" %}
+{% endif %}
 
-  <!-- Like button -->
-  <div class="like-section">
-    <button class="big-like-btn active" data-place-id="{{ place.id }}">
-      ❤️ {{ likes_count or 0 }}
-    </button>
-  </div>
+<article class="detail-container">
 
-  <!-- Info schema -->
-  <div class="info-schema">
-    <div class="schema-row">
-      <span>Անուն</span>
-      <span>{{ place.titlehy }}</span>
-    </div>
-    {% if place.locationhy %}
-    <div class="schema-row">
-      <span>Հասցե</span>
-      <span>{{ place.locationhy }}</span>
-    </div>
-    {% endif %}
-    {% if place.rating %}
-    <div class="schema-row">
-      <span>Վարկանիշ</span>
-      <span>{{ "%.1f"|format(place.rating) }} ★</span>
-    </div>
-    {% endif %}
-  </div>
-
-  <!-- Description -->
-  {% if place.descriptionhy %}
-  <div class="description">
-    {{ place.descriptionhy | safe }}
+  <!-- ═══ Hero image ═══ -->
+  {% if displayimage %}
+  <div class="detail-hero">
+    <img src="{{ displayimage }}" alt="{{ place.title_hy }}"
+         class="detail-hero-img" id="detail-hero-img">
   </div>
   {% endif %}
 
-  <!-- Gallery -->
-  {% if place.images %}
-  <div class="gallery">
-    {% for img in place.images %}
-    <img src="{{ img }}" alt="{{ place.titlehy }}">
-    {% endfor %}
-  </div>
-  {% endif %}
+  <div class="detail-content-wrapper">
 
-  <!-- Comments section (placeholder) -->
-  <div class="comments-panel">
-    <h3>Մեկնաբանություններ</h3>
-    <textarea placeholder="Մեկնաբանի՛ր... (max 500 նիշ)" maxlength="500"></textarea>
-    <div class="comment-actions">
-      <div class="stars-input">
-        <!-- 5 star rating input -->
-        ★ ★ ★ ★ ★
+    <!-- ═══ Action bar ═══ -->
+    <div class="back-wrapper back-wrapper--with-share">
+
+      <div class="detail-actions-left">
+
+        <!-- Հետ -->
+        <a href="{{ backurl }}" class="back-btn">← Հետ</a>
+
+        <!-- Բացել քարտեզում -->
+        {% if place.maps_url %}
+        <a href="{{ place.maps_url }}" target="_blank" rel="noopener"
+           class="back-btn back-btn--map">
+          🌐 Բացել քարտեզում
+        </a>
+        {% endif %}
+
+        <!-- Մեկնաբանություն -->
+        <button class="back-btn back-btn--comment" id="scroll-to-comments">
+          💬 <span id="comment-count">0</span>
+        </button>
+
+        <!-- Աստղեր -->
+        <div class="star-rating" id="star-rating" title="Գնահատի՛ր">
+          <span class="star" data-value="1">★</span>
+          <span class="star" data-value="2">★</span>
+          <span class="star" data-value="3">★</span>
+          <span class="star" data-value="4">★</span>
+          <span class="star" data-value="5">★</span>
+          <span class="star-avg" id="star-avg"></span>
+        </div>
+
+        <!-- Հավանել (վերև) -->
+        <button class="back-btn back-btn--like" id="like-btn-top">
+          <span id="like-icon-top">🤍</span> Հավանել
+        </button>
+        <span class="like-count-display" id="like-count-top">0</span>
+
       </div>
-      <button class="submit-comment">Ուղարկել</button>
+
+      <!-- Կիսվել -->
+      <button type="button" class="back-btn back-btn--share" id="share-button"
+              data-share-url="{{ request.url }}"
+              data-share-title="{{ place.title_hy }}">
+        📤 Կիսվել
+      </button>
+
     </div>
-    <div class="comments-list">
-      <!-- Dynamic comments -->
+
+    <!-- ═══ Վայրի անուն ═══ -->
+    <h1 class="detail-title">{{ place.title_hy }}</h1>
+
+    <!-- ═══ Info table ═══ -->
+    <div class="event-details">
+
+      {% if place.title_hy %}
+      <div class="detail-row">
+        <span class="label">🏷 Անուն</span>
+        <span class="value">{{ place.title_hy }}</span>
+      </div>
+      {% endif %}
+
+      {% if place.location_hy %}
+      <div class="detail-row">
+        <span class="label">📍 Հասցե</span>
+        <span class="value">{{ place.location_hy }}</span>
+      </div>
+      {% endif %}
+
+      {% if place.subcategory %}
+      <div class="detail-row">
+        <span class="label">📂 Կատեգորիա</span>
+        <span class="value">
+          {% if place.subcategory == "restaurants" %}🍽 Ռեստորան
+          {% elif place.subcategory == "cafes" %}☕ Սրճարան
+          {% elif place.subcategory == "bars" %}🍺 Բար / Փաբ
+          {% elif place.subcategory == "clubs" %}🎶 Ակումբ
+          {% elif place.subcategory == "pubs" %}🍺 Փաբ
+          {% else %}🌟 Այլ
+          {% endif %}
+        </span>
+      </div>
+      {% endif %}
+
+      {% if place.rating %}
+      <div class="detail-row">
+        <span class="label">⭐ Վարկանիշ</span>
+        <span class="value">{{ "%.1f" | format(place.rating) }} / 5</span>
+      </div>
+      {% endif %}
+
+      <div class="detail-row">
+        <span class="label">❤️ Հավանումներ</span>
+        <span class="value" id="like-count-info">0</span>
+      </div>
+
+      <div class="detail-row">
+        <span class="label">💬 Մեկնաբանություններ</span>
+        <span class="value" id="comment-count-info">0</span>
+      </div>
+
+    </div>
+
+    <!-- ═══ Նկարագրություն ═══ -->
+    {% if place.description_hy %}
+    <div class="church-description">
+      {{ place.description_hy | safe }}
+    </div>
+    {% endif %}
+
+    <!-- ═══ Gallery ═══ -->
+    {% if place.images and place.images | length > 1 %}
+    <div class="church-gallery">
+      {% for img in place.images[1:] %}
+      <img src="{{ img }}" alt="{{ place.title_hy }}"
+           class="js-lightbox-image church-gallery-img">
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- ═══ Like (ներքև) ═══ -->
+    <div class="place-like-bottom">
+      <button class="like-btn-big" id="like-btn-bottom">
+        <span id="like-icon-bottom">🤍</span>
+      </button>
+      <span class="like-count-display" id="like-count-bottom">0</span>
+    </div>
+
+    <!-- ═══ Comments ═══ -->
+    <div class="comments-section" id="comments-section">
+      <h2 class="comments-title">💬 Մեկնաբանություններ</h2>
+
+      <div class="comment-form">
+        <!-- Աստղեր comment-ի մեջ -->
+        <div class="comment-star-rating" id="comment-stars">
+          <span>Գնահատի՛ր՝ </span>
+          <span class="cstar" data-value="1">★</span>
+          <span class="cstar" data-value="2">★</span>
+          <span class="cstar" data-value="3">★</span>
+          <span class="cstar" data-value="4">★</span>
+          <span class="cstar" data-value="5">★</span>
+        </div>
+        <textarea id="comment-input" maxlength="500"
+          placeholder="Գրի՛ր մեկնաբանություն (մինչև 500 նիշ)..."></textarea>
+        <div class="comment-form-footer">
+          <span id="char-count">0 / 500</span>
+          <button class="back-btn" id="submit-comment">Ուղարկել</button>
+        </div>
+      </div>
+
+      <div class="comments-list" id="comments-list"></div>
+    </div>
+
+  </div>
+</article>
+
+<!-- ═══ Share modal ═══ -->
+<div class="share-modal" id="share-modal">
+  <div class="share-modal-box">
+    <button class="share-modal-close" id="share-modal-close">✕</button>
+    <h3>Կիսվել</h3>
+    <div class="share-buttons">
+      <a id="share-telegram"  href="#" target="_blank" class="share-btn share-btn--tg">✈️ Telegram</a>
+      <a id="share-facebook"  href="#" target="_blank" class="share-btn share-btn--fb">📘 Facebook</a>
+      <a id="share-whatsapp"  href="#" target="_blank" class="share-btn share-btn--wa">📱 WhatsApp</a>
+      <button class="share-btn share-btn--copy" id="share-copy">🔗 Պատճենել հղումը</button>
     </div>
   </div>
 </div>
-{% endblock %}
+
+<!-- ═══ Lightbox ═══ -->
+<div class="image-modal" id="image-modal">
+  <span class="image-modal-close" id="image-modal-close">&times;</span>
+  <img src="{{ displayimage }}" alt="{{ place.title_hy }}">
+</div>
+
+<!-- ════════════════ STYLES ════════════════ -->
+<style>
+/* Action bar */
+.detail-actions-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.back-btn--like  { background: #e11d48; }
+.back-btn--comment { background: #0369a1; }
+.back-btn--share { background: #f59e0b; }
+.back-btn--map   { background: #0f766e; }
+
+/* Stars (action bar) */
+.star-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+}
+.star {
+  font-size: 1.4rem;
+  color: #d1d5db;
+  transition: color 0.15s;
+  cursor: pointer;
+  user-select: none;
+}
+.star.active, .star.hovered { color: #f59e0b; }
+.star-avg {
+  font-size: 0.85rem;
+  color: #555;
+  margin-left: 4px;
+}
+
+/* Like bottom */
+.place-like-bottom {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 2rem 0 1rem;
+}
+.like-btn-big {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: transform 0.15s;
+  line-height: 1;
+}
+.like-btn-big:hover { transform: scale(1.15); }
+.like-count-display {
+  font-size: 1rem;
+  color: #555;
+}
+
+/* Comments */
+.comments-section {
+  margin-top: 2.5rem;
+  border-top: 2px solid #e5e7eb;
+  padding-top: 1.5rem;
+}
+.comments-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #071f33;
+}
+.comment-form {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+.comment-star-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 0.6rem;
+  font-size: 0.9rem;
+  color: #555;
+}
+.cstar {
+  font-size: 1.4rem;
+  color: #d1d5db;
+  cursor: pointer;
+  transition: color 0.15s;
+  user-select: none;
+}
+.cstar.active, .cstar.hovered { color: #f59e0b; }
+.comment-form textarea {
+  width: 100%;
+  min-height: 90px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.95rem;
+  resize: vertical;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+.comment-form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
+  color: #888;
+}
+/* Single comment */
+.comment-item {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.75rem;
+}
+.comment-item-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 0.4rem;
+}
+.comment-item-stars { color: #f59e0b; font-size: 0.9rem; }
+.comment-item-text  { font-size: 0.95rem; color: #222; line-height: 1.5; }
+
+/* Share modal */
+.share-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+}
+.share-modal.open { display: flex; }
+.share-modal-box {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  min-width: 280px;
+  position: relative;
+  text-align: center;
+}
+.share-modal-box h3 { margin: 0 0 1rem; font-size: 1.1rem; }
+.share-modal-close {
+  position: absolute;
+  top: 0.6rem; right: 0.8rem;
+  background: none; border: none;
+  font-size: 1.2rem; cursor: pointer; color: #888;
+}
+.share-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.share-btn {
+  display: block;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  color: #fff;
+  text-align: center;
+}
+.share-btn--tg   { background: #2aabee; }
+.share-btn--fb   { background: #1877f2; }
+.share-btn--wa   { background: #25d366; }
+.share-btn--copy { background: #6b7280; }
