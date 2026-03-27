@@ -4,30 +4,33 @@
 {% block title %}AskYerevan · Ժամանցի վայրեր{% endblock %}
 
 {% block content %}
+<div class="section-tabs">
+   Բոլորը |  Երևան |  Հայաստան
+</div>
 
-🎉 Ժամանցի վայրեր
+<div class="category-tabs">
+  🍽️ Ռեստորաններ | ☕ Կաֆեներ | 🌳 Այգիներ | 🎶 Կլուբներ/Բարեր | 🌟 Այլ
+</div>
 
-🇦🇲 Բոլորը
-🍽️ Ռեստորաններ  
-☕ Կաֆեներ
-🌳 Այգիներ
-🎶 Կլուբներ/Բարեր
-🌟 Այլ Վայրեր
+<div class="places-pinterest-grid">
+  {% for place in places %}
+  <div class="pinterest-card">
+    <a href="{{ url_for('place_detail_hy', place_id=place.id) }}">
+      <div class="card-image" style="background-image: url('{{ place.thumb or place.images[0] }}');">
+        <div class="card-overlay">
+          <div class="card-like">
+            <span class="like-heart" data-place-id="{{ place.id }}">❤️</span>
+            <span class="like-number">{{ place.likes_count or 0 }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-title">{{ place.titlehy }}</div>
+    </a>
+  </div>
+  {% endfor %}
+</div>
 
-{% for place in places %}
-<a href="{{ url_for('place_detail_hy', place_id=place.id) }}">
-  {% if place.thumb %}
-  <img src="{{ place.thumb }}" alt="{{ place.titlehy }}" class="sight-thumb">
-  {% elif place.images and place.images[0] %}
-  <img src="{{ place.images[0] }}" alt="{{ place.titlehy }}" class="sight-thumb">
-  {% endif %}
-  {% if place.category_label_hy %}
-  <span class="category-badge">{{ place.category_label_hy }}</span>
-  {% endif %}
-  {{ place.titlehy }}
-</a>
-{% endfor %}
-
+{% if not places %}
 Այս բաժնում դեռ ժամանցի վայրեր չկան։
-
+{% endif %}
 {% endblock %}
