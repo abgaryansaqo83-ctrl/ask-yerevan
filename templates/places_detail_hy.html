@@ -1,0 +1,52 @@
+{# templates/places_detail_hy.html #}
+{% extends "base.html" %}
+
+{% block title %}{{ place.titlehy }} | AskYerevan{% endblock %}
+
+{% block content %}
+<div class="place-detail">
+  <h1>{{ place.titlehy }}</h1>
+  
+  {% if place.locationhy %}
+  <p class="location">{{ place.locationhy }}</p>
+  {% endif %}
+  
+  {% if place.mapsurl %}
+  <a href="{{ place.mapsurl }}" target="_blank" class="maps-link">🗺️ Գույքագծով</a>
+  {% endif %}
+
+  <!-- Gallery -->
+  {% if place.images %}
+  <div class="gallery">
+    {% for img in place.images %}
+    <img src="{{ img }}" alt="{{ place.titlehy }}">
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Main description -->
+  {% if place.descriptionhy %}
+  <div class="description">
+    {{ place.descriptionhy | safe }}
+  </div>
+  {% endif %}
+
+  <!-- Like & Comments Placeholder (backend-ը հետո կգրենք) -->
+  <div class="interactions mt-4">
+    <div class="like-section">
+      <button class="like-btn" data-place-id="{{ place.id }}">
+        ❤️ Ունկնդրել ({{ likes_count or 0 }})
+      </button>
+    </div>
+    
+    <div class="comments-section">
+      <h4>Մեկնաբանություններ ({{ comments_count or 0 }})</h4>
+      <textarea placeholder="Մեկնաբանի՛ր..." maxlength="500"></textarea>
+      <button class="comment-submit">Ուղարկել</button>
+      <div class="comments-list">
+        <!-- Comments will be loaded here via JS -->
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
