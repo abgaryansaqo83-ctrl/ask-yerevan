@@ -7,131 +7,131 @@ PLACES = [
     #  ԵՐԵՎԱՆ / Հայաստան
     # ══════════════════════════════════════════
 
-{
-    "id": "kond-house",
-    "category": "yerevan",          # Հայաստան, Երևան
-    "subcategory": "bars",          # Բար
-    "title_hy": "The Kond House",
-    "title_en": "The Kond House",
-    "location_hy": "Երևան, Լեո 46",
-    "location_en": "46 Leo St, Yerevan",
-    "maps_url": "https://maps.app.goo.gl/bzqxdPX6TcJt4qPA6",
-    "rating": 4.7,
-    "thumb": "static/img/places/kond-house-terrace.jpg",
-    "images": [
-        "static/img/places/kond-house-terrace.jpg",
-        "static/img/places/kond-house-bbq.jpg",
-        "static/img/places/kond-house-bar.jpg",
-        "static/img/places/kond-house-dessert-or-cocktail.jpg",
-    ],
-    "short_hy": "Տանիք, խորոված, գինի Կոնի սրտում",
-    "short_en": "Rooftop BBQ and wine in Kond’s heart",
-    "description_hy": (
-        "Թաքնած Քոնդ թաղամասի նեղ փողոցների մեջ՝ The Kond House‑ը ավելի շատ "
-        "ընկերների բակ է հիշեցնում, քան պաշտոնական ռեստորան։ Քիչ աստիճաններ "
-        "վերև, և դու արդեն տանիքիտ ես՝ ծուռ տանիքների, կախված լվացքի ու քաղաքի "
-        "լույսերի տեսարանով՝ հին Երևանի տեքսուրայի և հարմարավետ ժամանակակից "
-        "մթնոլորտի խառնուրդում։ "
-        "Խոհանոցը ամբողջությամբ խորովածի և տնային հայկական ուտելիքի վրա է՝ "
-        "խորոված խոզի միս, տնային լոր, ձուկ շամփուրի վրա, մեծ ափսեներ գյուղական "
-        "կարտոֆիլով ու թարմ աղցաններով, որոնք դնում ես սեղանի կենտրոնում, որ բոլորը կիսեն։ "
-        "Սա այն տեղն է, որտեղ պատվիրում ես խառը սեթ, շիշ հայկական կարմիր գինի "
-        "կամ կոկտեյլների ցուցակից Negroni, և երեկոն ինքն իրեն երկարում է մինչև "
-        "ուշ գիշեր։ "
-        "Ներսում՝ փոքրիկ բար է՝ սուրճով, դասական կոկտեյլներով ու տնային խմիչքներով, "
-        "իսկ երեկոյան երաժշտությունն ու մեղմ լույսերը տանիքը դարձնում են փոքր միջոցառում՝ "
-        "թաքնված քաղաքի վրայի տանիքների միջև։"
-    ),
-    "description_en": (
-        "Hidden in the narrow streets of Kond, one of the oldest neighborhoods "
-        "of Yerevan, The Kond House feels more like visiting a friend’s backyard "
-        "than going to a formal restaurant. A few steps up and you are already "
-        "on a rooftop terrace with views over crooked roofs, hanging laundry and "
-        "the city lights in the distance a perfect mix of old Yerevan texture and "
-        "modern comfort. "
-        "The kitchen is all about hearty grill and home-style Armenian food: pork "
-        "khorovats with a proper smoky crust, homemade sausages, trout or sterlet "
-        "on skewers, big plates of village potatoes with herbs, and fresh salads "
-        "like Greek or Caesar to share in the middle of the table. This is the kind "
-        "of place where you order a set of mixed meats, a bottle of Armenian red "
-        "wine or a Negroni from the cocktail list, and the evening naturally turns "
-        "into a long, loud dinner with friends. "
-        "Inside, a cozy bar serves coffee, classic cocktails and house drinks, while "
-        "in the evenings the music and soft lights make the terrace feel almost like "
-        "a small party hidden above the streets. It is easy to imagine starting with "
-        "sunset photos over Kond, then slowly moving into grilled ribs, wine, a "
-        "dessert and a strong nightcap and leaving with the feeling that you have "
-        "discovered one of Yerevan’s most atmospheric corners rather than just another "
-        "restaurant."
-    ),
-}
-{
-    "id": "ulikhanyan-club",
-    "category": "yerevan",
-    "subcategory": "clubs",
-    "title_hy": "Ulikhanyan Club",
-    "title_en": "Ulikhanyan Club",
-    "location_hy": "Երևան, Սայաթ-Նովա պողոտա 7",
-    "location_en": "7 Sayat-Nova Ave, Yerevan",
-    "maps_url": "https://maps.app.goo.gl/KRvsZWdKTFRCGB7M9",
-    "rating": 4.8,
-    "thumb": "static/img/places/ulikhanyan-stage.jpg",
-    "images": [
-        "static/img/places/ulikhanyan-stage.jpg",
-        "static/img/places/ulikhanyan-bar.jpeg",
-        "static/img/places/ulikhanyan-audience.jpeg",
-    ],
-    "short_hy": "Ջազ, գինի ու live սեթեր Սայաթ‑Նովայի վրա",
-    "short_en": "Jazz, wine and late-night sets on Sayat-Nova Avenue",
-    "description_hy": (
-        "Սայաթ‑Նովա պողոտայի 7 համարի նկուղում գտնվող Ulikhanyan Club‑ը այն "
-        "տեղն է, որտեղ «մի բաժակ գինի կնստենք ու կգնանք» արտահայտությունը շատ "
-        "արագ վերածվում է մինչև վերջին բիս մնալու երեկոյի։ Փոքր, աղյուսապատ "
-        "սրահ, բեմը գրեթե ձեռքիդ տակ, սեղաններ ու բարի զուգակցություն՝ "
-        "մթնոլորտը ավելի շատ հիշեցնում է private jam‑session, քան մեծ концерт։ "
-        "Երբ խմբի ջազը, fusion‑ը կամ էթնո‑ջազը սկսում է, քեզ թվում է, թե նստած "
-        "ես փորձի վրա, ոչ թե պաշտոնական համերգում։ "
-        "Բարը լուրջ է վերաբերվում խմիչքներին․ այստեղ կգտնես հայկական կարմիր "
-        "և սպիտակ գինիներ, դասական կոկտեյլներ՝ Old Fashioned, Negroni, Dry "
-        "Martini և խնամքով ընտրված բրենդի՝ դանդաղ երեկոյան համար։ Պարզ, "
-        "բարային ուտեստներն ուղեկցում են խմիչքներին, ոչ թե ծանրացնում "
-        "երեկոն։ "
-        "Գրեթե ամեն երեկո կա live ծրագիր՝ jam‑session‑ներ, տոմսով համերգներ "
-        "ու փոքրիկ փառատոնային line‑up‑ներ, իսկ հանդիսատեսը խառն է՝ "
-        "երաժիշտներ, երևանցիներ ու հյուրեր, որոնք հաճախ ակումբն գտնում են "
-        "բերանացի պատմություններից։ Եթե ուզում ես զգալ Երևանի գիշերային "
-        "կողմը առանց մեծ, աղմկոտ ակումբների, ապա Ulikhanyan‑ը հենց այդ "
-        "հարմարավետ, ջազային sweet spot‑ն է։"
-    ),
-    "description_en": (
-        "Tucked in the basement at 7 Sayat-Nova Avenue, Ulikhanyan Club is one "
-        "of those places where you go just for one drink and end up staying until "
-        "the last encore. The room is small, brick-walled and intimate, with the "
-        "stage almost within arm’s reach, so when the band starts playing jazz, "
-        "fusion or ethno-jazz, you feel more like part of a private jam session "
-        "than a big concert. "
-        "The bar takes its drinks seriously: a solid wine list with Armenian reds "
-        "and whites, classic cocktails from Old Fashioned and Negroni to dry "
-        "Martinis, and a good selection of Armenian brandy for a slow late-night "
-        "sip. Simple bar snacks complete the picture without stealing the focus "
-        "from the music. "
-        "Live music is on almost every evening, from jam sessions on Mondays to "
-        "ticketed concerts and festival-style lineups, and the crowd is a mix of "
-        "musicians, locals and curious visitors who found the club by word of "
-        "mouth. If you want to feel Yerevan’s night side without going to a noisy "
-        "club, Ulikhanyan is exactly that sweet spot – dim lights, great sound, "
-        "strong drinks and the sense that you have discovered a small underground "
-        "heart of the city’s music scene."
-    ),
-}
-{
-    "id": "corpous-gastrobar",
-    "category": "yerevan",
-    "subcategory": "restaurants",
-    "title_hy": "Corpous Gastrobar",
-    "title_en": "Corpous Gastrobar",
-    "location_hy": "Երևան, Հյուսիսային պողոտա 5",
-    "location_en": "5 Northern Ave, Yerevan",
+    {
+        "id": "kond-house",
+        "category": "yerevan",
+        "subcategory": "bars",
+        "title_hy": "The Kond House",
+        "title_en": "The Kond House",
+        "location_hy": "Երևան, Լեո 46",
+        "location_en": "46 Leo St, Yerevan",
+        "maps_url": "https://maps.app.goo.gl/bzqxdPX6TcJt4qPA6",
+        "rating": 4.7,
+        "thumb": "static/img/places/kond-house-terrace.jpg",
+        "images": [
+            "static/img/places/kond-house-terrace.jpg",
+            "static/img/places/kond-house-bbq.jpg",
+            "static/img/places/kond-house-bar.jpg",
+            "static/img/places/kond-house-dessert-or-cocktail.jpg",
+        ],
+        "short_hy": "Տանիք, խորոված, գինի Կոնի սրտում",
+        "short_en": "Rooftop BBQ and wine in Kond's heart",
+        "description_hy": (
+            "Թաքնած Քոնդ թաղամասի նեղ փողոցների մեջ՝ The Kond House‑ը ավելի շատ "
+            "ընկերների բակ է հիշեցնում, քան պաշտոնական ռեստորան։ Քիչ աստիճաններ "
+            "վերև, և դու արդեն տանիքիտ ես՝ ծուռ տանիքների, կախված լվացքի ու քաղաքի "
+            "լույսերի տեսարանով՝ հին Երևանի տեքսուրայի և հարմարավետ ժամանակակից "
+            "մթնոլորտի խառնուրդում։ "
+            "Խոհանոցը ամբողջությամբ խորովածի և տնային հայկական ուտելիքի վրա է՝ "
+            "խորոված խոզի միս, տնային լոր, ձուկ շամփուրի վրա, մեծ ափսեներ գյուղական "
+            "կարտոֆիլով ու թարմ աղցաններով, որոնք դնում ես սեղանի կենտրոնում, որ բոլորը կիսեն։ "
+            "Սա այն տեղն է, որտեղ պատվիրում ես խառը սեթ, շիշ հայկական կարմիր գինի "
+            "կամ կոկտեյլների ցուցակից Negroni, և երեկոն ինքն իրեն երկարում է մինչև "
+            "ուշ գիշեր։ "
+            "Ներսում՝ փոքրիկ բար է՝ սուրճով, դասական կոկտեյլներով ու տնային խմիչքներով, "
+            "իսկ երեկոյան երաժշտությունն ու մեղմ լույսերը տանիքը դարձնում են փոքր միջոցառում՝ "
+            "թաքնված քաղաքի վրայի տանիքների միջև։"
+        ),
+        "description_en": (
+            "Hidden in the narrow streets of Kond, one of the oldest neighborhoods "
+            "of Yerevan, The Kond House feels more like visiting a friend's backyard "
+            "than going to a formal restaurant. A few steps up and you are already "
+            "on a rooftop terrace with views over crooked roofs, hanging laundry and "
+            "the city lights in the distance a perfect mix of old Yerevan texture and "
+            "modern comfort. "
+            "The kitchen is all about hearty grill and home-style Armenian food: pork "
+            "khorovats with a proper smoky crust, homemade sausages, trout or sterlet "
+            "on skewers, big plates of village potatoes with herbs, and fresh salads "
+            "like Greek or Caesar to share in the middle of the table. This is the kind "
+            "of place where you order a set of mixed meats, a bottle of Armenian red "
+            "wine or a Negroni from the cocktail list, and the evening naturally turns "
+            "into a long, loud dinner with friends. "
+            "Inside, a cozy bar serves coffee, classic cocktails and house drinks, while "
+            "in the evenings the music and soft lights make the terrace feel almost like "
+            "a small party hidden above the streets. It is easy to imagine starting with "
+            "sunset photos over Kond, then slowly moving into grilled ribs, wine, a "
+            "dessert and a strong nightcap and leaving with the feeling that you have "
+            "discovered one of Yerevan's most atmospheric corners rather than just another "
+            "restaurant."
+        ),
+    },                              # ← }, կոմայով
+    {
+        "id": "ulikhanyan-club",
+        "category": "yerevan",
+        "subcategory": "clubs",
+        "title_hy": "Ulikhanyan Club",
+        "title_en": "Ulikhanyan Club",
+        "location_hy": "Երևան, Սայաթ-Նովա պողոտա 7",
+        "location_en": "7 Sayat-Nova Ave, Yerevan",
+        "maps_url": "https://maps.app.goo.gl/KRvsZWdKTFRCGB7M9",
+        "rating": 4.8,
+        "thumb": "static/img/places/ulikhanyan-stage.jpg",
+        "images": [
+            "static/img/places/ulikhanyan-stage.jpg",
+            "static/img/places/ulikhanyan-bar.jpeg",
+            "static/img/places/ulikhanyan-audience.jpeg",
+        ],
+        "short_hy": "Ջազ, գինի ու live սեթեր Սայաթ‑Նովայի վրա",
+        "short_en": "Jazz, wine and late-night sets on Sayat-Nova Avenue",
+        "description_hy": (
+            "Սայաթ‑Նովա պողոտայի 7 համարի նկուղում գտնվող Ulikhanyan Club‑ը այն "
+            "տեղն է, որտեղ «մի բաժակ գինի կնստենք ու կգնանք» արտահայտությունը շատ "
+            "արագ վերածվում է մինչև վերջին բիս մնալու երեկոյի։ Փոքր, աղյուսապատ "
+            "սրահ, բեմը գրեթե ձեռքիդ տակ, սեղաններ ու բարի զուգակցություն՝ "
+            "մթնոլորտը ավելի շատ հիշեցնում է private jam‑session, քան մեծ концерт։ "
+            "Երբ խմբի ջազը, fusion‑ը կամ էթնո‑ջազը սկսում է, քեզ թվում է, թե նստած "
+            "ես փորձի վրա, ոչ թե պաշտոնական համերգում։ "
+            "Բարը լուրջ է վերաբերվում խմիչքներին․ այստեղ կգտնես հայկական կարմիր "
+            "և սպիտակ գինիներ, դասական կոկտեյլներ՝ Old Fashioned, Negroni, Dry "
+            "Martini և խնամքով ընտրված բրենդի՝ դանդաղ երեկոյան համար։ Պարզ, "
+            "բարային ուտեստներն ուղեկցում են խմիչքներին, ոչ թե ծանրացնում "
+            "երեկոն։ "
+            "Գրեթե ամեն երեկո կա live ծրագիր՝ jam‑session‑ներ, տոմսով համերգներ "
+            "ու փոքրիկ փառատոնային line‑up‑ներ, իսկ հանդիսատեսը խառն է՝ "
+            "երաժիշտներ, երևանցիներ ու հյուրեր, որոնք հաճախ ակումբն գտնում են "
+            "բերանացի պատմություններից։ Եթե ուզում ես զգալ Երևանի գիշերային "
+            "կողմը առանց մեծ, աղմկոտ ակումբների, ապա Ulikhanyan‑ը հենց այդ "
+            "հարմարավետ, ջազային sweet spot‑ն է։"
+        ),
+        "description_en": (
+            "Tucked in the basement at 7 Sayat-Nova Avenue, Ulikhanyan Club is one "
+            "of those places where you go just for one drink and end up staying until "
+            "the last encore. The room is small, brick-walled and intimate, with the "
+            "stage almost within arm's reach, so when the band starts playing jazz, "
+            "fusion or ethno-jazz, you feel more like part of a private jam session "
+            "than a big concert. "
+            "The bar takes its drinks seriously: a solid wine list with Armenian reds "
+            "and whites, classic cocktails from Old Fashioned and Negroni to dry "
+            "Martinis, and a good selection of Armenian brandy for a slow late-night "
+            "sip. Simple bar snacks complete the picture without stealing the focus "
+            "from the music. "
+            "Live music is on almost every evening, from jam sessions on Mondays to "
+            "ticketed concerts and festival-style lineups, and the crowd is a mix of "
+            "musicians, locals and curious visitors who found the club by word of "
+            "mouth. If you want to feel Yerevan's night side without going to a noisy "
+            "club, Ulikhanyan is exactly that sweet spot – dim lights, great sound, "
+            "strong drinks and the sense that you have discovered a small underground "
+            "heart of the city's music scene."
+        ),
+    },                              # ← }, կոմայով
+    {
+            "id": "corpous-gastrobar",
+            "category": "yerevan",
+            "subcategory": "restaurants",
+            "title_hy": "Corpous Gastrobar",
+            "title_en": "Corpous Gastrobar",
+            "location_hy": "Երևան, Հյուսիսային պողոտա 5",
+            "location_en": "5 Northern Ave, Yerevan",
     "maps_url": "https://maps.app.goo.gl/chk3jk6zxJAZqBM36",
     "rating": 4.6,
     "thumb": "static/img/places/corpous-interior.jpg",
