@@ -1,52 +1,287 @@
 {# templates/places_detail_en.html #}
 {% extends "base.html" %}
 
-{% block title %}{{ place.titleen }} | AskYerevan{% endblock %}
+{% block title %}{{ place.title_en }} | AskYerevan{% endblock %}
 
 {% block content %}
-<div class="place-detail">
-  <h1>{{ place.titleen }}</h1>
-  
-  {% if place.locationen %}
-  <p class="location">{{ place.locationen }}</p>
-  {% endif %}
-  
-  {% if place.mapsurl %}
-  <a href="{{ place.mapsurl }}" target="_blank" class="maps-link">🗺️ Maps</a>
-  {% endif %}
 
-  <!-- Gallery -->
-  {% if place.images %}
-  <div class="gallery">
-    {% for img in place.images %}
-    <img src="{{ img }}" alt="{{ place.titleen }}">
-    {% endfor %}
+{% if place.images and place.images[0] %}
+  {% set displayimage = request.base_url ~ place.images[0] %}
+{% elif place.thumb %}
+  {% set displayimage = request.base_url ~ place.thumb %}
+{% else %}
+  {% set displayimage = "" %}
+{% endif %}
+
+<article class="detail-container">
+
+  <!-- Hero image -->
+  {% if displayimage %}
+  <div class="detail-hero">
+    <img src="{{ displayimage }}" alt="{{ place.title_en }}"
+         class="detail-hero-img" id="detail-hero-img">
   </div>
   {% endif %}
 
-  <!-- Main description -->
-  {% if place.descriptionen %}
-  <div class="description">
-    {{ place.descriptionen | safe }}
-  </div>
-  {% endif %}
+  <div class="detail-content-wrapper">
 
-  <!-- Like & Comments Placeholder -->
-  <div class="interactions mt-4">
-    <div class="like-section">
-      <button class="like-btn" data-place-id="{{ place.id }}">
-        ❤️ Like ({{ likes_count or 0 }})
-      </button>
-    </div>
-    
-    <div class="comments-section">
-      <h4>Comments ({{ comments_count or 0 }})</h4>
-      <textarea placeholder="Leave a comment..." maxlength="500"></textarea>
-      <button class="comment-submit">Submit</button>
-      <div class="comments-list">
-        <!-- Comments will be loaded here via JS -->
+    <!-- Action bar -->
+    <div class="back-wrapper back-wrapper--with-share">
+
+      <div class="detail-actions-left">
+
+        <a href="{{ backurl }}" class="back-btn">← Back</a>
+
+        {% if place.maps_url %}
+        <a href="{{ place.maps_url }}" target="_blank" rel="noopener"
+           class="back-btn back-btn--map">
+          🌐 Open in Maps
+        </a>
+        {% endif %}
+
+        <button class="back-btn back-btn--comment" id="scroll-to-comments">
+          💬 <span id="comment-count">0</span>
+        </button>
+
+        <div class="star-rating" id="star-rating" title="Rate this place">
+          <span class="star" data-value="1">★</span>
+          <span class="star" data-value="2">★</span>
+          <span class="star" data-value="3">★</span>
+          <span class="star" data-value="4">★</span>
+          <span class="star" data-value="5">★</span>
+          <span class="star-avg" id="star-avg"></span>
+        </div>
+
+        <button class="back-btn back-btn--like" id="like-btn-top">
+          <span id="like-icon-top">🤍</span> Like
+        </button>
+        <span class="like-count-display" id="like-count-top">0</span>
+
       </div>
+
+      <button type="button" class="back-btn back-btn--share" id="share-button"
+              data-share-url="{{ request.url }}"
+              data-share-title="{{ place.title_en }}">
+        📤 Share
+      </button>
+
+    </div>
+
+    <!-- Title -->
+    <h1 class="detail-title">{{ place.title_en }}</h1>
+
+    <!-- Info table -->
+    <div class="event-details">
+
+      {% if place.title_en %}
+      <div class="detail-row">
+        <span class="label">🏷 Name</span>
+        <span class="value">{{ place.title_en }}</span>
+      </div>
+      {% endif %}
+
+      {% if place.location_en %}
+      <div class="detail-row">
+        <span class="label">📍 Address</span>
+        <span class="value">{{ place.location_en }}</span>
+      </div>
+      {% endif %}
+
+      {% if place.subcategory %}
+      <div class="detail-row">
+        <span class="label">📂 Category</span>
+        <span class="value">
+          {% if place.subcategory == "restaurants" %}🍽 Restaurant
+          {% elif place.subcategory == "cafes" %}☕ Cafe
+          {% elif place.subcategory == "bars" %}🍺 Bar / Pub
+          {% elif place.subcategory == "clubs" %}🎶 Club
+          {% elif place.subcategory == "pubs" %}🍺 Pub
+          {% else %}🌟 Other
+          {% endif %}
+        </span>
+      </div>
+      {% endif %}
+
+      {% if place.rating %}
+      <div class="detail-row">
+        <span class="label">⭐ Rating</span>
+        <span class="value">{{ "%.1f" | format(place.rating) }} / 5</span>
+      </div>
+      {% endif %}
+
+      <div class="detail-row">
+        <span class="label">❤️ Likes</span>
+        <span class="value" id="like-count-info">0</span>
+      </div>
+
+      <div class="detail-row">
+        <span class="label">💬 Comments</span>
+        <span class="value" id="comment-count-info">0</span>
+      </div>
+
+    </div>
+
+    <!-- Description -->
+    {% if place.description_en %}
+    <div class="church-description">
+      {{ place.description_en | safe }}
+    </div>
+    {% endif %}
+
+    <!-- Gallery -->
+    {% if place.images and place.images | length > 1 %}
+    <div class="church-gallery">
+      {% for img in place.images[1:] %}
+      <img src="{{ img }}" alt="{{ place.title_en }}"
+           class="js-lightbox-image church-gallery-img">
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Like bottom -->
+    <div class="place-like-bottom">
+      <button class="like-btn-big" id="like-btn-bottom">
+        <span id="like-icon-bottom">🤍</span>
+      </button>
+      <span class="like-count-display" id="like-count-bottom">0</span>
+    </div>
+
+    <!-- Comments -->
+    <div class="comments-section" id="comments-section">
+      <h2 class="comments-title">💬 Comments</h2>
+
+      <div class="comment-form">
+        <div class="comment-star-rating" id="comment-stars">
+          <span>Rate: </span>
+          <span class="cstar" data-value="1">★</span>
+          <span class="cstar" data-value="2">★</span>
+          <span class="cstar" data-value="3">★</span>
+          <span class="cstar" data-value="4">★</span>
+          <span class="cstar" data-value="5">★</span>
+        </div>
+        <textarea id="comment-input" maxlength="500"
+          placeholder="Write a comment (up to 500 characters)..."></textarea>
+        <div class="comment-form-footer">
+          <span id="char-count">0 / 500</span>
+          <button class="back-btn" id="submit-comment">Submit</button>
+        </div>
+      </div>
+
+      <div class="comments-list" id="comments-list"></div>
+    </div>
+
+  </div>
+</article>
+
+<!-- Share modal -->
+<div class="share-modal" id="share-modal">
+  <div class="share-modal-box">
+    <button class="share-modal-close" id="share-modal-close">✕</button>
+    <h3>Share</h3>
+    <div class="share-buttons">
+      <a id="share-telegram"  href="#" target="_blank" class="share-btn share-btn--tg">✈️ Telegram</a>
+      <a id="share-facebook"  href="#" target="_blank" class="share-btn share-btn--fb">📘 Facebook</a>
+      <a id="share-whatsapp"  href="#" target="_blank" class="share-btn share-btn--wa">📱 WhatsApp</a>
+      <button class="share-btn share-btn--copy" id="share-copy">🔗 Copy link</button>
     </div>
   </div>
 </div>
-{% endblock %}
+
+<!-- Lightbox -->
+<div class="image-modal" id="image-modal">
+  <span class="image-modal-close" id="image-modal-close">&times;</span>
+  <img src="{{ displayimage }}" alt="{{ place.title_en }}">
+</div>
+
+<!-- ════ STYLES (նույնը HY-ի պես) ════ -->
+<style>
+.detail-actions-left {
+  display: flex; align-items: center;
+  gap: 0.5rem; flex-wrap: wrap;
+}
+.back-btn--like    { background: #e11d48; }
+.back-btn--comment { background: #0369a1; }
+.back-btn--share   { background: #f59e0b; }
+.back-btn--map     { background: #0f766e; }
+.star-rating { display: inline-flex; align-items: center; gap: 2px; cursor: pointer; }
+.star { font-size: 1.4rem; color: #d1d5db; transition: color 0.15s; cursor: pointer; user-select: none; }
+.star.active, .star.hovered { color: #f59e0b; }
+.star-avg { font-size: 0.85rem; color: #555; margin-left: 4px; }
+.place-like-bottom { display: flex; align-items: center; gap: 0.5rem; margin: 2rem 0 1rem; }
+.like-btn-big { background: none; border: none; font-size: 2rem; cursor: pointer; transition: transform 0.15s; line-height: 1; }
+.like-btn-big:hover { transform: scale(1.15); }
+.like-count-display { font-size: 1rem; color: #555; }
+.comments-section { margin-top: 2.5rem; border-top: 2px solid #e5e7eb; padding-top: 1.5rem; }
+.comments-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; color: #071f33; }
+.comment-form { background: #f8fafc; border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem; }
+.comment-star-rating { display: flex; align-items: center; gap: 4px; margin-bottom: 0.6rem; font-size: 0.9rem; color: #555; }
+.cstar { font-size: 1.4rem; color: #d1d5db; cursor: pointer; transition: color 0.15s; user-select: none; }
+.cstar.active, .cstar.hovered { color: #f59e0b; }
+.comment-form textarea { width: 100%; min-height: 90px; border: 1px solid #d1d5db; border-radius: 8px; padding: 0.6rem 0.75rem; font-size: 0.95rem; resize: vertical; box-sizing: border-box; font-family: inherit; }
+.comment-form-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; font-size: 0.82rem; color: #888; }
+.comment-item { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 0.85rem 1rem; margin-bottom: 0.75rem; }
+.comment-item-header { display: flex; justify-content: space-between; font-size: 0.8rem; color: #888; margin-bottom: 0.4rem; }
+.comment-item-stars { color: #f59e0b; font-size: 0.9rem; }
+.comment-item-text  { font-size: 0.95rem; color: #222; line-height: 1.5; }
+.share-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 9999; align-items: center; justify-content: center; }
+.share-modal.open { display: flex; }
+.share-modal-box { background: #fff; border-radius: 16px; padding: 1.5rem 2rem; min-width: 280px; position: relative; text-align: center; }
+.share-modal-box h3 { margin: 0 0 1rem; font-size: 1.1rem; }
+.share-modal-close { position: absolute; top: 0.6rem; right: 0.8rem; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #888; }
+.share-buttons { display: flex; flex-direction: column; gap: 0.6rem; }
+.share-btn { display: block; padding: 0.6rem 1rem; border-radius: 999px; text-decoration: none; font-size: 0.95rem; font-weight: 500; cursor: pointer; border: none; color: #fff; text-align: center; }
+.share-btn--tg { background: #2aabee; }
+.share-btn--fb { background: #1877f2; }
+.share-btn--wa { background: #25d366; }
+.share-btn--copy { background: #6b7280; }
+</style>
+
+<!-- ════ JAVASCRIPT (նույն լոգիկան HY-ի պես, EN key-երով) ════ -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const PLACE_ID   = "{{ place.id }}";
+  const LIKES_KEY  = 'place_likes';
+  const CMT_KEY    = 'place_comments_' + PLACE_ID;
+  const RATE_KEY   = 'place_ratings_'  + PLACE_ID;
+
+  /* ══ LIKES ══ */
+  const likes = JSON.parse(localStorage.getItem(LIKES_KEY) || '{}');
+  const likeData = likes[PLACE_ID] || { liked: false, count: 0 };
+
+  function renderLikes() {
+    const icon = likeData.liked ? '❤️' : '🤍';
+    const cnt  = likeData.count;
+    document.getElementById('like-icon-top').textContent    = icon;
+    document.getElementById('like-icon-bottom').textContent = icon;
+    document.getElementById('like-count-top').textContent   = cnt;
+    document.getElementById('like-count-bottom').textContent= cnt;
+    document.getElementById('like-count-info').textContent  = cnt;
+  }
+
+  function toggleLike() {
+    likeData.liked  = !likeData.liked;
+    likeData.count  = likeData.liked
+      ? likeData.count + 1
+      : Math.max(0, likeData.count - 1);
+    likes[PLACE_ID] = likeData;
+    localStorage.setItem(LIKES_KEY, JSON.stringify(likes));
+    renderLikes();
+  }
+
+  renderLikes();
+  document.getElementById('like-btn-top').addEventListener('click', toggleLike);
+  document.getElementById('like-btn-bottom').addEventListener('click', toggleLike);
+
+  /* ══ STARS (action bar) ══ */
+  const stars   = document.querySelectorAll('#star-rating .star');
+  const starAvg = document.getElementById('star-avg');
+  const ratings = JSON.parse(localStorage.getItem(RATE_KEY) || '{"total":0,"count":0,"mine":0}');
+
+  function renderStars(highlight) {
+    stars.forEach(s => {
+      const v = parseInt(s.dataset.value);
+      s.classList.toggle('active', v <= highlight);
+    });
+    const avg = ratings.count > 0
+      ? (ratings.total / ratings.count).toFixed(1)
+      : '{{ "%.1f" | format(place.rating
