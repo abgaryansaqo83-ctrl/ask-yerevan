@@ -1,18 +1,59 @@
-{# templates/places_detail_hy.html #}
 {% extends "base.html" %}
 
 {% block title %}{{ place.titlehy }} | AskYerevan{% endblock %}
 
 {% block content %}
-<div class="place-detail">
-  <h1>{{ place.titlehy }}</h1>
-  
-  {% if place.locationhy %}
-  <p class="location">{{ place.locationhy }}</p>
-  {% endif %}
-  
-  {% if place.mapsurl %}
-  <a href="{{ place.mapsurl }}" target="_blank" class="maps-link">🗺️ Գույքագծով</a>
+<div class="detail-container">
+  <!-- Back + Actions -->
+  <div class="detail-header">
+    <a href="{{ url_for('places_list_hy') }}" class="back-btn">← Հետ</a>
+    <div class="detail-actions">
+      {% if place.mapsurl %}
+      <a href="{{ place.mapsurl }}" target="_blank" class="maps-btn">🗺️</a>
+      {% endif %}
+      <button class="comment-btn">💬 {{ comments_count or 0 }}</button>
+    </div>
+  </div>
+
+  <!-- Rating stars -->
+  <div class="rating-section">
+    <div class="stars">
+      ★★★☆☆ <!-- Dynamic via JS -->
+    </div>
+  </div>
+
+  <!-- Like button -->
+  <div class="like-section">
+    <button class="big-like-btn active" data-place-id="{{ place.id }}">
+      ❤️ {{ likes_count or 0 }}
+    </button>
+  </div>
+
+  <!-- Info schema -->
+  <div class="info-schema">
+    <div class="schema-row">
+      <span>Անուն</span>
+      <span>{{ place.titlehy }}</span>
+    </div>
+    {% if place.locationhy %}
+    <div class="schema-row">
+      <span>Հասցե</span>
+      <span>{{ place.locationhy }}</span>
+    </div>
+    {% endif %}
+    {% if place.rating %}
+    <div class="schema-row">
+      <span>Վարկանիշ</span>
+      <span>{{ "%.1f"|format(place.rating) }} ★</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Description -->
+  {% if place.descriptionhy %}
+  <div class="description">
+    {{ place.descriptionhy | safe }}
+  </div>
   {% endif %}
 
   <!-- Gallery -->
@@ -24,28 +65,19 @@
   </div>
   {% endif %}
 
-  <!-- Main description -->
-  {% if place.descriptionhy %}
-  <div class="description">
-    {{ place.descriptionhy | safe }}
-  </div>
-  {% endif %}
-
-  <!-- Like & Comments Placeholder (backend-ը հետո կգրենք) -->
-  <div class="interactions mt-4">
-    <div class="like-section">
-      <button class="like-btn" data-place-id="{{ place.id }}">
-        ❤️ Ունկնդրել ({{ likes_count or 0 }})
-      </button>
-    </div>
-    
-    <div class="comments-section">
-      <h4>Մեկնաբանություններ ({{ comments_count or 0 }})</h4>
-      <textarea placeholder="Մեկնաբանի՛ր..." maxlength="500"></textarea>
-      <button class="comment-submit">Ուղարկել</button>
-      <div class="comments-list">
-        <!-- Comments will be loaded here via JS -->
+  <!-- Comments section (placeholder) -->
+  <div class="comments-panel">
+    <h3>Մեկնաբանություններ</h3>
+    <textarea placeholder="Մեկնաբանի՛ր... (max 500 նիշ)" maxlength="500"></textarea>
+    <div class="comment-actions">
+      <div class="stars-input">
+        <!-- 5 star rating input -->
+        ★ ★ ★ ★ ★
       </div>
+      <button class="submit-comment">Ուղարկել</button>
+    </div>
+    <div class="comments-list">
+      <!-- Dynamic comments -->
     </div>
   </div>
 </div>
