@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request, Query
 from backend.admin_routes import router as admin_router
 from backend.churches_data import CHURCHES
 from backend.sights_data import SIGHTS
+from backend.places_data import PLACES
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -312,25 +313,34 @@ async def sight_detail_en(request: Request, sight_id: str):
     )
 
 # Places
-@app.get("/hy/places", response_class=HTMLResponse)
-async def places_hy(request: Request):
+@app.get("/hy/places/{place_id}", response_class=HTMLResponse)
+async def place_detail_hy(request: Request, place_id: str):
+    place = get_place_by_id(place_id)
+    if not place:
+        return RedirectResponse(url="/hy/places")
     return templates.TemplateResponse(
-        "places_hy.html",
+        "places_detail_hy.html",
         {
-            "request": request,
-            "lang": "hy",
+            "request":         request,
+            "lang":            "hy",
+            "place":           place,
+            "backurl":         "/hy/places",
             "is_winter_theme": is_winter_theme_enabled(),
         },
     )
 
-
-@app.get("/en/places", response_class=HTMLResponse)
-async def places_en(request: Request):
+@app.get("/en/places/{place_id}", response_class=HTMLResponse)
+async def place_detail_en(request: Request, place_id: str):
+    place = get_place_by_id(place_id)
+    if not place:
+        return RedirectResponse(url="/en/places")
     return templates.TemplateResponse(
-        "places_en.html",
+        "places_detail_en.html",
         {
-            "request": request,
-            "lang": "en",
+            "request":         request,
+            "lang":            "en",
+            "place":           place,
+            "backurl":         "/en/places",
             "is_winter_theme": is_winter_theme_enabled(),
         },
     )
