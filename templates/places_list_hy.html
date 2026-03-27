@@ -1,0 +1,33 @@
+{# templates/places_list_hy.html #}
+{% extends "base.html" %}
+
+{% block title %}AskYerevan · Ժամանցի վայրեր{% endblock %}
+
+{% block content %}
+
+🎉 Ժամանցի վայրեր
+
+🇦🇲 Բոլորը
+🍽️ Ռեստորաններ  
+☕ Կաֆեներ
+🌳 Այգիներ
+🎶 Կլուբներ/Բարեր
+🌟 Այլ Վայրեր
+
+{% for place in places %}
+<a href="{{ url_for('place_detail_hy', place_id=place.id) }}">
+  {% if place.thumb %}
+  <img src="{{ place.thumb }}" alt="{{ place.titlehy }}" class="sight-thumb">
+  {% elif place.images and place.images[0] %}
+  <img src="{{ place.images[0] }}" alt="{{ place.titlehy }}" class="sight-thumb">
+  {% endif %}
+  {% if place.category_label_hy %}
+  <span class="category-badge">{{ place.category_label_hy }}</span>
+  {% endif %}
+  {{ place.titlehy }}
+</a>
+{% endfor %}
+
+Այս բաժնում դեռ ժամանցի վայրեր չկան։
+
+{% endblock %}
