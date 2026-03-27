@@ -1553,5 +1553,5 @@ PLACES = [
         "the conversation is worth having over a long, unhurried dinner "
         "on Amiryan Street."
     ),
- } 
+} 
 ]
