@@ -312,7 +312,38 @@ async def sight_detail_en(request: Request, sight_id: str):
         },
     )
 
+# ════════════════════════════════
 # Places
+# ════════════════════════════════
+
+def get_place_by_id(place_id: str):          # 1. helper
+    return next((p for p in PLACES if p["id"] == place_id), None)
+
+@app.get("/hy/places", response_class=HTMLResponse)
+async def places_list_hy(request: Request):
+    return templates.TemplateResponse(
+        "places_list_hy.html",
+        {
+            "request":         request,
+            "lang":            "hy",
+            "places":          PLACES,
+            "is_winter_theme": is_winter_theme_enabled(),
+        },
+    )
+
+
+@app.get("/en/places", response_class=HTMLResponse)
+async def places_list_en(request: Request):
+    return templates.TemplateResponse(
+        "places_list_en.html",
+        {
+            "request":         request,
+            "lang":            "en",
+            "places":          PLACES,
+            "is_winter_theme": is_winter_theme_enabled(),
+        },
+    )
+    
 @app.get("/hy/places/{place_id}", response_class=HTMLResponse)
 async def place_detail_hy(request: Request, place_id: str):
     place = get_place_by_id(place_id)
