@@ -919,59 +919,257 @@ Sights page
   }
 }
 
-/* ===========================
-   Ժամանցի վայրեր
-   =========================== */
+/* ===================================================
+   Ժամանցի վայրեր — Places
+   (list + detail + like + comment + stars + share)
+   =================================================== */
 
-.places {
-  padding: 2rem 2rem;
+/* ── List page ────────────────────────────────────── */
+.category-subnav {
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-top: 1px solid #e5e5e5;
+  padding-top: 0.75rem;
 }
 
-.place-section {
-  padding: 2rem;
-  margin-bottom: 3rem;
-}
-
-.place-block {
+.sight-card-content {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.75rem;
+}
+
+.sight-card-like {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+  color: #555;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.place-like-icon {
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+/* ── Detail page — action bar ─────────────────────── */
+.detail-actions-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   flex-wrap: wrap;
-  gap: 1.5rem;
 }
 
-.place-block--reverse {
-  flex-direction: row-reverse;
+.back-btn--like    { background: #e11d48; }
+.back-btn--comment { background: #0369a1; }
+.back-btn--map     { background: #0f766e; }
+
+/* ── Stars (action bar) ───────────────────────────── */
+.star-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
 }
 
-/* Նկարների սյուն */
-.place-image {
-  flex: 1 1 260px;
+.star {
+  font-size: 1.4rem;
+  color: #d1d5db;
+  transition: color 0.15s;
+  cursor: pointer;
+  user-select: none;
 }
 
-.place-image--column {
+.star.active,
+.star.hovered { color: #f59e0b; }
+
+.star-avg {
+  font-size: 0.85rem;
+  color: #555;
+  margin-left: 4px;
+}
+
+/* ── Like (ներքև) ─────────────────────────────────── */
+.place-like-bottom {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 2rem 0 1rem;
+}
+
+.like-btn-big {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: transform 0.15s;
+  line-height: 1;
+  padding: 0;
+}
+
+.like-btn-big:hover { transform: scale(1.15); }
+
+.like-count-display {
+  font-size: 1rem;
+  color: #555;
+}
+
+/* ── Comments section ─────────────────────────────── */
+.comments-section {
+  margin-top: 2.5rem;
+  border-top: 2px solid #e5e7eb;
+  padding-top: 1.5rem;
+}
+
+.comments-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #071f33;
+}
+
+.comment-form {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.comment-star-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 0.6rem;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.cstar {
+  font-size: 1.4rem;
+  color: #d1d5db;
+  cursor: pointer;
+  transition: color 0.15s;
+  user-select: none;
+}
+
+.cstar.active,
+.cstar.hovered { color: #f59e0b; }
+
+.comment-form textarea {
+  width: 100%;
+  min-height: 90px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.95rem;
+  resize: vertical;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.comment-form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
+  color: #888;
+}
+
+/* ── Single comment item ──────────────────────────── */
+.comment-item {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.comment-item-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 0.4rem;
+}
+
+.comment-item-stars { color: #f59e0b; font-size: 0.9rem; }
+.comment-item-text  { font-size: 0.95rem; color: #222; line-height: 1.5; }
+
+/* ── Share modal ──────────────────────────────────── */
+.share-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+}
+
+.share-modal.open { display: flex; }
+
+.share-modal-box {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  min-width: 280px;
+  position: relative;
+  text-align: center;
+}
+
+.share-modal-box h3 {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+}
+
+.share-modal-close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.8rem;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #888;
+}
+
+.share-buttons {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  align-items: center;
+  gap: 0.6rem;
 }
 
-.place-image--column img {
-  width: 100%;
-  max-width: 420px;
-  height: auto;
-  border-radius: 4px;
-  margin: 0 auto;
+.share-btn {
+  display: block;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  color: #fff;
+  text-align: center;
 }
 
-/* Տեքստի սյուն */
-.place-text {
-  flex: 1 1 260px;
-}
+.share-btn--tg   { background: #2aabee; }
+.share-btn--fb   { background: #1877f2; }
+.share-btn--wa   { background: #25d366; }
+.share-btn--copy { background: #6b7280; }
 
-/* Մոբայլ */
+/* ── Mobile ───────────────────────────────────────── */
 @media (max-width: 768px) {
-  .place-block,
-  .place-block--reverse {
-    flex-direction: column;
+  .detail-actions-left {
+    gap: 0.4rem;
+  }
+  .star { font-size: 1.2rem; }
+  .cstar { font-size: 1.2rem; }
+  .share-modal-box {
+    min-width: 240px;
+    padding: 1.2rem 1.5rem;
   }
 }
 
