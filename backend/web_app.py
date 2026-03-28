@@ -1,19 +1,27 @@
 from fastapi import FastAPI, Request, Query
+from fastapi.responses import HTMLResponse, RedirectResponse, Response, JSONResponse
 from backend.admin_routes import router as admin_router
 from backend.churches_data import CHURCHES
 from backend.sights_data import SIGHTS
 from backend.places_data import PLACES
-from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from datetime import date
-from pathlib import Path  # <-- ԱՎԵԼԱՑՎԱԾ
+from pathlib import Path
+import uuid
 
 from backend.database import (
     init_db,
     get_all_news,
     get_news_by_id,
     get_random_news_with_image,
+    toggle_place_like,
+    get_place_likes,
+    set_place_rating,
+    get_place_rating,
+    add_place_comment,
+    get_place_comments,
+    get_place_comment_count,
 )
 
 import logging
@@ -376,6 +384,101 @@ async def place_detail_en(request: Request, place_id: str):
         },
     )
 
+# ════════════════════════════════
+# Places API (likes / ratings / comments)
+# ════════════════════════════════
+
+def get_or_create_session(request: Request, response: JSONResponse) -> str:
+    session_id = request.cookies.get("place_session")
+    if not session_id:
+        session_id = str(uuid.uuid4())
+        response.set_cookie(
+            key="place_session",
+            value=session_id,
+            max_age=60 * 60 * 24 * 365,  # 1 տարի
+            httponly=True,
+            samesite="lax",
+        )
+    return session_id
+
+
+@app.post("/api/places/{place_id}/like")
+async def api_place_like(place_id: str, request: Request):
+    response = JSONResponse(content={})
+    session_id = request.cookies.get("place_session") or str(uuid.uuid4())
+    result = toggle_place_like(place_id, session_id)
+    resp = JSONResponse(content=result)
+    resp.set_cookie(
+        key="place_session",
+        value=session_id,
+        max_age=60 * 60 * 24 * 365,
+        httponly=True,
+        samesite="lax",
+    )
+    return resp
+
+
+@app.get("/api/places/{place_id}/likes")
+async def api_place_likes(place_id: str, request: Request):
+    session_id = request.cookies.get("place_session") or ""
+    result = get_place_likes(place_id, session_id)
+    return JSONResponse(content=result)
+
+
+@app.post("/api/places/{place_id}/rating")
+async def api_place_rating_set(place_id: str, request: Request):
+    body = await request.json()
+    rating = int(body.get("rating", 0))
+    if not 1 <= rating <= 5:
+        return JSONResponse(content={"error": "Invalid rating"}, status_code=400)
+    session_id = request.cookies.get("place_session") or str(uuid.uuid4())
+    result = set_place_rating(place_id, session_id, rating)
+    resp = JSONResponse(content=result)
+    resp.set_cookie(
+        key="place_session",
+        value=session_id,
+        max_age=60 * 60 * 24 * 365,
+        httponly=True,
+        samesite="lax",
+    )
+    return resp
+
+
+@app.get("/api/places/{place_id}/rating")
+async def api_place_rating_get(place_id: str, request: Request):
+    session_id = request.cookies.get("place_session") or ""
+    result = get_place_rating(place_id, session_id)
+    return JSONResponse(content=result)
+
+
+@app.post("/api/places/{place_id}/comments")
+async def api_place_comment_add(place_id: str, request: Request):
+    body = await request.json()
+    text = str(body.get("text", "")).strip()
+    rating = int(body.get("rating", 0))
+    if not text:
+        return JSONResponse(content={"error": "Empty comment"}, status_code=400)
+    session_id = request.cookies.get("place_session") or str(uuid.uuid4())
+    result = add_place_comment(place_id, session_id, text, rating)
+    resp = JSONResponse(content=result)
+    resp.set_cookie(
+        key="place_session",
+        value=session_id,
+        max_age=60 * 60 * 24 * 365,
+        httponly=True,
+        samesite="lax",
+    )
+    return resp
+
+
+@app.get("/api/places/{place_id}/comments")
+async def api_place_comments_get(place_id: str):
+    comments = get_place_comments(place_id)
+    for c in comments:
+        if hasattr(c.get("created_at"), "isoformat"):
+            c["created_at"] = c["created_at"].isoformat()
+    return JSONResponse(content=comments)
+    
 # About
 @app.get("/hy/about", response_class=HTMLResponse)
 async def about_hy(request: Request):
