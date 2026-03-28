@@ -197,19 +197,21 @@
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
   const PLACE_ID = "{{ place.id }}";
-  const LIKES_KEY = 'place_likes';
-  const CMT_KEY   = 'place_comments_' + PLACE_ID;
-  const RATE_KEY  = 'place_ratings_'  + PLACE_ID;
+
+  /* ══ SESSION ══ */
+  // Cookie-ն server-ի կողمیcid ا ստeghtsvoum, JS-in petk chi
 
   /* ══ LIKES ══ */
-  const likes    = JSON.parse(localStorage.getItem(LIKES_KEY) || '{}');
-  const likeData = likes[PLACE_ID] || { liked: false, count: 0 };
+  async function fetchLikes() {
+    const r = await fetch(`/api/places/${PLACE_ID}/likes`);
+    return await r.json();
+  }
 
-  function renderLikes() {
-    const icon = likeData.liked ? '❤️' : '🤍';
-    const cnt  = likeData.count;
+  function renderLikes(data) {
+    const icon = data.liked ? '❤️' : '🤍';
+    const cnt  = data.count;
     document.getElementById('like-icon-top').textContent     = icon;
     document.getElementById('like-icon-bottom').textContent  = icon;
     document.getElementById('like-count-top').textContent    = cnt;
@@ -217,51 +219,55 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('like-count-info').textContent   = cnt;
   }
 
-  function toggleLike() {
-    likeData.liked  = !likeData.liked;
-    likeData.count  = likeData.liked ? likeData.count + 1 : Math.max(0, likeData.count - 1);
-    likes[PLACE_ID] = likeData;
-    localStorage.setItem(LIKES_KEY, JSON.stringify(likes));
-    renderLikes();
+  async function toggleLike() {
+    const r = await fetch(`/api/places/${PLACE_ID}/like`, { method: 'POST' });
+    const data = await r.json();
+    renderLikes(data);
   }
 
-  renderLikes();
+  const likesData = await fetchLikes();
+  renderLikes(likesData);
   document.getElementById('like-btn-top').addEventListener('click', toggleLike);
   document.getElementById('like-btn-bottom').addEventListener('click', toggleLike);
 
-  /* ══ STARS (action bar) ══ */
+  /* ══ STARS ══ */
   const stars   = document.querySelectorAll('#star-rating .star');
   const starAvg = document.getElementById('star-avg');
-  const ratings = JSON.parse(localStorage.getItem(RATE_KEY) || '{"total":0,"count":0,"mine":0}');
 
-  function renderStars(highlight) {
+  async function fetchRating() {
+    const r = await fetch(`/api/places/${PLACE_ID}/rating`);
+    return await r.json();
+  }
+
+  function renderStars(highlight, avg) {
     stars.forEach(s => {
       s.classList.toggle('active', parseInt(s.dataset.value) <= highlight);
     });
-    const avg = ratings.count > 0
-      ? (ratings.total / ratings.count).toFixed(1)
-      : '{{ "%.1f" | format(place.rating) }}';
-    starAvg.textContent = '(' + avg + ')';
+    if (avg) starAvg.textContent = '(' + avg + ')';
   }
 
-  renderStars(ratings.mine || 0);
+  const ratingData = await fetchRating();
+  renderStars(ratingData.my_rating, ratingData.avg);
 
   stars.forEach(s => {
-    s.addEventListener('mouseover', () => renderStars(parseInt(s.dataset.value)));
-    s.addEventListener('mouseleave', () => renderStars(ratings.mine || 0));
-    s.addEventListener('click', () => {
+    s.addEventListener('mouseover', () => {
+      stars.forEach(x => x.classList.toggle('hovered', parseInt(x.dataset.value) <= parseInt(s.dataset.value)));
+    });
+    s.addEventListener('mouseleave', () => stars.forEach(x => x.classList.remove('hovered')));
+    s.addEventListener('click', async () => {
       const val = parseInt(s.dataset.value);
-      if (ratings.mine) ratings.total -= ratings.mine;
-      ratings.mine  = val;
-      ratings.total += val;
-      ratings.count  = ratings.count || 1;
-      localStorage.setItem(RATE_KEY, JSON.stringify(ratings));
-      renderStars(val);
+      const r   = await fetch(`/api/places/${PLACE_ID}/rating`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rating: val }),
+      });
+      const data = await r.json();
+      renderStars(data.my_rating, data.avg);
     });
   });
 
   /* ══ COMMENT STARS ══ */
-  const cstars    = document.querySelectorAll('#comment-stars .cstar');
+  const cstars = document.querySelectorAll('#comment-stars .cstar');
   let selectedRating = 0;
 
   cstars.forEach(cs => {
@@ -283,17 +289,19 @@ document.addEventListener('DOMContentLoaded', function () {
   const cntTop       = document.getElementById('comment-count');
   const cntInfo      = document.getElementById('comment-count-info');
 
-  function loadComments() {
-    const comments = JSON.parse(localStorage.getItem(CMT_KEY) || '[]');
+  async function loadComments() {
+    const r        = await fetch(`/api/places/${PLACE_ID}/comments`);
+    const comments = await r.json();
     commentsList.innerHTML = '';
     comments.forEach(c => {
-      const el = document.createElement('div');
+      const el    = document.createElement('div');
       el.className = 'comment-item';
-      const stars = c.rating ? '★'.repeat(c.rating) + '☆'.repeat(5 - c.rating) : '';
+      const starsHtml = c.rating ? '★'.repeat(c.rating) + '☆'.repeat(5 - c.rating) : '';
+      const date  = c.created_at ? new Date(c.created_at).toLocaleDateString() : '';
       el.innerHTML = `
         <div class="comment-item-header">
-          <span class="comment-item-stars">${stars}</span>
-          <span>${c.date}</span>
+          <span class="comment-item-stars">${starsHtml}</span>
+          <span>${date}</span>
         </div>
         <div class="comment-item-text">${c.text}</div>`;
       commentsList.appendChild(el);
@@ -307,28 +315,26 @@ document.addEventListener('DOMContentLoaded', function () {
     charCount.textContent = commentInput.value.length + ' / 500';
   });
 
-  submitBtn.addEventListener('click', () => {
+  submitBtn.addEventListener('click', async () => {
     const text = commentInput.value.trim();
     if (!text) return;
-    const comments = JSON.parse(localStorage.getItem(CMT_KEY) || '[]');
-    comments.unshift({
-      text,
-      rating: selectedRating,
-      date: new Date().toLocaleDateString('hy-AM')
+    await fetch(`/api/places/${PLACE_ID}/comments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, rating: selectedRating }),
     });
-    localStorage.setItem(CMT_KEY, JSON.stringify(comments));
-    commentInput.value = '';
+    commentInput.value    = '';
     charCount.textContent = '0 / 500';
-    selectedRating = 0;
+    selectedRating        = 0;
     cstars.forEach(c => c.classList.remove('active'));
-    loadComments();
+    await loadComments();
   });
 
   document.getElementById('scroll-to-comments').addEventListener('click', () => {
     document.getElementById('comments-section').scrollIntoView({ behavior: 'smooth' });
   });
 
-  loadComments();
+  await loadComments();
 
   /* ══ SHARE ══ */
   const shareBtn = document.getElementById('share-button');
@@ -337,7 +343,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   shareBtn.addEventListener('click', () => {
     if (navigator.share) {
-      navigator.share({ title: title, url: url });
+      navigator.share({ title, url });
     } else {
       navigator.clipboard.writeText(url).then(() => {
         shareBtn.textContent = '✅ Պատճենված';
@@ -351,9 +357,15 @@ document.addEventListener('DOMContentLoaded', function () {
   const modalClose = document.getElementById('image-modal-close');
   const heroImg    = document.getElementById('detail-hero-img');
 
-  if (heroImg) heroImg.addEventListener('click', () => { modal.querySelector('img').src = heroImg.src; modal.classList.add('open'); });
+  if (heroImg) heroImg.addEventListener('click', () => {
+    modal.querySelector('img').src = heroImg.src;
+    modal.classList.add('open');
+  });
   document.querySelectorAll('.js-lightbox-image').forEach(img => {
-    img.addEventListener('click', () => { modal.querySelector('img').src = img.src; modal.classList.add('open'); });
+    img.addEventListener('click', () => {
+      modal.querySelector('img').src = img.src;
+      modal.classList.add('open');
+    });
   });
   if (modalClose) modalClose.addEventListener('click', () => modal.classList.remove('open'));
   if (modal) modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
