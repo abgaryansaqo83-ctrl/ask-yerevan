@@ -912,3 +912,190 @@ def count_violations(user_id: int,
     row = cur.fetchone()
     conn.close()
     return int(row["cnt"] if row else 0)
+
+# ============================================================================
+# PLACE LIKES / RATINGS / COMMENTS
+# ============================================================================
+
+# ── LIKES ────────────────────────────────────────────────────────────────────
+
+def toggle_place_like(place_id: str, session_id: str) -> dict:
+    """
+    Like-ի toggle — եթե կա, հանում է, եթե չկա, ավելացնում է։
+    Վերադարձնում է {"liked": bool, "count": int}
+    """
+    conn = get_connection()
+    cur = get_cursor(conn)
+
+    # ստուգում ա կա՞ արդեն
+    cur.execute(
+        "SELECT id FROM place_likes WHERE place_id = %s AND session_id = %s",
+        (place_id, session_id),
+    )
+    existing = cur.fetchone()
+
+    if existing:
+        cur.execute(
+            "DELETE FROM place_likes WHERE place_id = %s AND session_id = %s",
+            (place_id, session_id),
+        )
+        liked = False
+    else:
+        cur.execute(
+            "INSERT INTO place_likes (place_id, session_id) VALUES (%s, %s)",
+            (place_id, session_id),
+        )
+        liked = True
+
+    cur.execute(
+        "SELECT COUNT(*) AS cnt FROM place_likes WHERE place_id = %s",
+        (place_id,),
+    )
+    count = cur.fetchone()["cnt"]
+
+    conn.commit()
+    conn.close()
+    return {"liked": liked, "count": int(count)}
+
+
+def get_place_likes(place_id: str, session_id: str) -> dict:
+    """Վերադարձնում է like-ի count + արդյոք session-ը like ա արել"""
+    conn = get_connection()
+    cur = get_cursor(conn)
+
+    cur.execute(
+        "SELECT COUNT(*) AS cnt FROM place_likes WHERE place_id = %s",
+        (place_id,),
+    )
+    count = cur.fetchone()["cnt"]
+
+    cur.execute(
+        "SELECT id FROM place_likes WHERE place_id = %s AND session_id = %s",
+        (place_id, session_id),
+    )
+    liked = cur.fetchone() is not None
+
+    conn.close()
+    return {"liked": liked, "count": int(count)}
+
+
+# ── RATINGS ───────────────────────────────────────────────────────────────────
+
+def set_place_rating(place_id: str, session_id: str, rating: int) -> dict:
+    """
+    Session-ի rating-ը set կամ update անում է։
+    Վերադարձնում է {"my_rating": int, "avg": float, "count": int}
+    """
+    conn = get_connection()
+    cur = get_cursor(conn)
+
+    cur.execute(
+        """
+        INSERT INTO place_ratings (place_id, session_id, rating)
+        VALUES (%s, %s, %s)
+        ON CONFLICT (place_id, session_id)
+        DO UPDATE SET rating = EXCLUDED.rating
+        """,
+        (place_id, session_id, rating),
+    )
+
+    cur.execute(
+        """
+        SELECT COUNT(*) AS cnt, AVG(rating) AS avg
+        FROM place_ratings WHERE place_id = %s
+        """,
+        (place_id,),
+    )
+    row = cur.fetchone()
+
+    conn.commit()
+    conn.close()
+    return {
+        "my_rating": rating,
+        "avg": round(float(row["avg"]), 1) if row["avg"] else 0.0,
+        "count": int(row["cnt"]),
+    }
+
+
+def get_place_rating(place_id: str, session_id: str) -> dict:
+    """Վերադարձնում է avg rating + session-ի rating"""
+    conn = get_connection()
+    cur = get_cursor(conn)
+
+    cur.execute(
+        """
+        SELECT COUNT(*) AS cnt, AVG(rating) AS avg
+        FROM place_ratings WHERE place_id = %s
+        """,
+        (place_id,),
+    )
+    row = cur.fetchone()
+
+    cur.execute(
+        "SELECT rating FROM place_ratings WHERE place_id = %s AND session_id = %s",
+        (place_id, session_id),
+    )
+    my = cur.fetchone()
+
+    conn.close()
+    return {
+        "my_rating": int(my["rating"]) if my else 0,
+        "avg": round(float(row["avg"]), 1) if row and row["avg"] else 0.0,
+        "count": int(row["cnt"]) if row else 0,
+    }
+
+
+# ── COMMENTS ──────────────────────────────────────────────────────────────────
+
+def add_place_comment(place_id: str, session_id: str, text: str, rating: int = 0) -> dict:
+    """Comment ավելացնում է, վերադարձնում է id + created_at"""
+    conn = get_connection()
+    cur = get_cursor(conn)
+
+    cur.execute(
+        """
+        INSERT INTO place_comments (place_id, session_id, text, rating)
+        VALUES (%s, %s, %s, %s)
+        RETURNING id, created_at
+        """,
+        (place_id, session_id, text[:500], rating or None),
+    )
+    row = cur.fetchone()
+
+    conn.commit()
+    conn.close()
+    return {"id": row["id"], "created_at": str(row["created_at"])}
+
+
+def get_place_comments(place_id: str) -> list:
+    """Վերադարձնում է place-ի բոլոր comment-ները՝ նորից հին"""
+    conn = get_connection()
+    cur = get_cursor(conn)
+
+    cur.execute(
+        """
+        SELECT id, text, rating, created_at
+        FROM place_comments
+        WHERE place_id = %s
+        ORDER BY created_at DESC
+        """,
+        (place_id,),
+    )
+    rows = cur.fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+
+def get_place_comment_count(place_id: str) -> int:
+    """Վերադարձնում է comment-ների քանակը"""
+    conn = get_connection()
+    cur = get_cursor(conn)
+
+    cur.execute(
+        "SELECT COUNT(*) AS cnt FROM place_comments WHERE place_id = %s",
+        (place_id,),
+    )
+    row = cur.fetchone()
+    conn.close()
+    return int(row["cnt"]) if row else 0
+
