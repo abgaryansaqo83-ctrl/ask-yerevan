@@ -17,7 +17,7 @@ PLACES = [
         "location_en": "46 Leo St, Yerevan",
         "maps_url": "https://maps.app.goo.gl/bzqxdPX6TcJt4qPA6",
         "rating": 4.7,
-        "thumb": "/static/img/places/kond-house-bbq.jpg",
+        "thumb": "static/img/places/kond-house-bbq.jpg",
         "images": [
             "/static/img/places/kond-house-bbq.jpg",
             "/static/img/places/kond-house-dessert-or-cocktail.jpg",
@@ -75,7 +75,7 @@ PLACES = [
         "location_en": "7 Sayat-Nova Ave, Yerevan",
         "maps_url": "https://maps.app.goo.gl/KRvsZWdKTFRCGB7M9",
         "rating": 4.8,
-        "thumb": "/static/img/places/ulikhanyan-stage.jpg",
+        "thumb": "static/img/places/ulikhanyan-stage.jpg",
         "images": [
             "/static/img/places/ulikhanyan-stage.jpg",
             "/static/img/places/ulikhanyan-bar.jpeg",
