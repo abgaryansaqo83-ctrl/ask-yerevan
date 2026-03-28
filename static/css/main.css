@@ -1160,6 +1160,29 @@ Sights page
 .share-btn--wa   { background: #25d366; }
 .share-btn--copy { background: #6b7280; }
 
+/* ── Gallery (places detail) ── */
+.church-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.church-gallery-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+  cursor: zoom-in;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .church-gallery-img {
+    height: 160px;
+  }
+}
+
 /* ── Mobile ───────────────────────────────────────── */
 @media (max-width: 768px) {
   .detail-actions-left {
