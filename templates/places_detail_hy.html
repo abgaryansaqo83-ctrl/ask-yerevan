@@ -6,9 +6,9 @@
 {% block content %}
 
 {% if place.images and place.images[0] %}
-  {% set displayimage = request.base_url ~ place.images[0] %}
+  {% set displayimage = place.images[0] %}
 {% elif place.thumb %}
-  {% set displayimage = request.base_url ~ place.thumb %}
+  {% set displayimage = place.thumb %}
 {% else %}
   {% set displayimage = "" %}
 {% endif %}
