@@ -152,19 +152,6 @@
   </div>
 </article>
 
-<div class="share-modal" id="share-modal">
-  <div class="share-modal-box">
-    <button class="share-modal-close" id="share-modal-close">✕</button>
-    <h3>Կիսվել</h3>
-    <div class="share-buttons">
-      <a id="share-telegram" href="#" target="_blank" class="share-btn share-btn--tg">✈️ Telegram</a>
-      <a id="share-facebook" href="#" target="_blank" class="share-btn share-btn--fb">📘 Facebook</a>
-      <a id="share-whatsapp" href="#" target="_blank" class="share-btn share-btn--wa">📱 WhatsApp</a>
-      <button class="share-btn share-btn--copy" id="share-copy">🔗 Պատճենել հղումը</button>
-    </div>
-  </div>
-</div>
-
 <div class="image-modal" id="image-modal">
   <span class="image-modal-close" id="image-modal-close">&times;</span>
   <img src="{{ displayimage }}" alt="{{ place.title_hy }}">
@@ -344,22 +331,19 @@ document.addEventListener('DOMContentLoaded', function () {
   loadComments();
 
   /* ══ SHARE ══ */
-  const shareBtn   = document.getElementById('share-button');
-  const shareModal = document.getElementById('share-modal');
-  const shareClose = document.getElementById('share-modal-close');
-  const shareCopy  = document.getElementById('share-copy');
-  const url        = shareBtn.dataset.shareUrl;
-  const title      = shareBtn.dataset.shareTitle;
+  const shareBtn = document.getElementById('share-button');
+  const url      = shareBtn.dataset.shareUrl;
+  const title    = shareBtn.dataset.shareTitle;
 
-  document.getElementById('share-telegram').href  = 'https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(title);
-  document.getElementById('share-facebook').href  = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url);
-  document.getElementById('share-whatsapp').href  = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(title + ' ' + url);
-
-  shareBtn.addEventListener('click', () => shareModal.classList.add('open'));
-  shareClose.addEventListener('click', () => shareModal.classList.remove('open'));
-  shareModal.addEventListener('click', e => { if (e.target === shareModal) shareModal.classList.remove('open'); });
-  shareCopy.addEventListener('click', () => {
-    navigator.clipboard.writeText(url).then(() => { shareCopy.textContent = '✅ Պատճենված'; setTimeout(() => shareCopy.textContent = '🔗 Պատճենել հղումը', 2000); });
+  shareBtn.addEventListener('click', () => {
+    if (navigator.share) {
+      navigator.share({ title: title, url: url });
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        shareBtn.textContent = '✅ Պատճենված';
+        setTimeout(() => shareBtn.textContent = '📤 Կիսվել', 2000);
+      });
+    }
   });
 
   /* ══ LIGHTBOX ══ */
