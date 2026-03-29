@@ -856,24 +856,37 @@ async def cmd_sqlquery(message: Message):
 
 @dp.message()
 async def main_router(message: Message, state: FSMContext):
-    logger.info(
-        f"msg chat_id={message.chat.id}, "
-        f"thread_id={getattr(message, 'message_thread_id', None)}, "
-        f"text={message.text!r}"
-    )
-
     textraw = (message.text or "").strip()
     text = textraw.lower()
     thread_id = getattr(message, "message_thread_id", None)
+
+    # Լոգենք սկզբից raw text-ը
+    logger.info(
+        f"router: chat_id={message.chat.id}, "
+        f"thread_id={thread_id}, "
+        f"textraw={textraw!r}"
+    )
 
     # Լեզուն բերում ենք ամենասկզբում, որ ամեն տեղ հասանելի լինի
     user_row = get_user(message.from_user.id)
     lang = (user_row["language"] if user_row and user_row.get("language") else "hy")
 
-    city_btn   = get_text("btn_city", lang)
+    city_btn = get_text("btn_city", lang)
     events_btn = get_text("btn_events_menu", lang)
-    admin_btn  = get_text("btn_admin_question", lang)
-    site_btn   = get_text("btn_website", lang)
+    admin_btn = get_text("btn_admin_question", lang)
+    site_btn = get_text("btn_website", lang)
+
+    # Լոգենք նաև կոճակների տեքստերը, որ համեմատենք
+    logger.info(
+        "buttons: lang=%s, textraw=%r, city_btn=%r, events_btn=%r, "
+        "admin_btn=%r, site_btn=%r",
+        lang,
+        textraw,
+        city_btn,
+        events_btn,
+        admin_btn,
+        site_btn,
+    )
 
     # 1) Ի՞նչ կա քաղաքում → AI (կոճակ)
     if textraw == city_btn:
