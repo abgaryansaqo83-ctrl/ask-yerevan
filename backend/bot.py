@@ -871,43 +871,77 @@ async def main_router(message: Message, state: FSMContext):
     user_row = get_user(message.from_user.id)
     lang = (user_row["language"] if user_row and user_row.get("language") else "hy")
 
-    city_btn = get_text("btn_city", lang)
-    events_btn = get_text("btn_events_menu", lang)
-    admin_btn = get_text("btn_admin_question", lang)
-    site_btn = get_text("btn_website", lang)
+    # ---- Կոճակների տեքստեր (բազմալեզու) ----
+    city_btn_hy = get_text("btn_city", "hy")
+    city_btn_ru = get_text("btn_city", "ru")
+    city_btn_en = get_text("btn_city", "en")
+
+    events_btn_hy = get_text("btn_events_menu", "hy")
+    events_btn_ru = get_text("btn_events_menu", "ru")
+    events_btn_en = get_text("btn_events_menu", "en")
+
+    admin_btn_hy = get_text("btn_admin_question", "hy")
+    admin_btn_ru = get_text("btn_admin_question", "ru")
+    admin_btn_en = get_text("btn_admin_question", "en")
+
+    site_btn_hy = get_text("btn_website", "hy")
+    site_btn_ru = get_text("btn_website", "ru")
+    site_btn_en = get_text("btn_website", "en")
+
+    def norm(s: str) -> str:
+        return (s or "").strip()
 
     # Լոգենք նաև կոճակների տեքստերը, որ համեմատենք
     logger.info(
-        "buttons: lang=%s, textraw=%r, city_btn=%r, events_btn=%r, "
-        "admin_btn=%r, site_btn=%r",
+        "buttons_multi: lang=%s, textraw=%r, "
+        "city_hy=%r, city_ru=%r, city_en=%r, "
+        "events_hy=%r, events_ru=%r, events_en=%r, "
+        "admin_hy=%r, admin_ru=%r, admin_en=%r, "
+        "site_hy=%r, site_ru=%r, site_en=%r",
         lang,
         textraw,
-        city_btn,
-        events_btn,
-        admin_btn,
-        site_btn,
+        city_btn_hy, city_btn_ru, city_btn_en,
+        events_btn_hy, events_btn_ru, events_btn_en,
+        admin_btn_hy, admin_btn_ru, admin_btn_en,
+        site_btn_hy, site_btn_ru, site_btn_en,
     )
 
     # 1) Ի՞նչ կա քաղաքում → AI (կոճակ)
-    if textraw == city_btn:
+    if norm(textraw) in {
+        norm(city_btn_hy),
+        norm(city_btn_ru),
+        norm(city_btn_en),
+    }:
         await message.answer(get_text("ask_city_hint", lang))
         await state.set_state(UserQuestion.waiting_for_question)
         return
 
     # 2) Միջոցառումների մենյու (կոճակ)
-    if textraw == events_btn:
+    if norm(textraw) in {
+        norm(events_btn_hy),
+        norm(events_btn_ru),
+        norm(events_btn_en),
+    }:
         await message.answer(get_text("events_menu_intro", lang))
         await cmd_menu(message)
         return
 
     # 3) Հարց ադմինին (կոճակ)
-    if textraw == admin_btn:
+    if norm(textraw) in {
+        norm(admin_btn_hy),
+        norm(admin_btn_ru),
+        norm(admin_btn_en),
+    }:
         await message.answer(get_text("ask_admin_intro", lang))
         await state.set_state(AdminForm.waiting_for_message)
         return
 
     # 4) Մեր վեբ կայքը (կոճակ)
-    if textraw == site_btn:
+    if norm(textraw) in {
+        norm(site_btn_hy),
+        norm(site_btn_ru),
+        norm(site_btn_en),
+    }:
         await message.answer(
             get_text("website_link", lang).format(url=BOT_SITE_URL)
         )
@@ -994,6 +1028,7 @@ async def main_router(message: Message, state: FSMContext):
             await message.delete()
             return
 
+    
     # Listings detection
     is_listing, category = detect_listing_category(text)
     if is_listing:
