@@ -1099,9 +1099,9 @@ async def main_router(message: Message, state: FSMContext):
 
 def build_captcha_keyboard() -> InlineKeyboardMarkup:
     buttons = [
-        InlineKeyboardButton(text="🐰", callback_data="captcha:rabbit"),
-        InlineKeyboardButton(text="🐷", callback_data="captcha:pig"),
-        InlineKeyboardButton(text="🐑", callback_data="captcha:lamb"),
+        InlineKeyboardButton(text="🐇", callback_data="captcha:rabbit"),
+        InlineKeyboardButton(text="🐖", callback_data="captcha:pig"),
+        InlineKeyboardButton(text="🐏", callback_data="captcha:lamb"),
         InlineKeyboardButton(text="🦁", callback_data="captcha:lion"),
     ]
     random.shuffle(buttons)
