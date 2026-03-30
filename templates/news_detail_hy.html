@@ -300,13 +300,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* նույն logica, ինչ sight-card */
+  gap: 1.5rem;
   margin-bottom: 1.5rem;
 }
 
 .gallery-item {
-  position: relative;
   border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
@@ -314,18 +313,10 @@ document.addEventListener('DOMContentLoaded', function () {
   background: #f3f4f6;
 }
 
-/* քարտիկի հարաբերակցությունը */
-.gallery-item::before {
-  content: "";
-  display: block;
-  padding-bottom: 62%; /* մոտ 16:10 քարտ */
-}
-
+/* Քարտիկի կոնկրետ բարձրություն՝ նույն range-ը */
 .gallery-img {
-  position: absolute;
-  inset: 0;
   width: 100%;
-  height: 100%;
+  height: 180px;          /* ԱՅՍՆ Է ՓՈՔՐԱՑՆՈՒՄ */
   object-fit: cover;
   display: block;
   transition: transform 0.18s ease-out;
@@ -351,12 +342,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
 @media (max-width: 768px) {
   .gallery-grid {
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 0.6rem;
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
-  .gallery-item::before {
-    padding-bottom: 70%; /* մի քիչ ավելի բարձր मोबայլում */
+  .gallery-img {
+    height: 160px;       /* mobile-ի փոքր տարբերակ */
   }
 
   .video-embed {
