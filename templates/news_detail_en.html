@@ -99,6 +99,68 @@
         {{ news.content_en|safe }}
       </div>
     {% endif %}
+
+    {% if news.image_2 or news.image_3 or news.video_url %}
+      <div class="gallery-section">
+
+        {% if news.image_2 or news.image_3 %}
+          <div class="gallery-grid">
+            {% if news.image_2 %}
+              {% if news.image_2.startswith('/') %}
+                {% set img2 = request.base_url | string | trim('/') + news.image_2 %}
+              {% else %}
+                {% set img2 = news.image_2 %}
+              {% endif %}
+              <div class="gallery-item">
+                <img src="{{ img2 }}" alt="Gallery 2"
+                     class="gallery-img" data-src="{{ img2 }}">
+              </div>
+            {% endif %}
+
+            {% if news.image_3 %}
+              {% if news.image_3.startswith('/') %}
+                {% set img3 = request.base_url | string | trim('/') + news.image_3 %}
+              {% else %}
+                {% set img3 = news.image_3 %}
+              {% endif %}
+              <div class="gallery-item">
+                <img src="{{ img3 }}" alt="Gallery 3"
+                     class="gallery-img" data-src="{{ img3 }}">
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {% if news.video_url %}
+          <div class="video-section">
+            {% if 'youtube.com' in news.video_url or 'youtu.be' in news.video_url %}
+              {% if 'watch?v=' in news.video_url %}
+                {% set yt_id = news.video_url.split('watch?v=')[1].split('&')[0] %}
+              {% elif 'youtu.be/' in news.video_url %}
+                {% set yt_id = news.video_url.split('youtu.be/')[1].split('?')[0] %}
+              {% else %}
+                {% set yt_id = '' %}
+              {% endif %}
+              {% if yt_id %}
+                <iframe
+                  src="https://www.youtube.com/embed/{{ yt_id }}"
+                  class="video-embed"
+                  frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen>
+                </iframe>
+              {% endif %}
+            {% else %}
+              <video controls class="video-embed">
+                <source src="{{ news.video_url }}">
+              </video>
+            {% endif %}
+          </div>
+        {% endif %}
+
+      </div>
+    {% endif %}
+
   </div>
 </article>
 
@@ -197,6 +259,14 @@ document.addEventListener('DOMContentLoaded', function () {
     modal.classList.add('open');
   });
 
+  document.querySelectorAll('.gallery-img').forEach(function(img) {
+    img.addEventListener('click', function() {
+      const src = this.getAttribute('data-src');
+      modal.querySelector('img').src = src;
+      modal.classList.add('open');
+    });
+  });
+
   modalClose.addEventListener('click', function () {
     modal.classList.remove('open');
   });
@@ -213,6 +283,51 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 });
+
+.gallery-section {
+  margin-top: 2rem;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 1.5rem;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.gallery-item {
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.gallery-img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.2s;
+}
+
+.gallery-img:hover { transform: scale(1.02); }
+
+.video-section { margin-top: 1rem; }
+
+.video-embed {
+  width: 100%;
+  height: 420px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 768px) {
+  .gallery-grid { grid-template-columns: 1fr; }
+  .video-embed { height: 220px; }
+}
+  
 </script>
 
 {% endblock %}
