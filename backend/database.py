@@ -363,11 +363,10 @@ def save_news(
     eventtime: Optional[str] = None,
     venue_hy: Optional[str] = None,
     price_hy: Optional[str] = None,
+    image_2: Optional[str] = None,
+    image_3: Optional[str] = None,
+    video_url: Optional[str] = None,
 ) -> None:
-    """
-    Save news/event item into news table.
-    Uses source_url as UNIQUE key to avoid duplicates.
-    """
     conn = get_connection()
     cur = get_cursor(conn)
 
@@ -377,26 +376,22 @@ def save_news(
             INSERT INTO news (
                 title_hy, title_en,
                 content_hy, content_en,
-                image_url,
+                image_url, image_2, image_3, video_url,
                 category,
                 eventdate, eventtime,
                 venue_hy, price_hy,
                 source_url
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             ON CONFLICT (source_url) DO NOTHING
             """,
             (
-                title_hy,
-                title_en,
-                content_hy,
-                content_en,
-                image_url,
+                title_hy, title_en,
+                content_hy, content_en,
+                image_url, image_2, image_3, video_url,
                 category,
-                eventdate,
-                eventtime,
-                venue_hy,
-                price_hy,
+                eventdate, eventtime,
+                venue_hy, price_hy,
                 source_url,
             ),
         )
@@ -406,25 +401,21 @@ def save_news(
             INSERT OR IGNORE INTO news (
                 title_hy, title_en,
                 content_hy, content_en,
-                image_url,
+                image_url, image_2, image_3, video_url,
                 category,
                 eventdate, eventtime,
                 venue_hy, price_hy,
                 source_url
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
-                title_hy,
-                title_en,
-                content_hy,
-                content_en,
-                image_url,
+                title_hy, title_en,
+                content_hy, content_en,
+                image_url, image_2, image_3, video_url,
                 category,
-                eventdate,
-                eventtime,
-                venue_hy,
-                price_hy,
+                eventdate, eventtime,
+                venue_hy, price_hy,
                 source_url,
             ),
         )
@@ -543,6 +534,9 @@ def update_news(
     eventtime: Optional[str] = None,
     venue_hy: Optional[str] = None,
     price_hy: Optional[str] = None,
+    image_2: Optional[str] = None,
+    image_3: Optional[str] = None,
+    video_url: Optional[str] = None,
 ) -> bool:
     """Update existing news item by ID. Returns True if updated."""
     conn = get_connection()
@@ -557,6 +551,9 @@ def update_news(
                 content_hy = %s,
                 content_en = %s,
                 image_url  = %s,
+                image_2    = %s,
+                image_3    = %s,
+                video_url  = %s,
                 category   = %s,
                 eventdate  = %s,
                 eventtime  = %s,
@@ -567,7 +564,8 @@ def update_news(
             (
                 title_hy, title_en,
                 content_hy, content_en,
-                image_url, category,
+                image_url, image_2, image_3, video_url,
+                category,
                 eventdate, eventtime,
                 venue_hy, price_hy,
                 news_id,
@@ -582,6 +580,9 @@ def update_news(
                 content_hy = ?,
                 content_en = ?,
                 image_url  = ?,
+                image_2    = ?,
+                image_3    = ?,
+                video_url  = ?,
                 category   = ?,
                 eventdate  = ?,
                 eventtime  = ?,
@@ -592,7 +593,8 @@ def update_news(
             (
                 title_hy, title_en,
                 content_hy, content_en,
-                image_url, category,
+                image_url, image_2, image_3, video_url,
+                category,
                 eventdate, eventtime,
                 venue_hy, price_hy,
                 news_id,
