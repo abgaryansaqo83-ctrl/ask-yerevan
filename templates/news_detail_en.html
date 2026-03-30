@@ -30,7 +30,7 @@
   {% if news.image_url %}
     <div class="detail-hero">
       <img src="{{ display_image }}" alt="{{ news.title_en }}"
-           class="detail-hero-img"
+           class="detail-hero-img js-lightbox-image"
            id="detail-hero-img">
     </div>
   {% endif %}
@@ -113,7 +113,7 @@
               {% endif %}
               <div class="gallery-item">
                 <img src="{{ img2 }}" alt="Gallery 2"
-                     class="gallery-img" data-src="{{ img2 }}">
+                     class="gallery-img js-lightbox-image" data-src="{{ img2 }}">
               </div>
             {% endif %}
 
@@ -125,7 +125,7 @@
               {% endif %}
               <div class="gallery-item">
                 <img src="{{ img3 }}" alt="Gallery 3"
-                     class="gallery-img" data-src="{{ img3 }}">
+                     class="gallery-img js-lightbox-image" data-src="{{ img3 }}">
               </div>
             {% endif %}
           </div>
