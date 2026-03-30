@@ -366,7 +366,7 @@ def save_news(
     image_2: Optional[str] = None,
     image_3: Optional[str] = None,
     video_url: Optional[str] = None,
-) -> None:
+) -> Optional[int]:
     conn = get_connection()
     cur = get_cursor(conn)
 
