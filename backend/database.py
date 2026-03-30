@@ -421,8 +421,14 @@ def save_news(
         )
 
     conn.commit()
+    if DATABASE_URL:
+        cur.execute("SELECT lastval()")
+        row = cur.fetchone()
+        news_id = row[0] if row else None
+    else:
+        news_id = cur.lastrowid
     conn.close()
-
+    return news_id
 
 def get_all_news(limit: int = 10,
                  category: Optional[str] = None):
