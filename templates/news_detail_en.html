@@ -300,7 +300,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* նույն logica, ինչ sight-card */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
   margin-bottom: 1.5rem;
 }
@@ -313,10 +313,10 @@ document.addEventListener('DOMContentLoaded', function () {
   background: #f3f4f6;
 }
 
-/* Քարտիկի կոնկրետ բարձրություն՝ նույն range-ը */
+/* Քարտիկի կոնկրետ բարձրություն՝ news-card-image-ի նման */
 .gallery-img {
   width: 100%;
-  height: 180px;          /* ԱՅՍՆ Է ՓՈՔՐԱՑՆՈՒՄ */
+  height: 180px;
   object-fit: cover;
   display: block;
   transition: transform 0.18s ease-out;
@@ -345,15 +345,13 @@ document.addEventListener('DOMContentLoaded', function () {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-
   .gallery-img {
-    height: 160px;       /* mobile-ի փոքր տարբերակ */
+    height: 160px;
   }
-
   .video-embed {
     height: 220px;
   }
-}  
+}
 </script>
 
 {% endblock %}
