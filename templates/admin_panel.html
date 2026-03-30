@@ -146,8 +146,17 @@
 
     <div class="divider">— կամ —</div>
 
-    abel>նկարի URL (եթե upload չեմ անում)</label>
+    abel>Նկար 1 — URL (եթե upload չես անում)</label>
     <input type="text" name="image_url_manual" placeholder="https://... կամ /static/img/...">
+
+    abel>Նկար 2 — URL (կամընտիր)</label>
+    <input type="text" name="image_2" placeholder="https://... կամ /static/img/...">
+
+    abel>Նկար 3 — URL (կամընտիր)</label>
+    <input type="text" name="image_3" placeholder="https://... կամ /static/img/...">
+
+    abel>Վիդեո — YouTube հղում կամ /static/img/important/video.mp4 (կամընտիր)</label>
+    <input type="text" name="video_url" placeholder="https://youtube.com/... կամ /static/...">
 
     <button type="submit" class="btn">✅ Հրապարակում</button>
   </form>
@@ -201,19 +210,31 @@
     abel>Գին (price_hy)</label>
     <input type="text" name="price_hy" value="{{ news.price_hy or '' }}">
 
-    abel>Ներկայիս նկարի URL</label>
+    abel>Ներկայիս նկար 1 — URL</label>
     <input type="text" value="{{ news.image_url or 'չկա' }}" disabled
            style="background:#e5e7eb; color:#6b7280;">
 
-    abel>Նոր նկար — upload</label>
+    abel>Նոր նկար 1 — upload</label>
     <input type="file" name="image" accept="image/*">
 
     <div class="divider">— կամ —</div>
 
-    abel>Նոր նկարի URL (եթե upload չես անում)</label>
+    abel>Նկար 1 — նոր URL (եթե upload չես անում)</label>
     <input type="text" name="image_url_manual" placeholder="https://... կամ /static/img/...">
 
-    <button type="submit" class="btn">💾 Պահպանել</button>
+    abel>Նկար 2 — URL (կամ ընտրիր)</label>
+    <input type="text" name="image_2" value="{{ news.image_2 or '' }}"
+           placeholder="https://... կամ /static/img/...">
+
+    abel>Նկար 3 — URL (կամ ընտրիր)</label>
+    <input type="text" name="image_3" value="{{ news.image_3 or '' }}"
+           placeholder="https://... կամ /static/img/...">
+
+    abel>Վիդեո — YouTube հղում կամ /static/img/important/video.mp4 (կամ ընտրիր)</label>
+    <input type="text" name="video_url" value="{{ news.video_url or '' }}"
+           placeholder="https://youtube.com/... կամ /static/...">
+
+    <button type="submit" class="btn">💾 Պահպանվել է</button>
   </form>
 
   <a href="/admin/panel" class="btn-logout">← Վերադառնալ panel</a>
