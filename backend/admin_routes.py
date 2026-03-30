@@ -3,7 +3,7 @@ import shutil
 from fastapi import APIRouter, Request, Form, UploadFile, File
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from backend.database import save_news
+from backend.database import save_news, get_news_by_id, update_news
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -107,7 +107,83 @@ async def admin_publish(
             "error": str(e)
         })
 
+@router.get("/admin/edit/{news_id}", response_class=HTMLResponse)
+async def admin_edit_page(request: Request, news_id: int):
+    if not is_logged_in(request):
+        return RedirectResponse("/admin")
+    news = get_news_by_id(news_id)
+    if not news:
+        return HTMLResponse("Նորությունը չի գտնվել", status_code=404)
+    return templates.TemplateResponse("admin_panel.html", {
+        "request": request,
+        "page": "edit",
+        "news": dict(news),
+        "success": None,
+        "error": None
+    })
 
+
+@router.post("/admin/edit/{news_id}", response_class=HTMLResponse)
+async def admin_edit_submit(
+    request: Request,
+    news_id: int,
+    title_hy: str = Form(...),
+    title_en: str = Form(...),
+    content_hy: str = Form(...),
+    content_en: str = Form(...),
+    category: str = Form(...),
+    image_url_manual: str = Form(""),
+    eventdate: str = Form(""),
+    eventtime: str = Form(""),
+    venue_hy: str = Form(""),
+    price_hy: str = Form(""),
+    image: UploadFile = File(None),
+):
+    if not is_logged_in(request):
+        return RedirectResponse("/admin")
+
+    # Հին նորությունը վերցնում ենք, որ image_url-ը պահենք եթե նոր նկար չկա
+    existing = get_news_by_id(news_id)
+    image_url = existing["image_url"] if existing else None
+
+    # Եթե նոր ֆայլ upload արվել է
+    if image and image.filename:
+        ext = image.filename.rsplit(".", 1)[-1].lower()
+        safe_title = title_en[:30].strip().lower()
+        safe_title = "".join(c if c.isalnum() else "-" for c in safe_title)
+        filename = f"{safe_title}.{ext}"
+        filepath = f"{UPLOAD_DIR}/{filename}"
+        with open(filepath, "wb") as f:
+            shutil.copyfileobj(image.file, f)
+        image_url = f"/static/img/important/{filename}"
+
+    # Եթե manual URL է տրված
+    elif image_url_manual.strip():
+        image_url = image_url_manual.strip()
+
+    updated = update_news(
+        news_id=news_id,
+        title_hy=title_hy,
+        title_en=title_en,
+        content_hy=content_hy,
+        content_en=content_en,
+        image_url=image_url,
+        category=category,
+        eventdate=eventdate or None,
+        eventtime=eventtime or None,
+        venue_hy=venue_hy or None,
+        price_hy=price_hy or None,
+    )
+
+    news = get_news_by_id(news_id)
+    return templates.TemplateResponse("admin_panel.html", {
+        "request": request,
+        "page": "edit",
+        "news": dict(news),
+        "success": f"Թարմացվեց։ ID {news_id}" if updated else None,
+        "error": None if updated else "Թարմացումը չհաջողվեց"
+    })
+    
 @router.get("/admin/logout")
 async def admin_logout():
     response = RedirectResponse("/admin")
