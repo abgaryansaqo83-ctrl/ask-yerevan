@@ -1,5 +1,6 @@
 import os
 import shutil
+import unicodedata
 from fastapi import APIRouter, Request, Form, UploadFile, File
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -11,6 +12,12 @@ templates = Jinja2Templates(directory="templates")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "askyerevan2026")
 UPLOAD_DIR = "static/img/important"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+def make_safe_filename(title: str, ext: str) -> str:
+    title = unicodedata.normalize('NFKD', title)
+    title = title.encode('ascii', 'ignore').decode('ascii')
+    safe = ''.join(c if c.isalnum() else '-' for c in title[:30].strip().lower())
+    return f"{safe}.{ext}"
 
 def is_logged_in(request: Request) -> bool:
     return request.cookies.get("admin_auth") == ADMIN_PASSWORD
@@ -69,9 +76,7 @@ async def admin_publish(
 
     if image and image.filename:
         ext = image.filename.rsplit(".", 1)[-1].lower()
-        safe_title = title_en[:30].strip().lower()
-        safe_title = "".join(c if c.isalnum() else "-" for c in safe_title)
-        filename = f"{safe_title}.{ext}"
+        filename = make_safe_filename(title_en, ext)
         filepath = f"{UPLOAD_DIR}/{filename}"
         with open(filepath, "wb") as f:
             shutil.copyfileobj(image.file, f)
@@ -147,9 +152,7 @@ async def admin_edit_submit(
 
     if image and image.filename:
         ext = image.filename.rsplit(".", 1)[-1].lower()
-        safe_title = title_en[:30].strip().lower()
-        safe_title = "".join(c if c.isalnum() else "-" for c in safe_title)
-        filename = f"{safe_title}.{ext}"
+        filename = make_safe_filename(title_en, ext)
         filepath = f"{UPLOAD_DIR}/{filename}"
         with open(filepath, "wb") as f:
             shutil.copyfileobj(image.file, f)
