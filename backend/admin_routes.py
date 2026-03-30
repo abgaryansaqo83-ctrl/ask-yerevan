@@ -12,10 +12,8 @@ ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "askyerevan2026")
 UPLOAD_DIR = "static/img/important"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-
 def is_logged_in(request: Request) -> bool:
     return request.cookies.get("admin_auth") == ADMIN_PASSWORD
-
 
 @router.get("/admin", response_class=HTMLResponse)
 async def admin_login_page(request: Request):
@@ -26,7 +24,6 @@ async def admin_login_page(request: Request):
         "page": "login",
         "error": None
     })
-
 
 @router.post("/admin/login")
 async def admin_login(request: Request, password: str = Form(...)):
@@ -40,7 +37,6 @@ async def admin_login(request: Request, password: str = Form(...)):
         "error": "Սխալ գաղտնաբառ"
     })
 
-
 @router.get("/admin/panel", response_class=HTMLResponse)
 async def admin_panel(request: Request):
     if not is_logged_in(request):
@@ -52,7 +48,6 @@ async def admin_panel(request: Request):
         "error": None
     })
 
-
 @router.post("/admin/publish", response_class=HTMLResponse)
 async def admin_publish(
     request: Request,
@@ -62,14 +57,16 @@ async def admin_publish(
     content_en: str = Form(...),
     category: str = Form(...),
     image: UploadFile = File(None),
-    image_url_manual: str = Form("")
+    image_url_manual: str = Form(""),
+    image_2: str = Form(""),
+    image_3: str = Form(""),
+    video_url: str = Form(""),
 ):
     if not is_logged_in(request):
         return RedirectResponse("/admin")
 
     image_url = None
 
-    # եթե ֆայլ upload արվել է
     if image and image.filename:
         ext = image.filename.rsplit(".", 1)[-1].lower()
         safe_title = title_en[:30].strip().lower()
@@ -79,8 +76,6 @@ async def admin_publish(
         with open(filepath, "wb") as f:
             shutil.copyfileobj(image.file, f)
         image_url = f"/static/img/important/{filename}"
-
-    # եթե manual URL է տրված
     elif image_url_manual.strip():
         image_url = image_url_manual.strip()
 
@@ -91,7 +86,10 @@ async def admin_publish(
             content_hy=content_hy,
             content_en=content_en,
             image_url=image_url,
-            category=category
+            category=category,
+            image_2=image_2.strip() or None,
+            image_3=image_3.strip() or None,
+            video_url=video_url.strip() or None,
         )
         return templates.TemplateResponse("admin_panel.html", {
             "request": request,
@@ -122,7 +120,6 @@ async def admin_edit_page(request: Request, news_id: int):
         "error": None
     })
 
-
 @router.post("/admin/edit/{news_id}", response_class=HTMLResponse)
 async def admin_edit_submit(
     request: Request,
@@ -137,16 +134,17 @@ async def admin_edit_submit(
     eventtime: str = Form(""),
     venue_hy: str = Form(""),
     price_hy: str = Form(""),
+    image_2: str = Form(""),
+    image_3: str = Form(""),
+    video_url: str = Form(""),
     image: UploadFile = File(None),
 ):
     if not is_logged_in(request):
         return RedirectResponse("/admin")
 
-    # Հին նորությունը վերցնում ենք, որ image_url-ը պահենք եթե նոր նկար չկա
     existing = get_news_by_id(news_id)
     image_url = existing["image_url"] if existing else None
 
-    # Եթե նոր ֆայլ upload արվել է
     if image and image.filename:
         ext = image.filename.rsplit(".", 1)[-1].lower()
         safe_title = title_en[:30].strip().lower()
@@ -156,8 +154,6 @@ async def admin_edit_submit(
         with open(filepath, "wb") as f:
             shutil.copyfileobj(image.file, f)
         image_url = f"/static/img/important/{filename}"
-
-    # Եթե manual URL է տրված
     elif image_url_manual.strip():
         image_url = image_url_manual.strip()
 
@@ -173,6 +169,9 @@ async def admin_edit_submit(
         eventtime=eventtime or None,
         venue_hy=venue_hy or None,
         price_hy=price_hy or None,
+        image_2=image_2.strip() or None,
+        image_3=image_3.strip() or None,
+        video_url=video_url.strip() or None,
     )
 
     news = get_news_by_id(news_id)
