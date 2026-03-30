@@ -531,6 +531,79 @@ def get_random_news_with_image(category: str):
     conn.close()
     return row
 
+def update_news(
+    news_id: int,
+    title_hy: str,
+    title_en: str,
+    content_hy: str,
+    content_en: str,
+    image_url: Optional[str],
+    category: str,
+    eventdate: Optional[str] = None,
+    eventtime: Optional[str] = None,
+    venue_hy: Optional[str] = None,
+    price_hy: Optional[str] = None,
+) -> bool:
+    """Update existing news item by ID. Returns True if updated."""
+    conn = get_connection()
+    cur = get_cursor(conn)
+
+    if DATABASE_URL:
+        cur.execute(
+            """
+            UPDATE news SET
+                title_hy   = %s,
+                title_en   = %s,
+                content_hy = %s,
+                content_en = %s,
+                image_url  = %s,
+                category   = %s,
+                eventdate  = %s,
+                eventtime  = %s,
+                venue_hy   = %s,
+                price_hy   = %s
+            WHERE id = %s
+            """,
+            (
+                title_hy, title_en,
+                content_hy, content_en,
+                image_url, category,
+                eventdate, eventtime,
+                venue_hy, price_hy,
+                news_id,
+            ),
+        )
+    else:
+        cur.execute(
+            """
+            UPDATE news SET
+                title_hy   = ?,
+                title_en   = ?,
+                content_hy = ?,
+                content_en = ?,
+                image_url  = ?,
+                category   = ?,
+                eventdate  = ?,
+                eventtime  = ?,
+                venue_hy   = ?,
+                price_hy   = ?
+            WHERE id = ?
+            """,
+            (
+                title_hy, title_en,
+                content_hy, content_en,
+                image_url, category,
+                eventdate, eventtime,
+                venue_hy, price_hy,
+                news_id,
+            ),
+        )
+
+    updated = cur.rowcount > 0
+    conn.commit()
+    conn.close()
+    return updated
+    
 
 def get_upcoming_holiday_events(days_ahead: int = 14, limit: int = 10):
     """
