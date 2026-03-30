@@ -154,6 +154,71 @@
 
   <a href="/admin/logout" class="btn-logout">Ելք</a>
 </div>
+
+{% elif page == "edit" %}
+<div class="card">
+  <h1>✏️ Խմբագրել հրապարակումը</h1>
+
+  {% if success %}
+    <div class="alert alert-success">{{ success }}</div>
+  {% endif %}
+  {% if error %}
+    <div class="alert alert-error">{{ error }}</div>
+  {% endif %}
+
+  <form method="post" action="/admin/edit/{{ news.id }}" enctype="multipart/form-data">
+
+    abel>Վերնագիր (հայ)</label>
+    <input type="text" name="title_hy" value="{{ news.title_hy }}" required>
+
+    abel>Վերնագիր (անգլ)</label>
+    <input type="text" name="title_en" value="{{ news.title_en }}" required>
+
+    abel>Բովանդակություն (հայ)</label>
+    <textarea name="content_hy" required>{{ news.content_hy }}</textarea>
+
+    abel>Բովանդակություն (անգլ)</label>
+    <textarea name="content_en" required>{{ news.content_en }}</textarea>
+
+    abel>Կատեգորիա</label>
+    <select name="category">
+      <option value="important" {% if news.category == "important" %}selected{% endif %}>⚠️ Կարևոր</option>
+      <option value="general"   {% if news.category == "general"   %}selected{% endif %}>🌐 Գլխավոր</option>
+      <option value="city"      {% if news.category == "city"      %}selected{% endif %}>🏛️ Քաղաքային</option>
+      <option value="culture"   {% if news.category == "culture"   %}selected{% endif %}>🎭 Մշակույթ</option>
+      <option value="events"    {% if news.category == "events"    %}selected{% endif %}>🎉 Միջոցառումներ</option>
+    </select>
+
+    abel>Ամսաթիվ (eventdate)</label>
+    <input type="text" name="eventdate" value="{{ news.eventdate or '' }}" placeholder="2026-04-01">
+
+    abel>Ժամ (eventtime)</label>
+    <input type="text" name="eventtime" value="{{ news.eventtime or '' }}" placeholder="19:00">
+
+    abel>Վայր (venue_hy)</label>
+    <input type="text" name="venue_hy" value="{{ news.venue_hy or '' }}">
+
+    abel>Գին (price_hy)</label>
+    <input type="text" name="price_hy" value="{{ news.price_hy or '' }}">
+
+    abel>Ներկայիս նկարի URL</label>
+    <input type="text" value="{{ news.image_url or 'չկա' }}" disabled
+           style="background:#e5e7eb; color:#6b7280;">
+
+    abel>Նոր նկար — upload</label>
+    <input type="file" name="image" accept="image/*">
+
+    <div class="divider">— կամ —</div>
+
+    abel>Նոր նկարի URL (եթե upload չես անում)</label>
+    <input type="text" name="image_url_manual" placeholder="https://... կամ /static/img/...">
+
+    <button type="submit" class="btn">💾 Պահպանել</button>
+  </form>
+
+  <a href="/admin/panel" class="btn-logout">← Վերադառնալ panel</a>
+  <a href="/admin/logout" class="btn-logout">Ելք</a>
+</div>
 {% endif %}
 
 </body>
