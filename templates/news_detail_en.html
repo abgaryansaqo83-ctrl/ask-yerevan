@@ -112,7 +112,7 @@
                 {% set img2 = news.image_2 %}
               {% endif %}
               <div class="gallery-item">
-                <img src="{{ img2 }}" alt="Gallery 2"
+                <img src="{{ img2 }}" alt="Gallery image 2"
                      class="gallery-img js-lightbox-image" data-src="{{ img2 }}">
               </div>
             {% endif %}
@@ -124,7 +124,7 @@
                 {% set img3 = news.image_3 %}
               {% endif %}
               <div class="gallery-item">
-                <img src="{{ img3 }}" alt="Gallery 3"
+                <img src="{{ img3 }}" alt="Gallery image 3"
                      class="gallery-img js-lightbox-image" data-src="{{ img3 }}">
               </div>
             {% endif %}
@@ -160,7 +160,7 @@
 
       </div>
     {% endif %}
-
+    
   </div>
 </article>
 
@@ -300,40 +300,68 @@ document.addEventListener('DOMContentLoaded', function () {
 
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
   margin-bottom: 1.5rem;
 }
 
 .gallery-item {
-  border-radius: 10px;
+  position: relative;
+  border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: #f3f4f6;
+}
+
+/* քարտիկի հարաբերակցությունը */
+.gallery-item::before {
+  content: "";
+  display: block;
+  padding-bottom: 62%; /* մոտ 16:10 քարտ */
 }
 
 .gallery-img {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: 220px;
+  height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.2s;
+  transition: transform 0.18s ease-out;
 }
 
-.gallery-img:hover { transform: scale(1.02); }
+.gallery-item:hover .gallery-img {
+  transform: scale(1.03);
+}
 
-.video-section { margin-top: 1rem; }
+.video-section {
+  margin-top: 1rem;
+}
 
 .video-embed {
   width: 100%;
-  height: 420px;
-  border-radius: 10px;
+  max-width: 720px;
+  height: 360px;
+  border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: block;
+  margin: 0 auto;
 }
 
 @media (max-width: 768px) {
-  .gallery-grid { grid-template-columns: 1fr; }
-  .video-embed { height: 220px; }
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.6rem;
+  }
+
+  .gallery-item::before {
+    padding-bottom: 70%; /* մի քիչ ավելի բարձր मोबայլում */
+  }
+
+  .video-embed {
+    height: 220px;
+  }
 }
   
 </script>
