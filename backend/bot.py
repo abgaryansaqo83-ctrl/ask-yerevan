@@ -96,10 +96,6 @@ class UserQuestion(StatesGroup):
     waiting_for_question = State()
 
 
-class CaptchaForm(StatesGroup):
-    waiting_for_answer = State()
-
-
 class AddNewsForm(StatesGroup):
     waiting_for_title_hy = State()
     waiting_for_title_en = State()
@@ -141,13 +137,7 @@ async def handle_language_choice(message: Message, state: FSMContext):
     )
 
     # State-ից վերցնում ենք, թե որ խումբ էր join-ը
-    data = await state.get_data()
-    join_chat_id = data.get("join_chat_id") or message.chat.id
-    join_user_id = data.get("join_user_id") or message.from_user.id
-
-    # Ուղարկում ենք captcha-ն հենց այդ խմբում, արդեն ընտրված լեզվով
-    await send_captcha_test(join_chat_id, join_user_id, state, lang=lang)
-
+    
     await state.clear()
 
 # ========== /start (bot) ==========
@@ -319,9 +309,6 @@ async def cmd_site(message: Message):
 
 # ========== CAPTCHA callback handler ==========
 
-CAPTCHA_CORRECT = "lion"
-
-
 @dp.callback_query(F.data.startswith("setlang:"))
 async def handle_setlang_callback(callback: CallbackQuery):
     parts = callback.data.split(":")
@@ -332,7 +319,7 @@ async def handle_setlang_callback(callback: CallbackQuery):
     target_user_id = int(parts[1])
     lang = parts[2]  # hy / ru / en
 
-    # Միայն ինքն կարող է ընտրել
+    # Մենակ ինքը կարող է ընտրել
     if callback.from_user.id != target_user_id:
         await callback.answer(
             {"hy": "Սա քո ընտրությունը չէ 🙂",
@@ -342,7 +329,7 @@ async def handle_setlang_callback(callback: CallbackQuery):
         )
         return
 
-    # Պահում ենք ՄԵՆԱԿ ԱՅՍ user-ի համար DB-ում
+    # Պահում ենք DB-ում — ՄԵՆԱԿ ԱՅՍ user-ի համար
     save_user(
         chat_id=target_user_id,
         username=callback.from_user.username or "",
@@ -351,82 +338,12 @@ async def handle_setlang_callback(callback: CallbackQuery):
         language=lang,
     )
 
-    await callback.message.edit_reply_markup(reply_markup=None)
-    await send_captcha_test(callback.message.chat.id, target_user_id, lang=lang)
+    # Հանում ենք լեզվի keyboard-ը, ցույց տանք welcome
+    welcome = get_text("welcome_new_member", lang).format(
+        name=callback.from_user.full_name
+    )
+    await callback.message.edit_text(welcome)
     await callback.answer()
-
-    # === ՃԻՇՏ ՊԱՏԱՍԽԱՆ ===
-    if choice == CAPTCHA_CORRECT:
-        await state.update_data(captcha_passed=True)
-
-        await bot.restrict_chat_member(
-            chat_id=chat_id,
-            user_id=user_id,
-            permissions=ChatPermissions(
-                can_send_messages=True,
-                can_send_media_messages=True,
-                can_send_other_messages=True,
-            ),
-        )
-
-        user_row = get_user(callback.from_user.id)
-        lang = (user_row["language"] if user_row and user_row.get("language") else "hy")
-
-        success_text = get_text("captcha_success", lang)
-        welcome = get_text("welcome_new_member", lang).format(
-            name=callback.from_user.full_name
-        )
-        combined = success_text + "\n\n" + welcome
-
-        await callback.message.edit_text(combined)
-        await callback.answer()
-
-        await state.clear()
-        return
-
-    # === ՍԽԱԼ ՊԱՏԱՍԽԱՆՆԵՐ ===
-    attempts += 1
-    user_row = get_user(callback.from_user.id)
-    lang = (user_row["language"] if user_row and user_row.get("language") else "hy")
-
-    wait_hours = 0
-    message_tail = ""
-
-    if attempts == 1:
-        wait_hours = 0
-        message_tail = get_text("captcha_wrong_1", lang)
-    elif attempts == 2:
-        wait_hours = 8
-        message_tail = get_text("captcha_wrong_2", lang)
-    elif attempts == 3:
-        wait_hours = 12
-        message_tail = get_text("captcha_wrong_3", lang)
-    elif attempts == 4:
-        wait_hours = 24
-        message_tail = get_text("captcha_wrong_4", lang)
-    else:
-        await state.update_data(
-            captcha_attempts=attempts,
-            captcha_next_allowed=None,
-            captcha_blacklisted=True,
-        )
-        msg = get_text("captcha_blocked", lang)
-        await callback.answer(msg, show_alert=True)
-        return
-
-    next_allowed = None
-    if wait_hours > 0:
-        next_allowed = now + datetime.timedelta(hours=wait_hours)
-
-    await state.update_data(
-        captcha_attempts=attempts,
-        captcha_next_allowed=next_allowed.isoformat() if next_allowed else None,
-    )
-
-    await callback.answer(
-        get_text("captcha_wrong_generic", lang).format(tail=message_tail),
-        show_alert=True,
-    )
 
 # ========== Նոր անդամ / լքող անդամ ==========
 
@@ -437,27 +354,25 @@ async def on_chat_member_update(event: ChatMemberUpdated):
     user = new.user
     chat_id = event.chat.id
 
+    # ── Նոր մասնակից ──
     if new.status in ("member", "administrator") and old.status not in ("member", "administrator"):
-        await bot.restrict_chat_member(
-            chat_id=chat_id,
-            user_id=user.id,
-            permissions=ChatPermissions(can_send_messages=False),
-        )
-
-        # callback_data-ում user_id ենք ներդնում — per-user
+        
+        # Լեզվի ընտրություն — callback_data-ում user.id, որ մենակ ինքը ընտրի
         kb = InlineKeyboardMarkup(inline_keyboard=[[
-            InlineKeyboardButton(text="🇦🇲 Հայերեն", callback_data=f"setlang:{user.id}:hy"),
-            InlineKeyboardButton(text="🇷🇺 Русский", callback_data=f"setlang:{user.id}:ru"),
-            InlineKeyboardButton(text="🇬🇧 English",  callback_data=f"setlang:{user.id}:en"),
+             InlineKeyboardButton(text="🇦🇲 Հայերեն", callback_data=f"setlang:{user.id}:hy"),
+             InlineKeyboardButton(text="🇷🇺 Русский",  callback_data=f"setlang:{user.id}:ru"),
+             InlineKeyboardButton(text="🇬🇧 English",  callback_data=f"setlang:{user.id}:en"),
         ]])
 
         await bot.send_message(
             chat_id,
-            f"👋 {user.full_name}, ընտրիր լեզուն / Выбери язык / Choose language:",
+            f"👋 Խմբին միացավ <a href='tg://user?id={user.id}'>{user.full_name}</a>!\n\n"
+            f"Ընտրիր լեզուն / Выбери язык / Choose language:",
             reply_markup=kb,
         )
         return
 
+    # ── Հեռացած / kick ──
     if old.status in ("member", "administrator") and new.status in ("left", "kicked"):
         user_row = get_user(user.id)
         lang = user_row["language"] if user_row and user_row.get("language") else "hy"
@@ -487,8 +402,9 @@ def looks_like_armenian_translit(text: str) -> bool:
 @dp.message(UserQuestion.waiting_for_question)
 async def handle_user_question(message: Message, state: FSMContext):
     raw = (message.text or "").strip()
-    lang = detect_lang(message)
-
+    user_row = get_user(message.from_user.id)
+    lang = user_row["language"] if user_row and user_row.get("language") else "hy"
+    
     if "?" not in raw and "՞" not in raw:
         await message.answer("Գրի՛ քո հարցը Երևանի մասին, հարցականով 🙂")
         return
@@ -1076,32 +992,6 @@ async def main_router(message: Message, state: FSMContext):
     return
 
 # ========== CAPTCHA helpers (keyboard + sender) ==========
-
-def build_captcha_keyboard() -> InlineKeyboardMarkup:
-    buttons = [
-        InlineKeyboardButton(text="🐇", callback_data="captcha:rabbit"),
-        InlineKeyboardButton(text="🐖", callback_data="captcha:pig"),
-        InlineKeyboardButton(text="🐏", callback_data="captcha:lamb"),
-        InlineKeyboardButton(text="🦁", callback_data="captcha:lion"),
-    ]
-    random.shuffle(buttons)
-    return InlineKeyboardMarkup(inline_keyboard=[[b] for b in buttons])
-
-
-async def send_captcha_test(chat_id: int, user_id: int, state: FSMContext, lang: str = "hy"):
-    text_base = {
-        "hy": "Ընտրիր այն կենդանուն, որին սովորաբար չեն ուտում 🧐",
-        "ru": "Выбери животное, которого обычно не едят 🧐",
-        "en": "Choose the animal people usually do NOT eat 🧐",
-    }.get(lang, "Ընտրիր այն կենդանուն, որին սովորաբար չեն ուտում 🧐")
-
-    mention = f"<a href=\"tg://user?id={user_id}\">օգտվող</a>"
-    text = f"{mention}, {text_base}"
-
-    kb = build_captcha_keyboard()
-    await bot.send_message(chat_id, text, reply_markup=kb)
-    await state.set_state(CaptchaForm.waiting_for_answer)
-
 
 def build_language_keyboard() -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(
