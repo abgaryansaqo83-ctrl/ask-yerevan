@@ -322,33 +322,38 @@ async def cmd_site(message: Message):
 CAPTCHA_CORRECT = "lion"
 
 
-@dp.callback_query(F.data.startswith("captcha:"), CaptchaForm.waiting_for_answer)
-async def handle_captcha_answer(callback: CallbackQuery, state: FSMContext):
-    choice = callback.data.split(":", 1)[1]
-    user_id = callback.from_user.id
-    chat_id = callback.message.chat.id
+@dp.callback_query(F.data.startswith("setlang:"))
+async def handle_setlang_callback(callback: CallbackQuery):
+    parts = callback.data.split(":")
+    if len(parts) != 3:
+        await callback.answer()
+        return
 
-    data = await state.get_data()
-    attempts = int(data.get("captcha_attempts", 0))
-    next_allowed_str = data.get("captcha_next_allowed")
+    target_user_id = int(parts[1])
+    lang = parts[2]  # hy / ru / en
 
-    now = datetime.datetime.now(datetime.timezone.utc)
+    # Միայն ինքն կարող է ընտրել
+    if callback.from_user.id != target_user_id:
+        await callback.answer(
+            {"hy": "Սա քո ընտրությունը չէ 🙂",
+             "ru": "Это не твой выбор 🙂",
+             "en": "This is not your choice 🙂"}.get(lang, ""),
+            show_alert=True
+        )
+        return
 
-    # rate limit, եթե արդեն արգելված է
-    if next_allowed_str:
-        try:
-            next_allowed = datetime.datetime.fromisoformat(next_allowed_str)
-        except Exception:
-            next_allowed = None
-        if next_allowed and now < next_allowed:
-            # լեզուն վերցնում ենք DB-ից
-            user_row = get_user(callback.from_user.id)
-            lang = (user_row["language"] if user_row and user_row.get("language") else "hy")
+    # Պահում ենք ՄԵՆԱԿ ԱՅՍ user-ի համար DB-ում
+    save_user(
+        chat_id=target_user_id,
+        username=callback.from_user.username or "",
+        first_name=callback.from_user.full_name or "",
+        last_name="",
+        language=lang,
+    )
 
-            wait_hours = (next_allowed - now).total_seconds() // 3600 + 1
-            msg = get_text("captcha_try_later", lang).format(hours=int(wait_hours))
-            await callback.answer(msg, show_alert=True)
-            return
+    await callback.message.edit_reply_markup(reply_markup=None)
+    await send_captcha_test(callback.message.chat.id, target_user_id, lang=lang)
+    await callback.answer()
 
     # === ՃԻՇՏ ՊԱՏԱՍԽԱՆ ===
     if choice == CAPTCHA_CORRECT:
@@ -426,64 +431,39 @@ async def handle_captcha_answer(callback: CallbackQuery, state: FSMContext):
 # ========== Նոր անդամ / լքող անդամ ==========
 
 @dp.chat_member()
-async def on_chat_member_update(event: ChatMemberUpdated, state: FSMContext):
-    logger.info(
-        "chat_member update: chat=%s user=%s old=%s new=%s",
-        event.chat.id,
-        event.new_chat_member.user.id,
-        event.old_chat_member.status,
-        event.new_chat_member.status,
-    )
-
+async def on_chat_member_update(event: ChatMemberUpdated):
     old = event.old_chat_member
     new = event.new_chat_member
     user = new.user
     chat_id = event.chat.id
 
-    # Telegram-ի language_code-ը կարող ենք օգտագործել որպես նախնական hint
-    lang_code = (user.language_code or "hy").lower()
-    if lang_code.startswith("ru"):
-        lang = "ru"
-    elif lang_code.startswith("en"):
-        lang = "en"
-    else:
-        lang = "hy"
-
-    # Նոր անդամ մտավ խմբի մեջ
     if new.status in ("member", "administrator") and old.status not in ("member", "administrator"):
-
-        # Սկզբում արգելում ենք գրել, մինչև captcha անցնի
         await bot.restrict_chat_member(
             chat_id=chat_id,
             user_id=user.id,
             permissions=ChatPermissions(can_send_messages=False),
         )
 
-        # Լեզվի ընտրության կոճակները՝ անմիջապես խմբի մեջ, առանց հավելյալ տեքստի
-        kb = build_language_keyboard()
+        # callback_data-ում user_id ենք ներդնում — per-user
+        kb = InlineKeyboardMarkup(inline_keyboard=[[
+            InlineKeyboardButton(text="🇦🇲 Հայերեն", callback_data=f"setlang:{user.id}:hy"),
+            InlineKeyboardButton(text="🇷🇺 Русский", callback_data=f"setlang:{user.id}:ru"),
+            InlineKeyboardButton(text="🇬🇧 English",  callback_data=f"setlang:{user.id}:en"),
+        ]])
+
         await bot.send_message(
             chat_id,
-            f"{user.full_name}",
+            f"👋 {user.full_name}, ընտրիր լեզուն / Выбери язык / Choose language:",
             reply_markup=kb,
         )
-
-        # State-ում պահում ենք, թե որ chat-ից է join արել և ով է user-ը
-        await state.update_data(
-            join_chat_id=chat_id,
-            join_user_id=user.id,
-            captcha_passed=False,
-        )
-
-        # Տեղափոխում ենք FSM-ը լեզվի ընտրության state-ի վրա
-        await state.set_state(LanguageForm.waiting_for_choice)
         return
 
-    # Հին անդամը դուրս եկավ
     if old.status in ("member", "administrator") and new.status in ("left", "kicked"):
+        user_row = get_user(user.id)
+        lang = user_row["language"] if user_row and user_row.get("language") else "hy"
         text = get_text("goodbye_member", lang).format(name=user.full_name)
         await bot.send_message(chat_id, text)
-        return
-
+        
 # ========== /start-ից հետո AI հարց ==========
 
 from transliterate import translit  # մի անգամ ավելացնել imports-ում
