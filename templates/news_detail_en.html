@@ -1,12 +1,22 @@
 {% extends "base.html" %}
 
 {% block og_tags %}
-  {% if news.image_url and news.image_url.startswith('/') %}
-    {% set og_image = request.base_url | string | trim('/') + news.image_url %}
+  {% set site_origin = request.url.scheme ~ '://' ~ request.url.netloc %}
+
+  {% if news.image_url %}
+    {% if news.image_url.startswith('http://') or news.image_url.startswith('https://') %}
+      {% set og_image = news.image_url %}
+    {% elif news.image_url.startswith('/') %}
+      {% set og_image = site_origin ~ news.image_url %}
+    {% else %}
+      {% set og_image = site_origin ~ '/' ~ news.image_url %}
+    {% endif %}
   {% else %}
-    {% set og_image = news.image_url or '' %}
+    {% set og_image = '' %}
   {% endif %}
+
   <meta property="og:type" content="article">
+  <meta property="og:site_name" content="AskYerevan">
   <meta property="og:title" content="{{ news.title_en }}">
   <meta property="og:description" content="{{ news.content_en|striptags|truncate(180, True, '...') }}">
   <meta property="og:image" content="{{ og_image }}">
