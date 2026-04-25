@@ -41,8 +41,10 @@ async def _call_gemini(system_prompt: str, user_message: str) -> str:
         async with session.post(API_URL, headers=headers, json=payload) as resp:
             if resp.status != 200:
                 text = await resp.text()
+                logger.error(f"🔴 Gemini API error {resp.status}: {text}") # ← ավելացրու
                 raise RuntimeError(f"Gemini API error {resp.status}: {text}")
             data = await resp.json()
+            logger.info(f"✅ Gemini responded OK")  # ← ավելացրու
 
             response = data["candidates"][0]["content"]["parts"][0]["text"].strip()
 
@@ -92,7 +94,7 @@ async def generate_reply(
     try:
         return await _call_gemini(system_prompt, user_message)
     except Exception as e:
-        logger.exception("AI generate_reply failed: %s", e)
+        logger.error(f"🔴 AI generate_reply EXCEPTION: {type(e).__name__}: {e}")  # ← փոխիր
         if lang == "ru":
             return "Сейчас что-то пошло не так, попробуйте написать ещё раз позже."
         if lang == "en":
