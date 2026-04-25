@@ -15,7 +15,7 @@ class Settings:
     OPENWEATHER_API_KEY: str = os.getenv("OPENWEATHER_API_KEY", "")
     GOOGLE_MAPS_API_KEY: str = os.getenv("GOOGLE_MAPS_API_KEY", "")
     GOOGLE_DIRECTIONS_KEY: str = os.getenv("GOOGLE_DIRECTIONS_KEY", "")
-    AI_API_KEY: str = os.getenv("AI_API_KEY", "")
+    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
     DATABASE_URL: str = os.getenv("DATABASE_URL", "")
     TIMEZONE: str = os.getenv("TIMEZONE", "Asia/Yerevan")
     GROUP_CHAT_ID: int = int(os.getenv("GROUP_CHAT_ID", "-1003340745236"))
