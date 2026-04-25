@@ -177,7 +177,7 @@ async def handle_recommendation_request(query: str, chat_id: int):
 async def notify_unanswered_questions():
     bot = _get_bot()
     try:
-        rows = get_unanswered_questions_older_than(minutes=15)
+        rows = get_unanswered_questions_older_than(minutes=20)
         if not rows:
             return
 
@@ -196,4 +196,3 @@ async def notify_unanswered_questions():
                 logger.exception(f"Auto‑reply failed for question id={q['id']}: {e}")
     finally:
         await bot.session.close()
-
