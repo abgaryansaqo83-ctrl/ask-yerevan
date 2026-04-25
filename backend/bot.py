@@ -423,7 +423,7 @@ async def handle_user_question(message: Message, state: FSMContext):
         if recs and not recs[0].startswith("🤔 "):
             rec_parts.extend(recs)
     except Exception:
-
+        pass
 
     # 2) AI պատասխան
     reply = await generate_reply(text, lang=lang)
@@ -436,7 +436,6 @@ async def handle_user_question(message: Message, state: FSMContext):
 
     await message.answer(full)
     await state.clear()
-
 
 # ========== Սովորական տեքստեր (fallback router) + /publish ==========
 
