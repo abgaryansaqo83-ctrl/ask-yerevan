@@ -746,7 +746,6 @@ def delete_old_news(days: int = 90) -> int:
         cur.close()
         conn.close()
 
-
 # ============================================================================
 # QUESTIONS HELPERS  (unanswered group questions)
 # ============================================================================
@@ -791,6 +790,7 @@ def get_unanswered_questions_older_than(minutes: int) -> list[dict]:
     conn = get_connection()
     cur = get_cursor(conn)
 
+    # ⚠️ Այստեղ էր էռորը, հիմա PostgreSQL-safe տարբերակն է
     cur.execute(
         """
         SELECT
@@ -805,7 +805,7 @@ def get_unanswered_questions_older_than(minutes: int) -> list[dict]:
         JOIN users u
           ON u.chat_id = q.user_id::text
         WHERE q.answered = FALSE
-          AND q.created_at <= NOW() - INTERVAL '1 minute' * %s
+          AND q.created_at <= NOW() - (%s * INTERVAL '1 minute')
         ORDER BY q.created_at ASC;
         """,
         (minutes,),
@@ -873,10 +873,11 @@ def cleanup_old_listings(days: int = 15) -> None:
     cur = get_cursor(conn)
 
     if DATABASE_URL:
+        # ⚠️ Այստեղ էլ էր MySQL-ական syntax, ուղղում ենք
         cur.execute(
             """
             DELETE FROM listings
-            WHERE created_at < CURRENT_TIMESTAMP - INTERVAL %s DAY
+            WHERE created_at < CURRENT_TIMESTAMP - (%s * INTERVAL '1 day')
             """,
             (days,),
         )
@@ -900,12 +901,13 @@ def count_similar_listings(user_id: int,
     cur = get_cursor(conn)
 
     if DATABASE_URL:
+        # ⚠️ Նույն սխալ pattern-ը, դարձնում ենք Postgres-ական
         cur.execute(
             """
             SELECT COUNT(*) AS cnt
             FROM listings
             WHERE user_id = %s
-              AND created_at >= CURRENT_TIMESTAMP - INTERVAL %s DAY
+              AND created_at >= CURRENT_TIMESTAMP - (%s * INTERVAL '1 day')
               AND text = %s
             """,
             (str(user_id), days, text),
@@ -966,6 +968,7 @@ def count_violations(user_id: int,
     cur = get_cursor(conn)
 
     if DATABASE_URL:
+        # ⚠️ Այստեղ էլ ենք INTERVAL-ը դարձնում ճիշտ
         cur.execute(
             """
             SELECT COUNT(*) AS cnt
@@ -973,7 +976,7 @@ def count_violations(user_id: int,
             WHERE user_id = %s
               AND chat_id = %s
               AND vtype = %s
-              AND created_at >= CURRENT_TIMESTAMP - INTERVAL %s HOUR
+              AND created_at >= CURRENT_TIMESTAMP - (%s * INTERVAL '1 hour')
             """,
             (str(user_id), str(chat_id), vtype, within_hours),
         )
