@@ -404,33 +404,44 @@ async def handle_user_question(message: Message, state: FSMContext):
     raw = (message.text or "").strip()
     user_row = get_user(message.from_user.id)
     lang = user_row["language"] if user_row and user_row.get("language") else "hy"
-    
+
     if "?" not in raw and "՞" not in raw:
         await message.answer("Գրի՛ քո հարցը Երևանի մասին, հարցականով 🙂")
         return
-
-    text = raw
 
     # User location, եթե ունենք
     user_id = message.from_user.id
     user_location = USER_LOCATIONS.get(user_id)
 
-    # 1) Փորձում ենք recommendation-ներ բերել
+    # 1) Maps-ի recommendation-ներ
     rec_parts: list[str] = []
     try:
         recs = await get_recommendations(raw, user_location=user_location)
-        # recs always list[str]; եթե առաջինը «🤔 ...» է, значить category չի գտել
         if recs and not recs[0].startswith("🤔 "):
             rec_parts.extend(recs)
     except Exception:
         pass
 
-    # 2) AI պատասխան
-    reply = await generate_reply(text, lang=lang)
+    # 2) Groq AI պատասխան
+    reply = await generate_reply(raw, lang=lang)
 
     # 3) Կոմբինացված պատասխան
     if rec_parts:
-        full = "💡 Ահա մի քանի տարբերակ.\n" + "\n\n".join(rec_parts) + "\n\n" + reply
+        if lang == "ru":
+            separator = "➕ Помимо этих вариантов, также:"
+        elif lang == "en":
+            separator = "➕ Besides these options, also:"
+        else:
+            separator = "➕ Բացի այս տարբերակներից, կան նաև․"
+
+        full = (
+            "💡 Ահա մի քանի տարբերակ.\n"
+            + "\n\n".join(rec_parts)
+            + "\n\n"
+            + separator
+            + "\n"
+            + reply
+        )
     else:
         full = reply
 
