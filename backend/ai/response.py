@@ -10,7 +10,6 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 
 client = AsyncGroq(api_key=GROQ_API_KEY) if GROQ_API_KEY else None
 
-
 async def generate_reply(
     user_message: str,
     lang: str = "hy",
