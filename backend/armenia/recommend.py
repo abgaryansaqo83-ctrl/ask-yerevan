@@ -141,6 +141,7 @@ async def _search_places(
                         "address": place.get("vicinity", ""),
                         "price_level": place.get("price_level", 0),
                         "types": place.get("types", []),
+                        "place_id": place.get("place_id", ""),
                     }
                 )
 
@@ -159,40 +160,21 @@ def _detect_category(query: str) -> Optional[str]:
 
 
 def _format_recommendation(place: dict, emoji: str) -> str:
-    """1 տեղի recommendation-ի ֆորմատ։"""
     name = place["name"]
     rating = place["rating"]
     address = place["address"]
     price_level = place["price_level"]
+    place_id = place.get("place_id", "")
 
-    # Price emoji (Google price_level 0–4)
-    price_emojis = {
-        0: "💸",          # unknown
-        1: "💰",          # էժան
-        2: "💰💰",
-        3: "💰💰💰",
-        4: "💰💰💰💰",
-    }
-    price_str = price_emojis.get(price_level, "💰")
+    price_emojis = {0: "", 1: "💰", 2: "💰💰", 3: "💰💰💰", 4: "💰💰💰💰"}
+    price_str = price_emojis.get(price_level, "")
 
-    # Short description
-    types = place.get("types", [])
-    desc = _get_short_desc(types)
-
-    return (
-        f"{emoji} {name}\n"
-        f"⭐ {rating:.1f} | {address}\n"
-        f"{price_str} {desc}"
-    )
+    line = f"{emoji} {name}\n⭐ {rating:.1f} | {address}"
+    if price_str:
+        line += f" | {price_str}"
+    if place_id:
+        maps_url = f"https://www.google.com/maps/place/?q=place_id:{place_id}"
+        line += f"\n🗺 Բացել քարտեզում։ {maps_url}"
+    return line
 
 
-def _get_short_desc(types: List[str]) -> str:
-    """Types-ից կարճ նկարագրություն։"""
-    if "restaurant" in types:
-        return "համեղ խոհանոց + հարմար մթնոլորտ"
-    elif "cafe" in types:
-        return "համեղ սուրճ + հանգստյան վայր"
-    elif "bar" in types or "night_club" in types:
-        return "լավ երեկոյան + երաժշտություն"
-    else:
-        return "հիանալի ընտրություն"
