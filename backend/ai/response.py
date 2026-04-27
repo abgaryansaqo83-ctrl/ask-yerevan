@@ -2,65 +2,19 @@
 
 import os
 import re
-import aiohttp
+from groq import AsyncGroq
 
 from backend.utils.logger import logger
 
-PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY", "")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 
-API_URL = "https://api.perplexity.ai/chat/completions"
-MODEL_NAME = "sonar"
-
-async def _call_perplexity(system_prompt: str, user_message: str) -> str:
-    if not PERPLEXITY_API_KEY:
-        raise RuntimeError("PERPLEXITY_API_KEY is missing")
-
-    logger.info(f"Perplexity: using model={MODEL_NAME}")
-
-    headers = {
-        "Authorization": f"Bearer {PERPLEXITY_API_KEY}",
-        "Content-Type": "application/json",
-    }
-
-    payload = {
-        "model": MODEL_NAME,
-        "messages": [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_message},
-        ],
-        "temperature": 0.7,
-        "max_tokens": 900,  # կամ 1200, եթե ուզում ես ավելի երկար պատմություններ
-    }
-
-    async with aiohttp.ClientSession() as session:
-        async with session.post(API_URL, headers=headers, json=payload) as resp:
-            if resp.status != 200:
-                text = await resp.text()
-                raise RuntimeError(f"Perplexity API error {resp.status}: {text}")
-            data = await resp.json()
-            
-            # Վերցնում ենք պատասխանը
-            response = data["choices"][0]["message"]["content"].strip()
-            
-            # Հեռացնում ենք citation թվերը [1], [2], [3] և այլն
-            response = re.sub(r'\[\d+\]', '', response)
-            
-            # Հեռացնում ենք ավելորդ բացատները
-            response = re.sub(r'\s+', ' ', response).strip()
-            
-            return response
+client = AsyncGroq(api_key=GROQ_API_KEY) if GROQ_API_KEY else None
 
 
 async def generate_reply(
     user_message: str,
     lang: str = "hy",
 ) -> str:
-    """
-    AskYerevan city-helper AI պատասխաններ:
-    - Կենտրոնանում է Երևանի վրա
-    - Պատասխանում է կարճ, 1–3 նախադասություն
-    - Պահպանում է նշված լեզուն (hy/ru/en)
-    """
     system_prompts = {
         "hy": (
             "Դու Երևանի և ամբողջ Հայաստանի մասին օգնող, անվտանգ բոտ ես։ "
@@ -86,8 +40,8 @@ async def generate_reply(
     }
     system_prompt = system_prompts.get(lang, system_prompts["hy"])
 
-    if not PERPLEXITY_API_KEY:
-        logger.warning("PERPLEXITY_API_KEY is missing, fallback reply used")
+    if not GROQ_API_KEY or client is None:
+        logger.warning("GROQ_API_KEY is missing, fallback reply used")
         if lang == "ru":
             return "Пока что я не могу ответить подробно, но скоро научусь 🙂"
         if lang == "en":
@@ -95,9 +49,23 @@ async def generate_reply(
         return "Հիմա դեռ չեմ կարող մանրամասն պատասխանել, բայց շուտով կկարողանամ 🙂"
 
     try:
-        return await _call_perplexity(system_prompt, user_message)
+        logger.info(f"Groq: calling llama-3.3-70b-versatile | lang={lang}")
+        chat_completion = await client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_message},
+            ],
+            model="llama-3.3-70b-versatile",
+            temperature=0.7,
+            max_tokens=900,
+        )
+        response = chat_completion.choices[0].message.content.strip()
+        response = re.sub(r'\s+', ' ', response).strip()
+        logger.info("✅ Groq responded OK")
+        return response
+
     except Exception as e:
-        logger.exception("AI generate_reply failed: %s", e)
+        logger.error(f"🔴 Groq generate_reply EXCEPTION: {type(e).__name__}: {e}")
         if lang == "ru":
             return "Сейчас что-то пошло не так, попробуйте написать ещё раз позже."
         if lang == "en":
