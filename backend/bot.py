@@ -110,12 +110,18 @@ class AddNewsForm(StatesGroup):
 async def handle_language_choice(message: Message, state: FSMContext):
     text = (message.text or "").strip()
 
-    if "Рус" in text or "рус" in text:
+    if text == "🇷🇺 Русский":
         lang = "ru"
-    elif "English" in text or "Eng" in text:
+    elif text == "🇬🇧 English":
         lang = "en"
-    else:
+    elif text == "🇦🇲 Հայերեն":
         lang = "hy"
+    else:
+        await message.answer(
+            "Խնդրում եմ ընտրեք լեզուն համապատասխան կոճակից։",
+            reply_markup=build_language_keyboard(),
+        )
+        return
 
     # Պահում ենք user-ի ընտրած լեզուն DB-ում
     save_user(
