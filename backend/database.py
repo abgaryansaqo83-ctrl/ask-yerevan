@@ -162,53 +162,159 @@ def init_db():
 # USER HELPERS
 # ============================================================================
 
-def save_user(chat_id: int,
-              username: Optional[str] = None,
-              first_name: Optional[str] = None,
-              last_name: Optional[str] = None,
-              language: str = "hy") -> None:
+def save_user(
+    chat_id: int,
+    username: Optional[str] = None,
+    first_name: Optional[str] = None,
+    last_name: Optional[str] = None,
+    language: Optional[str] = None,
+) -> None:
+    """
+    Ստեղծում կամ թարմացնում է user-ին։
+
+    language=None լինելու դեպքում արդեն պահված լեզուն չի փոխվում։
+    Նոր user-ի համար default լեզուն hy է։
+    """
+
+    allowed_languages = {"hy", "en", "ru"}
+
+    if language is not None:
+        language = language.strip().lower()
+
+    if language not in allowed_languages:
+        language = None
+
     conn = get_connection()
     cur = get_cursor(conn)
 
     if DATABASE_URL:
         cur.execute(
             """
-            INSERT INTO users (chat_id, username, first_name, last_name, language, created_at)
-            VALUES (%s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
+            INSERT INTO users (
+                chat_id,
+                username,
+                first_name,
+                last_name,
+                language,
+                created_at
+            )
+            VALUES (%s, %s, %s, %s, COALESCE(%s, 'hy'), CURRENT_TIMESTAMP)
             ON CONFLICT (chat_id) DO UPDATE SET
                 username   = EXCLUDED.username,
                 first_name = EXCLUDED.first_name,
                 last_name  = EXCLUDED.last_name,
-                language   = EXCLUDED.language
+                language   = COALESCE(EXCLUDED.language, users.language)
             """,
-            (chat_id, username, first_name, last_name, language),
+            (
+                str(chat_id),
+                username,
+                first_name,
+                last_name,
+                language,
+            ),
         )
     else:
+        # SQLite-ում նախ ստուգում ենք՝ user-ը գոյություն ունի՞
         cur.execute(
-            """
-            INSERT OR REPLACE INTO users (chat_id, username, first_name, last_name, language, created_at)
-            VALUES (?, ?, ?, ?, ?, datetime('now'))
-            """,
-            (chat_id, username, first_name, last_name, language),
+            "SELECT id FROM users WHERE chat_id = ?",
+            (str(chat_id),),
         )
+        existing = cur.fetchone()
+
+        if existing:
+            if language is None:
+                cur.execute(
+                    """
+                    UPDATE users
+                    SET username = ?,
+                        first_name = ?,
+                        last_name = ?
+                    WHERE chat_id = ?
+                    """,
+                    (
+                        username,
+                        first_name,
+                        last_name,
+                        str(chat_id),
+                    ),
+                )
+            else:
+                cur.execute(
+                    """
+                    UPDATE users
+                    SET username = ?,
+                        first_name = ?,
+                        last_name = ?,
+                        language = ?
+                    WHERE chat_id = ?
+                    """,
+                    (
+                        username,
+                        first_name,
+                        last_name,
+                        language,
+                        str(chat_id),
+                    ),
+                )
+        else:
+            cur.execute(
+                """
+                INSERT INTO users (
+                    chat_id,
+                    username,
+                    first_name,
+                    last_name,
+                    language,
+                    created_at
+                )
+                VALUES (?, ?, ?, ?, ?, datetime('now'))
+                """,
+                (
+                    str(chat_id),
+                    username,
+                    first_name,
+                    last_name,
+                    language or "hy",
+                ),
+            )
 
     conn.commit()
+    cur.close()
     conn.close()
 
 
-def get_user(chat_id: int):
+def get_user(chat_id: int) -> Optional[Dict[str, Any]]:
+    """
+    Վերադարձնում է user-ին սովորական dict-ի տեսքով,
+    որպեսզի աշխատի և՛ PostgreSQL-ի, և՛ SQLite-ի դեպքում։
+    """
+
     conn = get_connection()
     cur = get_cursor(conn)
 
-    if DATABASE_URL:
-        cur.execute("SELECT * FROM users WHERE chat_id = %s", (str(chat_id),))
-    else:
-        cur.execute("SELECT * FROM users WHERE chat_id = ?", (str(chat_id),))
+    try:
+        if DATABASE_URL:
+            cur.execute(
+                "SELECT * FROM users WHERE chat_id = %s",
+                (str(chat_id),),
+            )
+        else:
+            cur.execute(
+                "SELECT * FROM users WHERE chat_id = ?",
+                (str(chat_id),),
+            )
 
-    row = cur.fetchone()
-    conn.close()
-    return row
+        row = cur.fetchone()
 
+        if row is None:
+            return None
+
+        return dict(row)
+
+    finally:
+        cur.close()
+        conn.close()
+        
 
 # ============================================================================
 # EVENTS HELPERS  (generic events table)
