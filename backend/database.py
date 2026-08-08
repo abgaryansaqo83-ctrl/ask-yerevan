@@ -1096,7 +1096,7 @@ def count_violations(user_id: int,
               AND vtype = ?
               AND datetime(created_at) >= datetime('now', ?)
             """,
-            (str(user_id), str(chat_id), vtype, f"-{withinhours} hours"),
+            (str(user_id), str(chat_id), vtype, f"-{within_hours} hours"),
         )
 
     row = cur.fetchone()
