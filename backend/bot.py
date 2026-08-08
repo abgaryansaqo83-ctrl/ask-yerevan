@@ -937,61 +937,153 @@ async def main_router(message: Message, state: FSMContext):
     
     # Listings detection
     is_listing, category = detect_listing_category(text)
+
     if is_listing:
+        # Ապահովում ենք, որ լեզուն միայն թույլատրելի արժեքներից մեկը լինի
+        user_lang = lang if lang in {"hy", "en", "ru"} else "hy"
+
+        listing_messages = {
+            "hy": {
+                "wrong_sell": (
+                    "Սա վաճառքի հայտարարություն է, խնդրում եմ տեղադրեք "
+                    "«Վաճառք» բաժնում 🙂"
+                ),
+                "wrong_rent": (
+                    "Սա վարձակալության հայտարարություն է, խնդրում եմ տեղադրեք "
+                    "«Վարձու» բաժնում 🙂"
+                ),
+                "wrong_search": (
+                    "Սա «Փնտրում եմ» հայտարարություն է, խնդրում եմ տեղադրեք "
+                    "«Փնտրում եմ» բաժնում 🙂"
+                ),
+                "wrong_job_offer": (
+                    "Սա աշխատանքի կամ ծառայության առաջարկ է, խնդրում եմ տեղադրեք "
+                    "համապատասխան բաժնում 🙂"
+                ),
+                "limit_reached": (
+                    "Նույն հայտարարությունը հնարավոր է հրապարակել առավելագույնը "
+                    "5 անգամ 15 օրվա ընթացքում։ Խնդրում ենք սպասել, մինչև անցնի "
+                    "15 օրը, և նոր միայն կրկին տեղադրել։"
+                ),
+                "limit_warning": (
+                    "Զգուշացում․ այս հայտարարությունն արդեն գրեթե ամբողջությամբ "
+                    "օգտագործել է 15 օրվա 5 հրապարակման սահմանը։ Հաջորդ "
+                    "հրապարակումը կարող է արդեն արգելվել։"
+                ),
+            },
+            "en": {
+                "wrong_sell": (
+                    "This is a sale listing. Please post it in the "
+                    "“For Sale” section 🙂"
+                ),
+                "wrong_rent": (
+                    "This is a rental listing. Please post it in the "
+                    "“Rentals” section 🙂"
+                ),
+                "wrong_search": (
+                    "This is a looking-for request. Please post it in the "
+                    "“Looking For” section 🙂"
+                ),
+                "wrong_job_offer": (
+                    "This is a job or service offer. Please post it in the "
+                    "appropriate section 🙂"
+                ),
+                "limit_reached": (
+                    "The same listing can be published a maximum of 5 times "
+                    "within 15 days. Please wait until the 15-day period has "
+                    "passed before publishing it again."
+                ),
+                "limit_warning": (
+                    "Warning: this listing has almost reached the limit of "
+                    "5 publications within 15 days. The next publication may "
+                    "be blocked."
+                ),
+            },
+            "ru": {
+                "wrong_sell": (
+                    "Это объявление о продаже. Пожалуйста, разместите его "
+                    "в разделе «Продажа» 🙂"
+                ),
+                "wrong_rent": (
+                    "Это объявление об аренде. Пожалуйста, разместите его "
+                    "в разделе «Аренда» 🙂"
+                ),
+                "wrong_search": (
+                    "Это объявление в формате «Ищу». Пожалуйста, разместите "
+                    "его в разделе «Ищу» 🙂"
+                ),
+                "wrong_job_offer": (
+                    "Это предложение работы или услуги. Пожалуйста, разместите "
+                    "его в соответствующем разделе 🙂"
+                ),
+                "limit_reached": (
+                    "Одно и то же объявление можно публиковать максимум 5 раз "
+                    "в течение 15 дней. Пожалуйста, дождитесь окончания этого "
+                    "периода и попробуйте снова."
+                ),
+                "limit_warning": (
+                    "Предупреждение: это объявление почти достигло лимита "
+                    "в 5 публикаций за 15 дней. Следующая публикация может "
+                    "быть заблокирована."
+                ),
+            },
+        }
+
+        messages = listing_messages[user_lang]
+
+        # Ստուգում ենք՝ ճիշտ բաժնում է արդյոք հայտարարությունը
         if category == "sell" and thread_id != settings.SELL_THREAD_ID:
-            await message.reply(
-                "Սա վաճառքի հայտարարություն է, խնդրում եմ տեղադրեք «Վաճառք» բաժնում 🙂"
-            )
+            await message.reply(messages["wrong_sell"])
             await message.delete()
             return
 
         if category == "rent" and thread_id != settings.RENT_THREAD_ID:
-            await message.reply(
-                "Սա վարձակալության հայտարարություն է, խնդրում եմ տեղադրեք «Վարձու» բաժնում 🙂"
-            )
+            await message.reply(messages["wrong_rent"])
             await message.delete()
             return
 
         if category == "search" and thread_id != settings.SEARCH_THREAD_ID:
-            await message.reply(
-                "Սա «Փնտրում եմ» հայտարարություն է, խնդրում եմ տեղադրեք «Փնտրում եմ» բաժնում 🙂"
-            )
+            await message.reply(messages["wrong_search"])
             await message.delete()
             return
 
-        if category == "job_offer" and thread_id != settings.JOB_SERVICE_THREAD_ID:
-            await message.reply(
-                "Սա աշխատանքի կամ ծառայության առաջարկ է, խնդրում եմ տեղադրեք համապատասխան բաժնում 🙂"
-            )
+        if (
+            category == "job_offer"
+            and thread_id != settings.JOB_SERVICE_THREAD_ID
+        ):
+            await message.reply(messages["wrong_job_offer"])
             await message.delete()
             return
 
         user_id = message.from_user.id
-        repeats = count_similar_listings(user_id, message.text or "", days=15)
+        listing_text = message.text or ""
 
+        repeats = count_similar_listings(
+            user_id,
+            listing_text,
+            days=15,
+        )
+
+        # Հայտարարությունների առավելագույն քանակը
         if repeats >= 5:
-            await message.reply(
-                "Նույն հայտարարությունը հնարավոր է հրապարակել առավելագույնը 5 անգամ "
-                "15 օրվա ընթացքում։ Խնդրում ենք սպասել, մինչև անցնի 15 օրը, "
-                "և նոր միայն կրկին տեղադրել։"
-            )
+            await message.reply(messages["limit_reached"])
             await message.delete()
             return
-        elif repeats == 4:
-            await message.reply(
-                "Զգուշացում․ այս հայտարարությունն արդեն գրեթե ամբողջությամբ "
-                "օգտագործել է 15 օրվա 5 հրապարակման սահմանը։ "
-                "Հաջորդ հրապարակումը կարող է արդեն արգելվել։"
-            )
 
+        # Վերջին թույլատրելի հրապարակումից առաջ զգուշացում
+        elif repeats == 4:
+            await message.reply(messages["limit_warning"])
+
+        # Պահպանում ենք հայտարարությունը
         save_listing(
             category=category,
             chat_id=message.chat.id,
             thread_id=thread_id,
             user_id=user_id,
             message_id=message.message_id,
-            text=message.text or "",
+            text=listing_text,
         )
+
         return
 
     # Վերջում՝ general greeting private / սովորական chat-ի համար
@@ -1000,7 +1092,7 @@ async def main_router(message: Message, state: FSMContext):
         return
 
     return
-
+    
 # ========== CAPTCHA helpers (keyboard + sender) ==========
 
 def build_language_keyboard() -> ReplyKeyboardMarkup:
